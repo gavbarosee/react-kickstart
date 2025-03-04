@@ -19,6 +19,7 @@
   "dependencies": {
     "commander": "^11.1.0",
     "fs-extra": "^11.2.0",
-    "inquirer": "^8.2.6"
+    "inquirer": "^8.2.6",
+    "execa": "^5.1.1"
   }
 }

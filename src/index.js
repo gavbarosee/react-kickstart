@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs-extra");
 const { promptUser } = require("./prompts");
+const { installDependencies } = require("./utils/package-manager");
 
 async function createApp(projectDirectory, options = {}) {
   // if no project directory is provided, use current directory
@@ -26,8 +27,31 @@ async function createApp(projectDirectory, options = {}) {
   try {
     // get user preferences
     const userChoices = options.yes ? getDefaultChoices() : await promptUser();
-    console.log("Selected options:", userChoices);
-    // TODO: Use these options to create the project
+
+    // create a basic package.json
+    const packageJson = {
+      name: projectName,
+      version: "0.1.0",
+      private: true,
+    };
+
+    // write package.json
+    fs.writeFileSync(
+      path.join(projectPath, "package.json"),
+      JSON.stringify(packageJson, null, 2)
+    );
+
+    // install dependencies
+    await installDependencies(projectPath, userChoices.packageManager);
+
+    console.log();
+    console.log(`Success! Created ${projectName} at ${projectPath}`);
+    console.log("Inside that directory, you can run several commands:");
+    console.log();
+    console.log(
+      `  ${userChoices.packageManager === "yarn" ? "yarn start" : "npm start"}`
+    );
+    console.log("    Starts the development server.");
   } catch (err) {
     console.error("An error occurred during project setup:");
     console.error(err);
