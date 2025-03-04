@@ -1,0 +1,22 @@
+{
+  "name": "react-kickstart",
+  "version": "0.1.0",
+  "description": "A modern CLI tool for creating React applications",
+  "main": "src/index.js",
+  "bin": {
+    "react-kickstart": "bin/react-kickstart.js"
+  },
+  "scripts": {
+    "start": "node bin/react-kickstart.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "react",
+    "cli"
+  ],
+  "author": "Gavish Barosee",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^11.1.0"
+  }
+}
