@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const { program } = require("commander");
+const createApp = require("../src/index");
 const pkg = require("../package.json");
 
 program
@@ -8,8 +9,9 @@ program
   .description("A modern CLI tool for creating React applications")
   .version(pkg.version)
   .argument("[project-directory]", "Project directory name")
-  .action((projectDirectory) => {
-    console.log(`Creating a new React app in ${projectDirectory || "."}`);
+  .option("-y, --yes", "Skip all prompts and use default values")
+  .action((projectDirectory, options) => {
+    createApp(projectDirectory, options);
   });
 
 program.parse(process.argv);

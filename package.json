@@ -17,6 +17,7 @@
   "author": "Gavish Barosee",
   "license": "MIT",
   "dependencies": {
-    "commander": "^11.1.0"
+    "commander": "^11.1.0",
+    "fs-extra": "^11.2.0"
   }
 }
