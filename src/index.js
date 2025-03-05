@@ -3,6 +3,7 @@ const fs = require("fs-extra");
 const chalk = require("chalk");
 const { promptUser } = require("./prompts");
 const { generateProject } = require("./generators");
+const { initGit } = require("./utils/git");
 const { installDependencies } = require("./utils/package-manager");
 
 async function createApp(projectDirectory, options = {}) {
@@ -13,7 +14,7 @@ async function createApp(projectDirectory, options = {}) {
 
   const projectName = projectDirectory || path.basename(projectPath);
 
-  // check if directory exists and is empty then proceed
+  // check if directory exists and is empty
   if (fs.existsSync(projectPath)) {
     const files = fs.readdirSync(projectPath);
     if (files.length > 0) {
@@ -29,12 +30,15 @@ async function createApp(projectDirectory, options = {}) {
   try {
     // get user preferences
     const userChoices = options.yes ? getDefaultChoices() : await promptUser();
-
-    // generate project files
     await generateProject(projectPath, projectName, userChoices);
 
     // install dependencies
     await installDependencies(projectPath, userChoices.packageManager);
+
+    // initialize git if selected
+    if (userChoices.initGit) {
+      await initGit(projectPath);
+    }
 
     console.log();
     console.log(
@@ -67,6 +71,7 @@ function getDefaultChoices() {
     framework: "vite",
     typescript: false,
     styling: "tailwind",
+    initGit: true,
   };
 }
 

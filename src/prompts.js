@@ -43,6 +43,12 @@ async function promptUser() {
       ],
       default: "tailwind",
     },
+    {
+      type: "confirm",
+      name: "initGit",
+      message: "Initialize a git repository?",
+      default: true,
+    },
   ]);
 
   return answers;
