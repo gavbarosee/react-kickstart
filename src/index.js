@@ -66,6 +66,7 @@ function getDefaultChoices() {
     packageManager: "npm",
     framework: "vite",
     typescript: false,
+    styling: "tailwind",
   };
 }
 

@@ -32,6 +32,17 @@ async function promptUser() {
       message: "Would you like to use TypeScript?",
       default: false,
     },
+    {
+      type: "list",
+      name: "styling",
+      message: "Which styling solution would you like to use?",
+      choices: [
+        { name: "Tailwind CSS", value: "tailwind" },
+        { name: "styled-components", value: "styled-components" },
+        { name: "None (plain CSS)", value: "css" },
+      ],
+      default: "tailwind",
+    },
   ]);
 
   return answers;

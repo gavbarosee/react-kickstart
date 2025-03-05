@@ -32,6 +32,15 @@ async function generateViteProject(projectPath, projectName, userChoices) {
     packageJson.devDependencies.typescript = "^5.3.2";
   }
 
+  // add styling dependencies
+  if (userChoices.styling === "tailwind") {
+    packageJson.devDependencies.tailwindcss = "^3.3.5";
+    packageJson.devDependencies.postcss = "^8.4.31";
+    packageJson.devDependencies.autoprefixer = "^10.4.16";
+  } else if (userChoices.styling === "styled-components") {
+    packageJson.dependencies["styled-components"] = "^6.1.1";
+  }
+
   // write package.json
   fs.writeFileSync(
     path.join(projectPath, "package.json"),
@@ -80,7 +89,7 @@ export default defineConfig({
   const mainContent = `import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.${fileExt}'
-import './index.css'
+${userChoices.styling === "tailwind" ? "import './index.css'" : ""}
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -90,8 +99,86 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 `;
   fs.writeFileSync(path.join(srcDir, `main.${fileExt}`), mainContent);
 
-  // create App component
-  const appContent = `import { useState } from 'react'
+  // create App component based on styling choice
+  let appContent;
+
+  if (userChoices.styling === "styled-components") {
+    appContent = `import { useState } from 'react'
+import styled from 'styled-components'
+
+const Container = styled.div\`
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+\`
+
+const Header = styled.h1\`
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+\`
+
+const Button = styled.button\`
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  color: white;
+  cursor: pointer;
+  transition: border-color 0.25s;
+  
+  &:hover {
+    border-color: #646cff;
+  }
+\`
+
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <Container>
+      <Header>React Kickstart</Header>
+      <p>Edit <code>src/App.${fileExt}</code> and save to test HMR</p>
+      <div>
+        <Button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </Button>
+      </div>
+    </Container>
+  )
+}
+
+export default App
+`;
+  } else if (userChoices.styling === "tailwind") {
+    appContent = `import { useState } from 'react'
+
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <div className="max-w-4xl mx-auto p-8 text-center">
+      <h1 className="text-4xl font-bold mb-4">React Kickstart</h1>
+      <p className="mb-4">Edit <code className="bg-gray-100 p-1 rounded">src/App.${fileExt}</code> and save to test HMR</p>
+      <div>
+        <button
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={() => setCount((count) => count + 1)}
+        >
+          count is {count}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default App
+`;
+  } else {
+    appContent = `import { useState } from 'react'
 import './App.css'
 
 function App() {
@@ -112,10 +199,52 @@ function App() {
 
 export default App
 `;
+  }
+
   fs.writeFileSync(path.join(srcDir, `App.${fileExt}`), appContent);
 
-  // create CSS file
-  const cssContent = `body {
+  // create CSS file if needed
+  if (userChoices.styling === "css" || userChoices.styling === "tailwind") {
+    let cssContent = "";
+
+    if (userChoices.styling === "tailwind") {
+      cssContent = `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+`;
+
+      // create Tailwind config
+      const tailwindConfig = `/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+`;
+      fs.writeFileSync(
+        path.join(projectPath, "tailwind.config.js"),
+        tailwindConfig
+      );
+
+      // create PostCSS config
+      const postcssConfig = `export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+`;
+      fs.writeFileSync(
+        path.join(projectPath, "postcss.config.js"),
+        postcssConfig
+      );
+    } else {
+      cssContent = `body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -128,8 +257,39 @@ export default App
   text-align: center;
 }
 `;
-  fs.writeFileSync(path.join(srcDir, "index.css"), cssContent);
-  fs.writeFileSync(path.join(srcDir, "App.css"), ""); // empty file for now
+    }
+
+    fs.writeFileSync(path.join(srcDir, "index.css"), cssContent);
+
+    if (userChoices.styling === "css") {
+      fs.writeFileSync(
+        path.join(srcDir, "App.css"),
+        `
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  color: white;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+`
+      );
+    }
+  }
 
   // create basic gitignore
   const gitignore = `# Logs

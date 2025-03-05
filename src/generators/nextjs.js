@@ -30,6 +30,16 @@ async function generateNextjsProject(projectPath, projectName, userChoices) {
     packageJson.dependencies["@types/react-dom"] = "^18.2.17";
   }
 
+  // add styling dependencies
+  if (userChoices.styling === "tailwind") {
+    packageJson.dependencies.tailwindcss = "^3.3.5";
+    packageJson.dependencies.postcss = "^8.4.31";
+    packageJson.dependencies.autoprefixer = "^10.4.16";
+  } else if (userChoices.styling === "styled-components") {
+    packageJson.dependencies["styled-components"] = "^6.1.1";
+    packageJson.dependencies["babel-plugin-styled-components"] = "^2.1.4";
+  }
+
   // write package.json
   fs.writeFileSync(
     path.join(projectPath, "package.json"),
@@ -45,32 +55,84 @@ async function generateNextjsProject(projectPath, projectName, userChoices) {
   fs.ensureDirSync(publicDir);
   fs.ensureDirSync(stylesDir);
 
-  // determine file extensions
+  // Determine file extensions
   const fileExt = userChoices.typescript ? "tsx" : "jsx";
 
-  // create Next.js config file (always .js regardless of TS choice)
-  const nextConfig = `/** @type {import('next').NextConfig} */
+  // create Next.js config file
+  let nextConfig = `/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-};
+`;
+
+  if (userChoices.styling === "styled-components") {
+    nextConfig += `  compiler: {
+    styledComponents: true,
+  },
+`;
+  }
+
+  nextConfig += `};
 
 module.exports = nextConfig;
 `;
+
   fs.writeFileSync(path.join(projectPath, "next.config.js"), nextConfig);
 
-  // Create index page
-  const indexContent = `export default function Home() {
+  // create index page based on styling choice
+  let indexContent;
+
+  if (userChoices.styling === "styled-components") {
+    indexContent = `import styled from 'styled-components';
+
+const Container = styled.div\`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  text-align: center;
+\`;
+
+const Title = styled.h1\`
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+\`;
+
+export default function Home() {
   return (
-    <div>
+    <Container>
+      <Title>Welcome to React Kickstart</Title>
+      <p>Edit <code>pages/index.${fileExt}</code> to get started</p>
+    </Container>
+  );
+}
+`;
+  } else if (userChoices.styling === "tailwind") {
+    indexContent = `export default function Home() {
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center p-8">
+      <h1 className="text-4xl font-bold mb-4">Welcome to React Kickstart</h1>
+      <p className="mb-4">Edit <code className="bg-gray-100 p-1 rounded">pages/index.${fileExt}</code> to get started</p>
+    </div>
+  );
+}
+`;
+  } else {
+    indexContent = `export default function Home() {
+  return (
+    <div className="container">
       <h1>Welcome to React Kickstart</h1>
       <p>Edit <code>pages/index.${fileExt}</code> to get started</p>
     </div>
   );
 }
 `;
+  }
+
   fs.writeFileSync(path.join(pagesDir, `index.${fileExt}`), indexContent);
 
-  // Create _app page
+  // create _app page
   const appContent = `import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
@@ -81,8 +143,47 @@ export default MyApp;
 `;
   fs.writeFileSync(path.join(pagesDir, `_app.${fileExt}`), appContent);
 
-  // add CSS file
-  const cssContent = `html,
+  // add CSS file based on styling choice
+  let cssContent;
+
+  if (userChoices.styling === "tailwind") {
+    cssContent = `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+`;
+
+    // create Tailwind config
+    const tailwindConfig = `/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+`;
+    fs.writeFileSync(
+      path.join(projectPath, "tailwind.config.js"),
+      tailwindConfig
+    );
+
+    // create PostCSS config
+    const postcssConfig = `module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+`;
+    fs.writeFileSync(
+      path.join(projectPath, "postcss.config.js"),
+      postcssConfig
+    );
+  } else {
+    cssContent = `html,
 body {
   padding: 0;
   margin: 0;
@@ -98,7 +199,26 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.container {
+  min-height: 100vh;
+  padding: 0 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+  line-height: 1.15;
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
 `;
+  }
+
   fs.writeFileSync(path.join(stylesDir, "globals.css"), cssContent);
 
   // create gitignore
