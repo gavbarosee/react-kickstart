@@ -25,6 +25,13 @@ async function generateViteProject(projectPath, projectName, userChoices) {
     },
   };
 
+  // add TypeScript if selected
+  if (userChoices.typescript) {
+    packageJson.devDependencies["@types/react"] = "^18.2.40";
+    packageJson.devDependencies["@types/react-dom"] = "^18.2.17";
+    packageJson.devDependencies.typescript = "^5.3.2";
+  }
+
   // write package.json
   fs.writeFileSync(
     path.join(projectPath, "package.json"),
@@ -37,6 +44,7 @@ async function generateViteProject(projectPath, projectName, userChoices) {
   fs.ensureDirSync(path.join(projectPath, "public"));
 
   // create index.html
+  const fileExt = userChoices.typescript ? "tsx" : "jsx";
   const indexHtml = `<!doctype html>
 <html lang="en">
   <head>
@@ -47,13 +55,14 @@ async function generateViteProject(projectPath, projectName, userChoices) {
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="/src/main.${fileExt}"></script>
   </body>
 </html>
 `;
   fs.writeFileSync(path.join(projectPath, "index.html"), indexHtml);
 
   // create vite.config.js
+  const configExt = userChoices.typescript ? "ts" : "js";
   const viteConfig = `import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
@@ -62,12 +71,15 @@ export default defineConfig({
   plugins: [react()],
 })
 `;
-  fs.writeFileSync(path.join(projectPath, "vite.config.js"), viteConfig);
+  fs.writeFileSync(
+    path.join(projectPath, `vite.config.${configExt}`),
+    viteConfig
+  );
 
-  // create main.jsx
+  // create main file
   const mainContent = `import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.jsx'
+import App from './App.${fileExt}'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -76,9 +88,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   </React.StrictMode>,
 )
 `;
-  fs.writeFileSync(path.join(srcDir, "main.jsx"), mainContent);
+  fs.writeFileSync(path.join(srcDir, `main.${fileExt}`), mainContent);
 
-  // create App.jsx
+  // create App component
   const appContent = `import { useState } from 'react'
 import './App.css'
 
@@ -88,7 +100,7 @@ function App() {
   return (
     <>
       <h1>React Kickstart</h1>
-      <p>Edit <code>src/App.jsx</code> and save to test HMR</p>
+      <p>Edit <code>src/App.${fileExt}</code> and save to test HMR</p>
       <div>
         <button onClick={() => setCount((count) => count + 1)}>
           count is {count}
@@ -100,7 +112,7 @@ function App() {
 
 export default App
 `;
-  fs.writeFileSync(path.join(srcDir, "App.jsx"), appContent);
+  fs.writeFileSync(path.join(srcDir, `App.${fileExt}`), appContent);
 
   // create CSS file
   const cssContent = `body {
@@ -146,6 +158,52 @@ dist-ssr
 *.sw?
 `;
   fs.writeFileSync(path.join(projectPath, ".gitignore"), gitignore);
+
+  // if using TypeScript, create tsconfig.json
+  if (userChoices.typescript) {
+    const tsConfig = {
+      compilerOptions: {
+        target: "ES2020",
+        useDefineForClassFields: true,
+        lib: ["ES2020", "DOM", "DOM.Iterable"],
+        module: "ESNext",
+        skipLibCheck: true,
+        moduleResolution: "bundler",
+        allowImportingTsExtensions: true,
+        resolveJsonModule: true,
+        isolatedModules: true,
+        noEmit: true,
+        jsx: "react-jsx",
+        strict: true,
+        noUnusedLocals: true,
+        noUnusedParameters: true,
+        noFallthroughCasesInSwitch: true,
+      },
+      include: ["src"],
+      references: [{ path: "./tsconfig.node.json" }],
+    };
+
+    fs.writeFileSync(
+      path.join(projectPath, "tsconfig.json"),
+      JSON.stringify(tsConfig, null, 2)
+    );
+
+    const tsConfigNode = {
+      compilerOptions: {
+        composite: true,
+        skipLibCheck: true,
+        module: "ESNext",
+        moduleResolution: "bundler",
+        allowSyntheticDefaultImports: true,
+      },
+      include: ["vite.config.ts"],
+    };
+
+    fs.writeFileSync(
+      path.join(projectPath, "tsconfig.node.json"),
+      JSON.stringify(tsConfigNode, null, 2)
+    );
+  }
 
   return true;
 }

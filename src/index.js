@@ -65,6 +65,7 @@ function getDefaultChoices() {
   return {
     packageManager: "npm",
     framework: "vite",
+    typescript: false,
   };
 }
 

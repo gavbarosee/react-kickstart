@@ -26,6 +26,12 @@ async function promptUser() {
       ],
       default: "vite",
     },
+    {
+      type: "confirm",
+      name: "typescript",
+      message: "Would you like to use TypeScript?",
+      default: false,
+    },
   ]);
 
   return answers;
