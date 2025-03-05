@@ -1,3 +1,4 @@
+const generateNextjsProject = require("./nextjs");
 const generateViteProject = require("./vite");
 
 async function generateProject(projectPath, projectName, userChoices) {
@@ -7,6 +8,9 @@ async function generateProject(projectPath, projectName, userChoices) {
   switch (userChoices.framework) {
     case "vite":
       await generateViteProject(projectPath, projectName, userChoices);
+      break;
+    case "nextjs":
+      await generateNextjsProject(projectPath, projectName, userChoices);
       break;
     default:
       throw new Error(`Unsupported framework: ${userChoices.framework}`);

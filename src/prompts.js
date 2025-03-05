@@ -21,6 +21,7 @@ async function promptUser() {
       message: "Which framework would you like to use?",
       choices: [
         { name: "Vite", value: "vite" },
+        { name: "Next.js", value: "nextjs" },
         // more frameworks later
       ],
       default: "vite",
