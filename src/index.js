@@ -4,6 +4,7 @@ const chalk = require("chalk");
 const { promptUser } = require("./prompts");
 const { generateProject } = require("./generators");
 const { initGit } = require("./utils/git");
+const { openEditor } = require("./utils/editor");
 const { installDependencies } = require("./utils/package-manager");
 
 async function createApp(projectDirectory, options = {}) {
@@ -30,6 +31,7 @@ async function createApp(projectDirectory, options = {}) {
   try {
     // get user preferences
     const userChoices = options.yes ? getDefaultChoices() : await promptUser();
+    // generate project files
     await generateProject(projectPath, projectName, userChoices);
 
     // install dependencies
@@ -38,6 +40,11 @@ async function createApp(projectDirectory, options = {}) {
     // initialize git if selected
     if (userChoices.initGit) {
       await initGit(projectPath);
+    }
+
+    // open in editor if selected
+    if (userChoices.openEditor) {
+      await openEditor(projectPath, userChoices.editor);
     }
 
     console.log();
@@ -58,6 +65,17 @@ async function createApp(projectDirectory, options = {}) {
     console.log(`  ${chalk.cyan(`${pmRun} build`)}`);
     console.log("    Bundles the app for production.");
     console.log();
+
+    console.log("We suggest that you begin by typing:");
+    console.log();
+
+    if (projectDirectory) {
+      console.log(`  ${chalk.cyan("cd")} ${projectDirectory}`);
+    }
+
+    console.log(`  ${chalk.cyan(`${pmRun} dev`)}`);
+    console.log();
+    console.log("Happy hacking!");
   } catch (err) {
     console.error("An error occurred during project setup:");
     console.error(err.message || err);
@@ -72,6 +90,8 @@ function getDefaultChoices() {
     typescript: false,
     styling: "tailwind",
     initGit: true,
+    openEditor: false,
+    editor: "vscode",
   };
 }
 

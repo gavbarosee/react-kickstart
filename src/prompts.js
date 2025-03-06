@@ -49,6 +49,24 @@ async function promptUser() {
       message: "Initialize a git repository?",
       default: true,
     },
+    {
+      type: "confirm",
+      name: "openEditor",
+      message:
+        "Would you like to open the project in an editor after creation?",
+      default: false,
+    },
+    {
+      type: "list",
+      name: "editor",
+      message: "Which editor would you like to use?",
+      choices: [
+        { name: "Visual Studio Code", value: "vscode" },
+        { name: "Cursor", value: "cursor" },
+      ],
+      default: "vscode",
+      when: (answers) => answers.openEditor,
+    },
   ]);
 
   return answers;
