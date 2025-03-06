@@ -22,6 +22,7 @@ async function promptUser() {
       choices: [
         { name: "Vite", value: "vite" },
         { name: "Next.js", value: "nextjs" },
+        { name: "Rsbuild", value: "rsbuild" },
         // more frameworks later
       ],
       default: "vite",

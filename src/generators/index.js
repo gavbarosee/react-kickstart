@@ -1,5 +1,6 @@
-const generateNextjsProject = require("./nextjs");
 const generateViteProject = require("./vite");
+const generateNextjsProject = require("./nextjs");
+const generateRsbuildProject = require("./rsbuild");
 
 async function generateProject(projectPath, projectName, userChoices) {
   console.log(`Creating a ${userChoices.framework} project...`);
@@ -11,6 +12,9 @@ async function generateProject(projectPath, projectName, userChoices) {
       break;
     case "nextjs":
       await generateNextjsProject(projectPath, projectName, userChoices);
+      break;
+    case "rsbuild":
+      await generateRsbuildProject(projectPath, projectName, userChoices);
       break;
     default:
       throw new Error(`Unsupported framework: ${userChoices.framework}`);
