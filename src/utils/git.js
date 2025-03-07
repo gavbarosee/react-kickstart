@@ -1,19 +1,23 @@
 const execa = require("execa");
 const fs = require("fs-extra");
 const path = require("path");
+const ora = require("ora");
+const { log, error } = require("./logger");
 
 async function initGit(projectPath) {
+  const spinner = ora("Initializing git repository...").start();
+
   try {
     // check if git is installed
     try {
       await execa("git", ["--version"]);
     } catch (err) {
-      console.log("Git is not installed. Skipping git initialization.");
+      spinner.warn("Git is not installed. Skipping git initialization.");
       return false;
     }
 
     // initialize git repository
-    console.log("Initializing git repository...");
+    log("Initializing git repository...");
     await execa("git", ["init"], { cwd: projectPath });
 
     // create .gitignore file if it doesn't exist
@@ -46,11 +50,11 @@ yarn-error.log*
       fs.writeFileSync(gitignorePath, gitignoreContent.trim());
     }
 
-    console.log("Git repository initialized successfully!");
+    spinner.succeed("Git repository initialized successfully!");
     return true;
   } catch (err) {
-    console.error("Failed to initialize git repository");
-    console.error(err.message || err);
+    spinner.fail("Failed to initialize git repository");
+    error(err.message || err);
     return false;
   }
 }

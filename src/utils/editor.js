@@ -1,7 +1,6 @@
 const execa = require("execa");
 const ora = require("ora");
-const chalk = require("chalk");
-const { log } = require("./logger");
+const { log, warning } = require("./logger");
 
 async function openEditor(projectPath, editor = "vscode") {
   const spinner = ora(`Opening project in ${editor}...`).start();
@@ -29,20 +28,12 @@ async function openEditor(projectPath, editor = "vscode") {
       spinner.succeed(`Project opened in ${editor}!`);
       return true;
     } catch (err) {
-      spinner.fail(`Couldn't open ${editor}.`);
-      console.log();
-      console.log(chalk.yellow("This might be because:"));
-      console.log(`  • ${editor} is not installed`);
-      console.log(`  • ${editor} is not in your PATH`);
-      console.log(
-        `  • You need to install the shell command: ${chalk.cyan(
-          `${editor} --install-extension`
-        )}`
+      spinner.warn(
+        `Couldn't open ${editor}. It might not be installed or not in PATH.`
       );
-      console.log();
-      console.log(`To open your project manually, run:`);
-      console.log(chalk.cyan(`  ${command} ${projectPath}`));
-      console.log();
+      warning(
+        `To open your project in ${editor}, run: ${command} ${projectPath}`
+      );
       return false;
     }
   } catch (err) {

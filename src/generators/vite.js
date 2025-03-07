@@ -1,8 +1,9 @@
 const fs = require("fs-extra");
 const path = require("path");
+const { log } = require("../utils/logger");
 
 async function generateViteProject(projectPath, projectName, userChoices) {
-  console.log("Creating a Vite React project...");
+  log("Creating a Vite React project...");
 
   // create package.json
   const packageJson = {

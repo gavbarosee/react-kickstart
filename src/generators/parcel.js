@@ -1,8 +1,9 @@
 const fs = require("fs-extra");
 const path = require("path");
+const { log } = require("../utils/logger");
 
 async function generateParcelProject(projectPath, projectName, userChoices) {
-  console.log("Creating a Parcel React project...");
+  log("Creating a Parcel React project...");
 
   const packageJson = {
     name: projectName,

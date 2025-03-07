@@ -1,8 +1,9 @@
 const fs = require("fs-extra");
 const path = require("path");
+const { log } = require("../utils/logger");
 
 async function generateRsbuildProject(projectPath, projectName, userChoices) {
-  console.log("Creating an Rsbuild React project...");
+  log("Creating an Rsbuild React project...");
 
   const packageJson = {
     name: projectName,
