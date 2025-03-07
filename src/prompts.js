@@ -23,7 +23,7 @@ async function promptUser() {
         { name: "Vite", value: "vite" },
         { name: "Next.js", value: "nextjs" },
         { name: "Rsbuild", value: "rsbuild" },
-        // more frameworks later
+        { name: "Parcel", value: "parcel" },
       ],
       default: "vite",
     },
