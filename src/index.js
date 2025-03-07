@@ -59,8 +59,19 @@ async function createApp(projectDirectory, options = {}) {
 
     const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
 
-    console.log(`  ${chalk.cyan(`${pmRun} dev`)}`);
-    console.log("    Starts the development server.");
+    // parcel uses 'start'
+    let devCommand;
+    if (userChoices.framework === "parcel") {
+      devCommand =
+        userChoices.packageManager === "yarn" ? "yarn start" : "npm start";
+      console.log(`  ${chalk.cyan(devCommand)}`);
+      console.log("    Starts the development server.");
+    } else {
+      devCommand = `${pmRun} dev`;
+      console.log(`  ${chalk.cyan(devCommand)}`);
+      console.log("    Starts the development server.");
+    }
+
     console.log();
     console.log(`  ${chalk.cyan(`${pmRun} build`)}`);
     console.log("    Bundles the app for production.");
@@ -73,7 +84,7 @@ async function createApp(projectDirectory, options = {}) {
       console.log(`  ${chalk.cyan("cd")} ${projectDirectory}`);
     }
 
-    console.log(`  ${chalk.cyan(`${pmRun} dev`)}`);
+    console.log(`  ${chalk.cyan(devCommand)}`);
     console.log();
     console.log("Happy hacking!");
   } catch (err) {
