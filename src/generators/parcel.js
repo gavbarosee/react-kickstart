@@ -39,6 +39,21 @@ async function generateParcelProject(projectPath, projectName, userChoices) {
     packageJson.dependencies["styled-components"] = "^6.1.1";
   }
 
+  if (userChoices.linting) {
+    packageJson.devDependencies.eslint = "^8.55.0";
+    packageJson.devDependencies["eslint-plugin-react"] = "^7.33.2";
+    packageJson.devDependencies["eslint-plugin-react-hooks"] = "^4.6.0";
+    packageJson.devDependencies.prettier = "^3.1.0";
+    packageJson.devDependencies["eslint-plugin-prettier"] = "^5.0.1";
+    packageJson.devDependencies["eslint-config-prettier"] = "^9.1.0";
+
+    if (userChoices.typescript) {
+      packageJson.devDependencies["@typescript-eslint/eslint-plugin"] =
+        "^6.13.1";
+      packageJson.devDependencies["@typescript-eslint/parser"] = "^6.13.1";
+    }
+  }
+
   fs.writeFileSync(
     path.join(projectPath, "package.json"),
     JSON.stringify(packageJson, null, 2)
@@ -221,6 +236,62 @@ code {
     }
 
     fs.writeFileSync(path.join(srcDir, "styles.css"), cssContent);
+  }
+
+  if (userChoices.linting) {
+    const eslintConfig = {
+      env: {
+        browser: true,
+        es2021: true,
+        node: true,
+      },
+      extends: [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:prettier/recommended",
+      ],
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+      settings: {
+        react: {
+          version: "detect",
+        },
+      },
+      plugins: ["react", "prettier"],
+      rules: {
+        "react/react-in-jsx-scope": "off",
+        "prettier/prettier": ["error", { singleQuote: true }],
+      },
+    };
+
+    if (userChoices.typescript) {
+      eslintConfig.extends.push("plugin:@typescript-eslint/recommended");
+      eslintConfig.parser = "@typescript-eslint/parser";
+      eslintConfig.plugins.push("@typescript-eslint");
+    }
+
+    fs.writeFileSync(
+      path.join(projectPath, ".eslintrc.json"),
+      JSON.stringify(eslintConfig, null, 2)
+    );
+
+    const prettierConfig = {
+      semi: true,
+      singleQuote: true,
+      tabWidth: 2,
+      trailingComma: "es5",
+    };
+
+    fs.writeFileSync(
+      path.join(projectPath, ".prettierrc"),
+      JSON.stringify(prettierConfig, null, 2)
+    );
   }
 
   const gitignore = `# Logs

@@ -32,6 +32,22 @@ async function generateViteProject(projectPath, projectName, userChoices) {
     packageJson.devDependencies.typescript = "^5.3.2";
   }
 
+  // setup ESLint and Prettier if selected
+  if (userChoices.linting) {
+    packageJson.devDependencies.eslint = "^8.55.0";
+    packageJson.devDependencies["eslint-plugin-react"] = "^7.33.2";
+    packageJson.devDependencies["eslint-plugin-react-hooks"] = "^4.6.0";
+    packageJson.devDependencies.prettier = "^3.1.0";
+    packageJson.devDependencies["eslint-plugin-prettier"] = "^5.0.1";
+    packageJson.devDependencies["eslint-config-prettier"] = "^9.1.0";
+
+    if (userChoices.typescript) {
+      packageJson.devDependencies["@typescript-eslint/eslint-plugin"] =
+        "^6.13.1";
+      packageJson.devDependencies["@typescript-eslint/parser"] = "^6.13.1";
+    }
+  }
+
   // add styling dependencies
   if (userChoices.styling === "tailwind") {
     packageJson.devDependencies.tailwindcss = "^3.3.5";
@@ -289,6 +305,63 @@ button:hover {
 `
       );
     }
+  }
+
+  // ESLint and Prettier configs if selected
+  if (userChoices.linting) {
+    const eslintConfig = {
+      env: {
+        browser: true,
+        es2021: true,
+        node: true,
+      },
+      extends: [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:prettier/recommended",
+      ],
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true,
+        },
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+      settings: {
+        react: {
+          version: "detect",
+        },
+      },
+      plugins: ["react", "prettier"],
+      rules: {
+        "react/react-in-jsx-scope": "off",
+        "prettier/prettier": ["error", { singleQuote: true }],
+      },
+    };
+
+    if (userChoices.typescript) {
+      eslintConfig.extends.push("plugin:@typescript-eslint/recommended");
+      eslintConfig.parser = "@typescript-eslint/parser";
+      eslintConfig.plugins.push("@typescript-eslint");
+    }
+
+    fs.writeFileSync(
+      path.join(projectPath, ".eslintrc.json"),
+      JSON.stringify(eslintConfig, null, 2)
+    );
+
+    const prettierConfig = {
+      semi: true,
+      singleQuote: true,
+      tabWidth: 2,
+      trailingComma: "es5",
+    };
+
+    fs.writeFileSync(
+      path.join(projectPath, ".prettierrc"),
+      JSON.stringify(prettierConfig, null, 2)
+    );
   }
 
   // create basic gitignore

@@ -221,6 +221,69 @@ h1 {
 
   fs.writeFileSync(path.join(stylesDir, "globals.css"), cssContent);
 
+  if (userChoices.linting) {
+    const eslintConfig = {
+      extends: [
+        "next/core-web-vitals",
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:prettier/recommended",
+      ],
+      plugins: ["react", "prettier"],
+      rules: {
+        "react/react-in-jsx-scope": "off",
+        "prettier/prettier": ["error", { singleQuote: true }],
+      },
+    };
+
+    if (userChoices.typescript) {
+      eslintConfig.extends.push("plugin:@typescript-eslint/recommended");
+      eslintConfig.parser = "@typescript-eslint/parser";
+      eslintConfig.plugins.push("@typescript-eslint");
+    }
+
+    fs.writeFileSync(
+      path.join(projectPath, ".eslintrc.json"),
+      JSON.stringify(eslintConfig, null, 2)
+    );
+
+    const prettierConfig = {
+      semi: true,
+      singleQuote: true,
+      tabWidth: 2,
+      trailingComma: "es5",
+    };
+
+    fs.writeFileSync(
+      path.join(projectPath, ".prettierrc"),
+      JSON.stringify(prettierConfig, null, 2)
+    );
+
+    const updatedPackageJson = JSON.parse(
+      fs.readFileSync(path.join(projectPath, "package.json"))
+    );
+    updatedPackageJson.devDependencies = {
+      ...(updatedPackageJson.devDependencies || {}),
+      "eslint-config-prettier": "^9.0.0",
+      "eslint-plugin-prettier": "^5.0.1",
+      prettier: "^3.1.0",
+    };
+
+    if (userChoices.typescript) {
+      updatedPackageJson.devDependencies = {
+        ...updatedPackageJson.devDependencies,
+        "@typescript-eslint/eslint-plugin": "^6.13.1",
+        "@typescript-eslint/parser": "^6.13.1",
+      };
+    }
+
+    fs.writeFileSync(
+      path.join(projectPath, "package.json"),
+      JSON.stringify(updatedPackageJson, null, 2)
+    );
+  }
+
   // create gitignore
   const gitignore = `# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 

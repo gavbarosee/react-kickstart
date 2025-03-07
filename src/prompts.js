@@ -34,6 +34,13 @@ async function promptUser() {
       default: false,
     },
     {
+      type: "confirm",
+      name: "linting",
+      message:
+        "Would you like to include ESLint and Prettier for code quality?",
+      default: true,
+    },
+    {
       type: "list",
       name: "styling",
       message: "Which styling solution would you like to use?",

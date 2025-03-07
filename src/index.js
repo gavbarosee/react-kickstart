@@ -88,6 +88,7 @@ function getDefaultChoices() {
     packageManager: "npm",
     framework: "vite",
     typescript: false,
+    linting: true,
     styling: "tailwind",
     initGit: true,
     openEditor: false,
