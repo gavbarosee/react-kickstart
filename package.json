@@ -1,7 +1,7 @@
 {
   "name": "react-kickstart",
   "version": "0.1.0",
-  "description": "A modern CLI tool for creating React applications",
+  "description": "A modern CLI tool for creating React applications with various frameworks",
   "main": "src/index.js",
   "bin": {
     "react-kickstart": "bin/react-kickstart.js"
@@ -12,15 +12,28 @@
   },
   "keywords": [
     "react",
-    "cli"
+    "cli",
+    "generator",
+    "vite",
+    "nextjs",
+    "rsbuild",
+    "parcel"
   ],
   "author": "Gavish Barosee",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^4.1.2",
     "commander": "^11.1.0",
+    "cross-spawn": "^7.0.3",
+    "execa": "^5.1.1",
+    "figlet": "^1.7.0",
     "fs-extra": "^11.2.0",
     "inquirer": "^8.2.6",
-    "execa": "^5.1.1",
-    "chalk": "^4.1.2"
+    "log-symbols": "^4.1.0",
+    "ora": "^5.4.1",
+    "validate-npm-package-name": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }

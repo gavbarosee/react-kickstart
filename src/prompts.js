@@ -1,7 +1,22 @@
 const inquirer = require("inquirer");
+const chalk = require("chalk");
+const figlet = require("figlet");
 
 async function promptUser() {
-  console.log("React Kickstart - Let's set up your project!");
+  console.log();
+  console.log(
+    chalk.blue(
+      figlet.textSync("React Kickstart", {
+        font: "Standard",
+        horizontalLayout: "full",
+      })
+    )
+  );
+  console.log();
+  console.log(
+    chalk.cyan("  A modern CLI tool for creating React applications")
+  );
+  console.log(chalk.cyan("  ------------------------------------------------"));
   console.log();
 
   const answers = await inquirer.prompt([
