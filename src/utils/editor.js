@@ -1,13 +1,17 @@
 const execa = require("execa");
+const ora = require("ora");
+const chalk = require("chalk");
+const { log } = require("./logger");
 
 async function openEditor(projectPath, editor = "vscode") {
+  const spinner = ora(`Opening project in ${editor}...`).start();
+
   try {
-    console.log(`Opening project in ${editor}...`);
+    log(`Opening project in ${editor}...`);
 
     let command;
     let args = [projectPath];
 
-    // determine which command to run based on the editor choice
     switch (editor) {
       case "vscode":
         command = process.platform === "win32" ? "code.cmd" : "code";
@@ -16,25 +20,33 @@ async function openEditor(projectPath, editor = "vscode") {
         command = process.platform === "win32" ? "cursor.cmd" : "cursor";
         break;
       default:
-        console.warn(`Unsupported editor: ${editor}`);
+        spinner.fail(`Unsupported editor: ${editor}`);
         return false;
     }
 
     try {
       await execa(command, args);
-      console.log(`Project opened in ${editor}!`);
+      spinner.succeed(`Project opened in ${editor}!`);
       return true;
     } catch (err) {
-      console.warn(
-        `Couldn't open ${editor}. It might not be installed or not in PATH.`
+      spinner.fail(`Couldn't open ${editor}.`);
+      console.log();
+      console.log(chalk.yellow("This might be because:"));
+      console.log(`  • ${editor} is not installed`);
+      console.log(`  • ${editor} is not in your PATH`);
+      console.log(
+        `  • You need to install the shell command: ${chalk.cyan(
+          `${editor} --install-extension`
+        )}`
       );
-      console.warn(
-        `To open your project in ${editor}, run: ${command} ${projectPath}`
-      );
+      console.log();
+      console.log(`To open your project manually, run:`);
+      console.log(chalk.cyan(`  ${command} ${projectPath}`));
+      console.log();
       return false;
     }
   } catch (err) {
-    console.warn(`Failed to open project in ${editor}`);
+    spinner.fail(`Failed to open project in ${editor}`);
     return false;
   }
 }
