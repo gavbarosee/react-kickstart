@@ -28,6 +28,20 @@ async function promptUser() {
       default: "vite",
     },
     {
+      type: "list",
+      name: "nextRouting",
+      message: "Which Next.js routing system would you like to use?",
+      choices: [
+        {
+          name: "App Router (newer, supports Server Components)",
+          value: "app",
+        },
+        { name: "Pages Router (traditional)", value: "pages" },
+      ],
+      default: "app",
+      when: (answers) => answers.framework === "nextjs",
+    },
+    {
       type: "confirm",
       name: "typescript",
       message: "Would you like to use TypeScript?",
