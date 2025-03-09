@@ -1,8 +1,12 @@
-const fs = require("fs-extra");
-const path = require("path");
-const { log } = require("../utils/logger");
+import fs from "fs-extra";
+import path from "path";
+import { log } from "../utils/logger.js";
 
-async function generateParcelProject(projectPath, projectName, userChoices) {
+export default async function generateParcelProject(
+  projectPath,
+  projectName,
+  userChoices
+) {
   log("Creating a Parcel React project...");
 
   const packageJson = {
@@ -369,5 +373,3 @@ dist/
 
   return true;
 }
-
-module.exports = generateParcelProject;

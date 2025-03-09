@@ -1,10 +1,10 @@
-const execa = require("execa");
-const fs = require("fs-extra");
-const path = require("path");
-const ora = require("ora");
-const { log, error } = require("./logger");
+import execa from "execa";
+import fs from "fs-extra";
+import path from "path";
+import ora from "ora";
+import { log, error } from "./logger.js";
 
-async function initGit(projectPath) {
+export async function initGit(projectPath) {
   const spinner = ora("Initializing git repository...").start();
 
   try {
@@ -58,7 +58,3 @@ yarn-error.log*
     return false;
   }
 }
-
-module.exports = {
-  initGit,
-};

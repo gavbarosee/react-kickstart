@@ -1,8 +1,8 @@
-const inquirer = require("inquirer");
-const chalk = require("chalk");
-const figlet = require("figlet");
+import inquirer from "inquirer";
+import chalk from "chalk";
+import figlet from "figlet";
 
-async function promptUser() {
+export async function promptUser() {
   console.log();
   console.log(
     chalk.blue(
@@ -108,7 +108,3 @@ async function promptUser() {
 
   return answers;
 }
-
-module.exports = {
-  promptUser,
-};

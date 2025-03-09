@@ -1,15 +1,15 @@
-const path = require("path");
-const fs = require("fs-extra");
-const validateProjectName = require("validate-npm-package-name");
-const chalk = require("chalk");
-const { promptUser } = require("./prompts");
-const { generateProject } = require("./generators");
-const { initGit } = require("./utils/git");
-const { openEditor } = require("./utils/editor");
-const { installDependencies } = require("./utils/package-manager");
-const { error, success, section, bullet } = require("./utils/logger");
+import path from "path";
+import fs from "fs-extra";
+import validateProjectName from "validate-npm-package-name";
+import chalk from "chalk";
+import { promptUser } from "./prompts.js";
+import generateProject from "./generators/index.js";
+import { initGit } from "./utils/git.js";
+import { openEditor } from "./utils/editor.js";
+import { installDependencies } from "./utils/package-manager.js";
+import { error, success, section, bullet } from "./utils/logger.js";
 
-async function createApp(projectDirectory, options = {}) {
+export async function createApp(projectDirectory, options = {}) {
   try {
     // if no project directory is provided, use current directory
     const projectPath = projectDirectory
@@ -135,5 +135,3 @@ function handleError(err, verbose) {
 
   process.exit(1);
 }
-
-module.exports = createApp;

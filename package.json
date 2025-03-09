@@ -1,6 +1,7 @@
 {
   "name": "react-kickstart",
   "version": "0.1.0",
+  "type": "module",
   "description": "A modern CLI tool for creating React applications with various frameworks",
   "main": "src/index.js",
   "bin": {

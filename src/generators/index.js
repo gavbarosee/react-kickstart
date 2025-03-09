@@ -1,11 +1,15 @@
-const ora = require("ora");
-const { log } = require("../utils/logger");
-const generateViteProject = require("./vite");
-const generateNextjsProject = require("./nextjs");
-const generateRsbuildProject = require("./rsbuild");
-const generateParcelProject = require("./parcel");
+import ora from "ora";
+import { log } from "../utils/logger.js";
+import generateViteProject from "./vite/index.js";
+import generateNextjsProject from "./nextjs.js";
+import generateRsbuildProject from "./rsbuild.js";
+import generateParcelProject from "./parcel.js";
 
-async function generateProject(projectPath, projectName, userChoices) {
+export default async function generateProject(
+  projectPath,
+  projectName,
+  userChoices
+) {
   const spinner = ora("Generating project files...").start();
   try {
     log(`Creating a ${userChoices.framework} project...`);
@@ -32,7 +36,3 @@ async function generateProject(projectPath, projectName, userChoices) {
     throw error;
   }
 }
-
-module.exports = {
-  generateProject,
-};

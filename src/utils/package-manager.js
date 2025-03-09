@@ -1,28 +1,32 @@
-const execa = require("execa");
+import execa from "execa";
+import ora from "ora";
+import { log, error } from "./logger.js";
 
-async function installDependencies(projectPath, packageManager = "npm") {
+export async function installDependencies(projectPath, packageManager = "npm") {
+  const spinner = ora("Installing dependencies...").start();
+
   try {
     const installCmd = packageManager === "yarn" ? "yarn" : "npm";
     const installArgs = packageManager === "yarn" ? [] : ["install"];
 
-    console.log(`Installing dependencies using ${packageManager}...`);
+    log(`Installing dependencies using ${packageManager}...`);
 
     await execa(installCmd, installArgs, {
       cwd: projectPath,
       stdio: "inherit",
     });
 
-    console.log("Dependencies installed successfully!");
+    spinner.succeed("Dependencies installed successfully!");
     return true;
   } catch (err) {
-    console.error("Failed to install dependencies");
-    console.error(err.message || err);
+    spinner.fail("Failed to install dependencies");
+    error(err.message || err);
 
     return false;
   }
 }
 
-function getPackageManagerCommand(packageManager) {
+export function getPackageManagerCommand(packageManager) {
   if (packageManager === "yarn") {
     return {
       run: "yarn",
@@ -39,8 +43,3 @@ function getPackageManagerCommand(packageManager) {
     start: "npm start",
   };
 }
-
-module.exports = {
-  installDependencies,
-  getPackageManagerCommand,
-};

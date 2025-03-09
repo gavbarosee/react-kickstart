@@ -1,8 +1,12 @@
-const fs = require("fs-extra");
-const path = require("path");
-const { log } = require("../utils/logger");
+import fs from "fs-extra";
+import path from "path";
+import { log } from "../utils/logger.js";
 
-async function generateNextjsProject(projectPath, projectName, userChoices) {
+export default async function generateNextjsProject(
+  projectPath,
+  projectName,
+  userChoices
+) {
   log(
     `Creating a Next.js React project with ${userChoices.nextRouting} router...`
   );
@@ -697,5 +701,3 @@ export default function Home() {
 `;
   }
 }
-
-module.exports = generateNextjsProject;

@@ -1,8 +1,8 @@
-const execa = require("execa");
-const ora = require("ora");
-const { log, warning } = require("./logger");
+import execa from "execa";
+import ora from "ora";
+import { log, warning } from "./logger.js";
 
-async function openEditor(projectPath, editor = "vscode") {
+export async function openEditor(projectPath, editor = "vscode") {
   const spinner = ora(`Opening project in ${editor}...`).start();
 
   try {
@@ -41,7 +41,3 @@ async function openEditor(projectPath, editor = "vscode") {
     return false;
   }
 }
-
-module.exports = {
-  openEditor,
-};

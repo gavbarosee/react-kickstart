@@ -1,8 +1,12 @@
-const fs = require("fs-extra");
-const path = require("path");
-const { log } = require("../utils/logger");
+import fs from "fs-extra";
+import path from "path";
+import { log } from "../utils/logger.js";
 
-async function generateRsbuildProject(projectPath, projectName, userChoices) {
+export default async function generateRsbuildProject(
+  projectPath,
+  projectName,
+  userChoices
+) {
   log("Creating an Rsbuild React project...");
 
   const packageJson = {
@@ -391,5 +395,3 @@ dist-ssr
 
   return true;
 }
-
-module.exports = generateRsbuildProject;
