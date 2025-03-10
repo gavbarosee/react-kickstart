@@ -2,7 +2,7 @@ import ora from "ora";
 import { log } from "../utils/logger.js";
 import generateViteProject from "./vite/index.js";
 import generateNextjsProject from "./nextjs.js";
-import generateRsbuildProject from "./rsbuild.js";
+import generateRsbuildProject from "./rsbuild/index.js";
 import generateParcelProject from "./parcel.js";
 
 export default async function generateProject(
