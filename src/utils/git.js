@@ -5,7 +5,12 @@ import ora from "ora";
 import { log, error } from "./logger.js";
 
 export async function initGit(projectPath) {
-  const spinner = ora("Initializing git repository...").start();
+  // const spinner = ora("Initializing git repository...").start();
+  const spinner = ora({
+    text: "Initializing git repository...",
+    color: "blue",
+    spinner: "dots",
+  }).start();
 
   try {
     // check if git is installed

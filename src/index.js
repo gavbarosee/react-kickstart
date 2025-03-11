@@ -7,7 +7,16 @@ import generateProject from "./generators/index.js";
 import { initGit } from "./utils/git.js";
 import { openEditor } from "./utils/editor.js";
 import { installDependencies } from "./utils/package-manager.js";
-import { error, success, section, bullet } from "./utils/logger.js";
+import {
+  error,
+  success,
+  bullet,
+  initSteps,
+  nextStep,
+  mainHeader,
+  subHeader,
+  divider,
+} from "./utils/logger.js";
 
 export async function createApp(projectDirectory, options = {}) {
   try {
@@ -18,7 +27,6 @@ export async function createApp(projectDirectory, options = {}) {
 
     const projectName = projectDirectory || path.basename(projectPath);
 
-    // validate project name
     const validationResult = validateProjectName(projectName);
     if (!validationResult.validForNewPackages) {
       error(`Invalid project name: ${projectName}`);
@@ -31,7 +39,6 @@ export async function createApp(projectDirectory, options = {}) {
       process.exit(1);
     }
 
-    // check if directory exists and is empty
     if (fs.existsSync(projectPath)) {
       const files = fs.readdirSync(projectPath);
       if (files.length > 0) {
@@ -42,21 +49,29 @@ export async function createApp(projectDirectory, options = {}) {
       fs.mkdirSync(projectPath, { recursive: true });
     }
 
-    section(`Creating a new React app in ${chalk.green(projectPath)}`);
+    // section(`Creating a new React app in ${chalk.green(projectPath)}`);
+    // mainHeader(`Creating a new React app in ${chalk.green(projectPath)}`);
 
     try {
-      // get user preferences
       const userChoices = options.yes
         ? getDefaultChoices()
         : await promptUser();
 
-      // generate project files
+      divider();
+
+      // display steps during prompting
+      initSteps(3);
+
+      // STEP 1: generate project files
+      nextStep("Generating project files");
       await generateProject(projectPath, projectName, userChoices);
 
-      // install dependencies using selected package manager
+      // STEP 2: install dependencies
+      nextStep("Installing dependencies");
       await installDependencies(projectPath, userChoices.packageManager);
 
-      // init git if selected
+      // STEP 3: additional setups
+      nextStep("Finalizing project setup");
       if (userChoices.initGit) {
         await initGit(projectPath);
       }
@@ -66,12 +81,14 @@ export async function createApp(projectDirectory, options = {}) {
         await openEditor(projectPath, userChoices.editor);
       }
 
+      divider();
+
       // success case
       console.log();
       success(
         `Created ${chalk.cyan(projectName)} at ${chalk.cyan(projectPath)}`
       );
-      section("What's next?");
+      subHeader("Next steps");
 
       const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
 

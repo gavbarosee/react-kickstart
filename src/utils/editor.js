@@ -3,7 +3,12 @@ import ora from "ora";
 import { log, warning } from "./logger.js";
 
 export async function openEditor(projectPath, editor = "vscode") {
-  const spinner = ora(`Opening project in ${editor}...`).start();
+  // const spinner = ora(`Opening project in ${editor}...`).start();
+  const spinner = ora({
+    text: `Opening project in ${editor}...`,
+    color: "magenta",
+    spinner: "simpleDotsScrolling",
+  }).start();
 
   try {
     log(`Opening project in ${editor}...`);

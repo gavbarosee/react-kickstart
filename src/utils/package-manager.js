@@ -3,7 +3,13 @@ import ora from "ora";
 import { log, error } from "./logger.js";
 
 export async function installDependencies(projectPath, packageManager = "npm") {
-  const spinner = ora("Installing dependencies...").start();
+  // const spinner = ora("Installing dependencies...").start();
+
+  const spinner = ora({
+    text: `Installing dependencies...`,
+    color: "green",
+    spinner: "bouncingBar",
+  }).start();
 
   try {
     const installCmd = packageManager === "yarn" ? "yarn" : "npm";

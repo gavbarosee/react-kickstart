@@ -25,8 +25,8 @@ export async function promptUser() {
       name: "packageManager",
       message: "Which package manager would you like to use?",
       choices: [
-        { name: "npm", value: "npm" },
-        { name: "yarn", value: "yarn" },
+        { name: chalk.green("📦 npm"), value: "npm" },
+        { name: chalk.blue("🧶 yarn"), value: "yarn" },
       ],
       default: "npm",
     },
@@ -35,10 +35,23 @@ export async function promptUser() {
       name: "framework",
       message: "Which framework would you like to use?",
       choices: [
-        { name: "Vite", value: "vite" },
-        { name: "Next.js", value: "nextjs" },
-        { name: "Rsbuild", value: "rsbuild" },
-        { name: "Parcel", value: "parcel" },
+        {
+          name:
+            chalk.yellow("⚡ Vite") + " - Fast dev server, optimized builds",
+          value: "vite",
+        },
+        {
+          name: chalk.blue("▲  Next.js") + " - SSR, full-stack framework",
+          value: "nextjs",
+        },
+        {
+          name: chalk.cyan("🚀 Rsbuild") + " - Performance-focused bundler",
+          value: "rsbuild",
+        },
+        {
+          name: chalk.magenta("📦 Parcel") + " - Zero-configuration bundler",
+          value: "parcel",
+        },
       ],
       default: "vite",
     },
@@ -48,10 +61,14 @@ export async function promptUser() {
       message: "Which Next.js routing system would you like to use?",
       choices: [
         {
-          name: "App Router (newer, supports Server Components)",
+          name:
+            chalk.cyan("App Router") + " - Newer, supports Server Components",
           value: "app",
         },
-        { name: "Pages Router (traditional)", value: "pages" },
+        {
+          name: chalk.blue("Pages Router") + " - Traditional routing system",
+          value: "pages",
+        },
       ],
       default: "app",
       when: (answers) => answers.framework === "nextjs",
@@ -59,14 +76,16 @@ export async function promptUser() {
     {
       type: "confirm",
       name: "typescript",
-      message: "Would you like to use TypeScript?",
+      message: "Would you like to use " + chalk.blue("TypeScript") + "?",
       default: false,
     },
     {
       type: "confirm",
       name: "linting",
       message:
-        "Would you like to include ESLint and Prettier for code quality?",
+        "Would you like to include " +
+        chalk.yellow("ESLint and Prettier") +
+        " for code quality?",
       default: true,
     },
     {
@@ -74,16 +93,26 @@ export async function promptUser() {
       name: "styling",
       message: "Which styling solution would you like to use?",
       choices: [
-        { name: "Tailwind CSS", value: "tailwind" },
-        { name: "styled-components", value: "styled-components" },
-        { name: "None (plain CSS)", value: "css" },
+        {
+          name:
+            chalk.cyan("🎨 Tailwind CSS") + " - Utility-first CSS framework",
+          value: "tailwind",
+        },
+        {
+          name: chalk.magenta("💅 styled-components") + " - CSS-in-JS library",
+          value: "styled-components",
+        },
+        {
+          name: chalk.blue("📝 Plain CSS") + " - No additional dependencies",
+          value: "css",
+        },
       ],
       default: "tailwind",
     },
     {
       type: "confirm",
       name: "initGit",
-      message: "Initialize a git repository?",
+      message: "Initialize a " + chalk.green("git repository") + "?",
       default: true,
     },
     {
@@ -98,8 +127,8 @@ export async function promptUser() {
       name: "editor",
       message: "Which editor would you like to use?",
       choices: [
-        { name: "Visual Studio Code", value: "vscode" },
-        { name: "Cursor", value: "cursor" },
+        { name: chalk.blue("Visual Studio Code"), value: "vscode" },
+        { name: chalk.cyan("Cursor"), value: "cursor" },
       ],
       default: "vscode",
       when: (answers) => answers.openEditor,
