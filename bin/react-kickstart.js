@@ -24,6 +24,7 @@ program
   .version(packageJson.version)
   .argument("[project-directory]", "Project directory name")
   .option("-y, --yes", "Skip all prompts and use default values")
+  .option("--no-summary", "Skip the configuration summary")
   .action((projectDirectory, options) => {
     createApp(projectDirectory, options);
   });

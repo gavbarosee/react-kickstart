@@ -20,9 +20,10 @@
     "rsbuild",
     "parcel"
   ],
-  "author": "Gavish Barosee",
+  "author": "Gav Barosee",
   "license": "MIT",
   "dependencies": {
+    "boxen": "^5.0.1",
     "chalk": "^4.1.2",
     "figures": "^4.0.1",
     "commander": "^11.1.0",

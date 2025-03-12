@@ -1,0 +1,119 @@
+import chalk from "chalk";
+import boxen from "boxen";
+import inquirer from "inquirer";
+
+function getFrameworkDescriptor(framework) {
+  const descriptors = {
+    vite: "Fast dev server, optimized builds",
+    nextjs: "SSR, full-stack framework",
+    rsbuild: "Performance-focused bundler",
+    parcel: "Zero-configuration bundler",
+  };
+  return descriptors[framework] || "";
+}
+
+function getStylingDescriptor(styling) {
+  const descriptors = {
+    tailwind: "Utility-first CSS framework",
+    "styled-components": "CSS-in-JS library",
+    css: "Standard CSS files",
+  };
+  return descriptors[styling] || "";
+}
+
+export function generateSummary(projectPath, projectName, userChoices) {
+  const getStatusSymbol = (value) =>
+    value ? chalk.green("✓") : chalk.red("✗");
+
+  // format each item in the summary with proper alignment
+  const formatItem = (icon, label, value, description = "") => {
+    const paddedLabel = `${icon} ${label}:`.padEnd(20);
+    const descText = description ? chalk.gray(` → ${description}`) : "";
+    return `${paddedLabel} ${value}${descText}`;
+  };
+
+  const formatSectionHeader = (title) => {
+    return chalk.cyan(`\n━━━━━━━━━━ ${title} ━━━━━━━━━━`);
+  };
+
+  // create summary content with logical grouping
+  const content = [
+    formatItem("📋", "Project", chalk.cyan(projectName)),
+    formatItem("📁", "Location", chalk.cyan(projectPath)),
+
+    formatSectionHeader("Build Configuration"),
+    formatItem(
+      "📦",
+      "Package Manager",
+      chalk.green(userChoices.packageManager)
+    ),
+    formatItem(
+      "🚀",
+      "Framework",
+      chalk.yellow(userChoices.framework),
+      getFrameworkDescriptor(userChoices.framework)
+    ),
+
+    // conditionally show routing for next.js
+    userChoices.framework === "nextjs"
+      ? formatItem("🔄", "Router Type", chalk.blue(userChoices.nextRouting))
+      : "",
+
+    formatSectionHeader("Developer Experience"),
+    formatItem("🔤", "TypeScript", getStatusSymbol(userChoices.typescript)),
+    formatItem(
+      "🧹",
+      "Linting",
+      getStatusSymbol(userChoices.linting),
+      userChoices.linting ? "ESLint + Prettier" : ""
+    ),
+    formatItem(
+      "🎨",
+      "Styling",
+      chalk.magenta(userChoices.styling),
+      getStylingDescriptor(userChoices.styling)
+    ),
+
+    formatSectionHeader("Project Tools"),
+    formatItem("🔄", "Git Repository", getStatusSymbol(userChoices.initGit)),
+    userChoices.openEditor
+      ? formatItem("📝", "Editor", chalk.cyan(userChoices.editor))
+      : formatItem(
+          "📝",
+          "Open in Editor",
+          getStatusSymbol(userChoices.openEditor)
+        ),
+
+    // action hint at the bottom
+    "",
+    chalk.gray("» Press Y to proceed or N to reconfigure «"),
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return boxen(content, {
+    title: " Your React Project Configuration ",
+    titleAlignment: "center",
+    padding: 1,
+    margin: 1,
+    borderColor: "cyan",
+    borderStyle: "round",
+  });
+}
+
+// display the summary and ask for confirmation
+export async function showSummaryPrompt(projectPath, projectName, userChoices) {
+  const summary = generateSummary(projectPath, projectName, userChoices);
+  console.log(summary);
+
+  const { confirmed } = await inquirer.prompt([
+    {
+      type: "confirm",
+      name: "confirmed",
+      message: "Proceed with this configuration?",
+      default: true,
+    },
+  ]);
+
+  return confirmed;
+}

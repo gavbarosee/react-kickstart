@@ -7,16 +7,9 @@ import generateProject from "./generators/index.js";
 import { initGit } from "./utils/git.js";
 import { openEditor } from "./utils/editor.js";
 import { installDependencies } from "./utils/package-manager.js";
-import {
-  error,
-  success,
-  bullet,
-  initSteps,
-  nextStep,
-  mainHeader,
-  subHeader,
-  divider,
-} from "./utils/logger.js";
+import { error, initSteps, nextStep, divider } from "./utils/logger.js";
+import { showSummaryPrompt } from "./utils/summary.js";
+import { generateCompletionSummary } from "./utils/completion.js";
 
 export async function createApp(projectDirectory, options = {}) {
   try {
@@ -49,16 +42,30 @@ export async function createApp(projectDirectory, options = {}) {
       fs.mkdirSync(projectPath, { recursive: true });
     }
 
-    // section(`Creating a new React app in ${chalk.green(projectPath)}`);
-    // mainHeader(`Creating a new React app in ${chalk.green(projectPath)}`);
-
     try {
       const userChoices = options.yes
         ? getDefaultChoices()
         : await promptUser();
 
-      divider();
+      // add summary and confirmation step (skip if --no-summary or -y flag is used)
+      if (!options.yes && options.summary !== false) {
+        divider();
 
+        // show summary and ask for confirmation
+        const confirmed = await showSummaryPrompt(
+          projectPath,
+          projectName,
+          userChoices
+        );
+
+        // exit if user does not confirm
+        if (!confirmed) {
+          console.log(chalk.yellow("Setup canceled. No changes were made."));
+          process.exit(0);
+        }
+      }
+
+      divider();
       // display steps during prompting
       initSteps(3);
 
@@ -68,7 +75,10 @@ export async function createApp(projectDirectory, options = {}) {
 
       // STEP 2: install dependencies
       nextStep("Installing dependencies");
-      await installDependencies(projectPath, userChoices.packageManager);
+      const installResult = await installDependencies(
+        projectPath,
+        userChoices.packageManager
+      );
 
       // STEP 3: additional setups
       nextStep("Finalizing project setup");
@@ -83,39 +93,13 @@ export async function createApp(projectDirectory, options = {}) {
 
       divider();
 
-      // success case
-      console.log();
-      success(
-        `Created ${chalk.cyan(projectName)} at ${chalk.cyan(projectPath)}`
+      const completionSummary = generateCompletionSummary(
+        projectPath,
+        projectName,
+        userChoices,
+        installResult.vulnerabilities
       );
-      subHeader("Next steps");
-
-      const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
-
-      // show the correct dev command based on the framework
-      let devCommand;
-      if (userChoices.framework === "parcel") {
-        devCommand =
-          userChoices.packageManager === "yarn" ? "yarn start" : "npm start";
-        bullet(`Start the development server: ${chalk.cyan(devCommand)}`);
-      } else {
-        devCommand = `${pmRun} dev`;
-        bullet(`Start the development server: ${chalk.cyan(devCommand)}`);
-      }
-
-      bullet(`Build for production: ${chalk.cyan(`${pmRun} build`)}`);
-
-      console.log();
-      console.log("Get started by typing:");
-      console.log();
-
-      if (projectDirectory) {
-        console.log(`  ${chalk.cyan("cd")} ${projectDirectory}`);
-      }
-
-      console.log(`  ${chalk.cyan(devCommand)}`);
-      console.log();
-      console.log(chalk.green("Happy hacking! 🚀"));
+      console.log(completionSummary);
     } catch (err) {
       handleError(err, options.verbose);
     }
@@ -147,7 +131,7 @@ function handleError(err, verbose) {
 
   console.log();
   console.log(chalk.yellow("Need help? Open an issue:"));
-  console.log("  https://github.com/yourusername/react-kickstart/issues/new");
+  console.log("  https://github.com/gavbarosee/react-kickstart/issues/new");
   console.log();
 
   process.exit(1);
