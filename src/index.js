@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs-extra";
 import validateProjectName from "validate-npm-package-name";
 import chalk from "chalk";
-import { promptUser } from "./prompts.js";
+import { promptUser, getDefaultChoices } from "./prompts.js";
 import generateProject from "./generators/index.js";
 import { initGit } from "./utils/git.js";
 import { openEditor } from "./utils/editor.js";
@@ -43,6 +43,7 @@ export async function createApp(projectDirectory, options = {}) {
     }
 
     try {
+      // use step-by-step prompting system when not using --yes flag
       const userChoices = options.yes
         ? getDefaultChoices()
         : await promptUser();
@@ -106,19 +107,6 @@ export async function createApp(projectDirectory, options = {}) {
   } catch (err) {
     handleError(err, options.verbose);
   }
-}
-
-function getDefaultChoices() {
-  return {
-    packageManager: "npm",
-    framework: "vite",
-    typescript: false,
-    linting: true,
-    styling: "tailwind",
-    initGit: true,
-    openEditor: false,
-    editor: "vscode",
-  };
 }
 
 function handleError(err, verbose) {

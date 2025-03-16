@@ -1,8 +1,10 @@
 import inquirer from "inquirer";
 import chalk from "chalk";
 import figlet from "figlet";
+import { section } from "./utils/logger.js";
 
 export async function promptUser() {
+  // welcome banner
   console.log();
   console.log(
     chalk.blue(
@@ -19,121 +21,378 @@ export async function promptUser() {
   console.log(chalk.cyan("  ------------------------------------------------"));
   console.log();
 
-  const answers = await inquirer.prompt([
-    {
-      type: "list",
-      name: "packageManager",
-      message: "Which package manager would you like to use?",
-      choices: [
-        { name: chalk.green("📦 npm"), value: "npm" },
-        { name: chalk.blue("🧶 yarn"), value: "yarn" },
-      ],
-      default: "npm",
-    },
-    {
-      type: "list",
-      name: "framework",
-      message: "Which framework would you like to use?",
-      choices: [
-        {
-          name:
-            chalk.yellow("⚡ Vite") + " - Fast dev server, optimized builds",
-          value: "vite",
-        },
-        {
-          name: chalk.blue("▲  Next.js") + " - SSR, full-stack framework",
-          value: "nextjs",
-        },
-        {
-          name: chalk.cyan("🚀 Rsbuild") + " - Performance-focused bundler",
-          value: "rsbuild",
-        },
-        {
-          name: chalk.magenta("📦 Parcel") + " - Zero-configuration bundler",
-          value: "parcel",
-        },
-      ],
-      default: "vite",
-    },
-    {
-      type: "list",
-      name: "nextRouting",
-      message: "Which Next.js routing system would you like to use?",
-      choices: [
-        {
-          name:
-            chalk.cyan("App Router") + " - Newer, supports Server Components",
-          value: "app",
-        },
-        {
-          name: chalk.blue("Pages Router") + " - Traditional routing system",
-          value: "pages",
-        },
-      ],
-      default: "app",
-      when: (answers) => answers.framework === "nextjs",
-    },
-    {
-      type: "confirm",
-      name: "typescript",
-      message: "Would you like to use " + chalk.blue("TypeScript") + "?",
-      default: false,
-    },
-    {
-      type: "confirm",
-      name: "linting",
-      message:
-        "Would you like to include " +
-        chalk.yellow("ESLint and Prettier") +
-        " for code quality?",
-      default: true,
-    },
-    {
-      type: "list",
-      name: "styling",
-      message: "Which styling solution would you like to use?",
-      choices: [
-        {
-          name:
-            chalk.cyan("🎨 Tailwind CSS") + " - Utility-first CSS framework",
-          value: "tailwind",
-        },
-        {
-          name: chalk.magenta("💅 styled-components") + " - CSS-in-JS library",
-          value: "styled-components",
-        },
-        {
-          name: chalk.blue("📝 Plain CSS") + " - No additional dependencies",
-          value: "css",
-        },
-      ],
-      default: "tailwind",
-    },
-    {
-      type: "confirm",
-      name: "initGit",
-      message: "Initialize a " + chalk.green("git repository") + "?",
-      default: true,
-    },
-    {
-      type: "confirm",
-      name: "openEditor",
-      message:
-        "Would you like to open the project in an editor after creation?",
-      default: false,
-    },
-    {
-      type: "list",
-      name: "editor",
-      message: "Which editor would you like to use?",
-      choices: [
-        { name: chalk.blue("Visual Studio Code"), value: "vscode" },
-        { name: chalk.cyan("Cursor"), value: "cursor" },
-      ],
-      default: "vscode",
-      when: (answers) => answers.openEditor,
-    },
-  ]);
+  const answers = {};
 
-  return answers;
+  // each item in history represents a completed step
+  const history = [];
+
+  async function packageManagerPrompt() {
+    section(`Step 1/8: Package Manager`);
+
+    const { packageManager } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "packageManager",
+        message: "Which package manager would you like to use?",
+        choices: [
+          { name: chalk.green("📦 npm"), value: "npm" },
+          { name: chalk.blue("🧶 yarn"), value: "yarn" },
+        ],
+        default: answers.packageManager || "npm",
+      },
+    ]);
+
+    answers.packageManager = packageManager;
+    history.push("packageManager");
+    return frameworkPrompt();
+  }
+
+  async function frameworkPrompt() {
+    section(`Step 2/8: Framework Selection`);
+
+    const choices = [
+      {
+        name: chalk.yellow("⚡ Vite") + " - Fast dev server, optimized builds",
+        value: "vite",
+      },
+      {
+        name: chalk.blue("▲  Next.js") + " - SSR, full-stack framework",
+        value: "nextjs",
+      },
+      {
+        name: chalk.cyan("🚀 Rsbuild") + " - Performance-focused bundler",
+        value: "rsbuild",
+      },
+      {
+        name: chalk.magenta("📦 Parcel") + " - Zero-configuration bundler",
+        value: "parcel",
+      },
+    ];
+
+    // add back option (except for first step)
+    choices.push(new inquirer.Separator());
+    choices.push({
+      name: chalk.yellow("← Back to previous step"),
+      value: "BACK_OPTION",
+    });
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message: "Which framework would you like to use?",
+        choices: choices,
+        default: function () {
+          if (answers.framework) {
+            return choices.findIndex((c) => c.value === answers.framework);
+          }
+          return 0;
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      return packageManagerPrompt();
+    }
+
+    answers.framework = selection;
+    history.push("framework");
+
+    if (selection === "nextjs") {
+      return nextjsOptionsPrompt();
+    } else {
+      return languageOptionsPrompt();
+    }
+  }
+
+  async function nextjsOptionsPrompt() {
+    section(`Step 3/8: Next.js Options`);
+
+    const choices = [
+      {
+        name: chalk.cyan("App Router") + " - Newer, supports Server Components",
+        value: "app",
+      },
+      {
+        name: chalk.blue("Pages Router") + " - Traditional routing system",
+        value: "pages",
+      },
+      new inquirer.Separator(),
+      {
+        name: chalk.yellow("← Back to previous step"),
+        value: "BACK_OPTION",
+      },
+    ];
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message: "Which Next.js routing system would you like to use?",
+        choices: choices,
+        default: function () {
+          if (answers.nextRouting) {
+            return choices.findIndex((c) => c.value === answers.nextRouting);
+          }
+          return 0;
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      return frameworkPrompt();
+    }
+
+    answers.nextRouting = selection;
+    history.push("nextRouting");
+    return languageOptionsPrompt();
+  }
+
+  async function languageOptionsPrompt() {
+    const stepNum = answers.framework === "nextjs" ? 4 : 3;
+    section(`Step ${stepNum}/8: Language Options`);
+
+    const choices = [
+      { name: chalk.green("Yes"), value: true },
+      { name: chalk.red("No"), value: false },
+      new inquirer.Separator(),
+      {
+        name: chalk.yellow("← Back to previous step"),
+        value: "BACK_OPTION",
+      },
+    ];
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message: "Would you like to use TypeScript?",
+        choices: choices,
+        default: function () {
+          if (answers.typescript !== undefined) {
+            return choices.findIndex((c) => c.value === answers.typescript);
+          }
+          return 0;
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      if (answers.framework === "nextjs") {
+        return nextjsOptionsPrompt();
+      } else {
+        return frameworkPrompt();
+      }
+    }
+
+    answers.typescript = selection;
+    history.push("typescript");
+    return codeQualityPrompt();
+  }
+
+  async function codeQualityPrompt() {
+    const stepNum = answers.framework === "nextjs" ? 5 : 4;
+    section(`Step ${stepNum}/8: Code Quality`);
+
+    const choices = [
+      { name: chalk.green("Yes"), value: true },
+      { name: chalk.red("No"), value: false },
+      new inquirer.Separator(),
+      {
+        name: chalk.yellow("← Back to previous step"),
+        value: "BACK_OPTION",
+      },
+    ];
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message:
+          "Would you like to include ESLint and Prettier for code quality?",
+        choices: choices,
+        default: function () {
+          if (answers.linting !== undefined) {
+            return choices.findIndex((c) => c.value === answers.linting);
+          }
+          return 0;
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      return languageOptionsPrompt();
+    }
+
+    answers.linting = selection;
+    history.push("linting");
+    return stylingSolutionPrompt();
+  }
+
+  async function stylingSolutionPrompt() {
+    const stepNum = answers.framework === "nextjs" ? 6 : 5;
+    section(`Step ${stepNum}/8: Styling Solution`);
+
+    const choices = [
+      {
+        name: chalk.cyan("🎨 Tailwind CSS") + " - Utility-first CSS framework",
+        value: "tailwind",
+      },
+      {
+        name: chalk.magenta("💅 styled-components") + " - CSS-in-JS library",
+        value: "styled-components",
+      },
+      {
+        name: chalk.blue("📝 Plain CSS") + " - No additional dependencies",
+        value: "css",
+      },
+      new inquirer.Separator(),
+      {
+        name: chalk.yellow("← Back to previous step"),
+        value: "BACK_OPTION",
+      },
+    ];
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message: "Which styling solution would you like to use?",
+        choices: choices,
+        default: function () {
+          if (answers.styling) {
+            return choices.findIndex((c) => c.value === answers.styling);
+          }
+          return 0;
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      return codeQualityPrompt();
+    }
+
+    answers.styling = selection;
+    history.push("styling");
+    return gitOptionsPrompt();
+  }
+
+  async function gitOptionsPrompt() {
+    const stepNum = answers.framework === "nextjs" ? 7 : 6;
+    section(`Step ${stepNum}/8: Git Options`);
+
+    const choices = [
+      { name: chalk.green("Yes"), value: true },
+      { name: chalk.red("No"), value: false },
+      new inquirer.Separator(),
+      {
+        name: chalk.yellow("← Back to previous step"),
+        value: "BACK_OPTION",
+      },
+    ];
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message: "Initialize a git repository?",
+        choices: choices,
+        default: function () {
+          if (answers.initGit !== undefined) {
+            return choices.findIndex((c) => c.value === answers.initGit);
+          }
+          return 0;
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      return stylingSolutionPrompt();
+    }
+
+    answers.initGit = selection;
+    history.push("gitInit");
+    return editorOptionsPrompt();
+  }
+
+  async function editorOptionsPrompt() {
+    const stepNum = answers.framework === "nextjs" ? 8 : 7;
+    section(`Step ${stepNum}/8: Editor Options`);
+
+    const choices = [
+      { name: chalk.green("Yes"), value: true },
+      { name: chalk.red("No"), value: false },
+      new inquirer.Separator(),
+      {
+        name: chalk.yellow("← Back to previous step"),
+        value: "BACK_OPTION",
+      },
+    ];
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message:
+          "Would you like to open the project in an editor after creation?",
+        choices: choices,
+        default: function () {
+          if (answers.openEditor !== undefined) {
+            return choices.findIndex((c) => c.value === answers.openEditor);
+          }
+          return 1;
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      return gitOptionsPrompt();
+    }
+
+    answers.openEditor = selection;
+
+    if (answers.openEditor) {
+      const { editor } = await inquirer.prompt([
+        {
+          type: "list",
+          name: "editor",
+          message: "Which editor would you like to use?",
+          choices: [
+            { name: chalk.blue("Visual Studio Code"), value: "vscode" },
+            { name: chalk.cyan("Cursor"), value: "cursor" },
+          ],
+          default: answers.editor || "vscode",
+        },
+      ]);
+      answers.editor = editor;
+    }
+
+    history.push("editorOptions");
+
+    return answers;
+  }
+
+  // start the prompt flow
+  return packageManagerPrompt();
+}
+
+// fn to get default choices (used when --yes flag is provided)
+export function getDefaultChoices() {
+  return {
+    packageManager: "npm",
+    framework: "vite",
+    typescript: false,
+    linting: true,
+    styling: "tailwind",
+    initGit: true,
+    openEditor: false,
+    editor: "vscode",
+  };
 }

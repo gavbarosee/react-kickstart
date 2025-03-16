@@ -43,6 +43,48 @@ export function debug(message, isVerbose = false) {
   }
 }
 
+// icons for each step category
+const stepIcons = {
+  "Package Manager": "📦",
+  "Framework Selection": "🚀",
+  "Next.js Options": "▲ ",
+  "Language Options": "🔤",
+  "Code Quality": "✨",
+  "Styling Solution": "🎨",
+  "Git Options": "🔄",
+  "Editor Options": "📝",
+  // default icon if no match
+  default: "•",
+};
+
+// section header with step indication and progress
+export function section(title) {
+  // extract step number if present (e.g., "Step 1/8: Package Manager")
+  const stepMatch = title.match(/Step (\d+)\/(\d+): (.*)/);
+
+  if (stepMatch) {
+    const currentStep = parseInt(stepMatch[1]);
+    const totalSteps = parseInt(stepMatch[2]);
+    const stepTitle = stepMatch[3];
+
+    const icon = stepIcons[stepTitle] || stepIcons.default;
+
+    console.log();
+    console.log(
+      chalk.bold.cyan(` ${icon} STEP ${currentStep} OF ${totalSteps}`)
+    );
+    console.log(chalk.bold.white(` ${stepTitle}`));
+    console.log(chalk.cyan("━".repeat(40)));
+    console.log();
+  } else {
+    // fallback for sections that don't follow the step pattern
+    console.log();
+    console.log(chalk.bold.cyan(`• ${title}`));
+    console.log(chalk.cyan("━".repeat(40)));
+    console.log();
+  }
+}
+
 export function mainHeader(title) {
   console.log("\n");
   console.log(
@@ -68,14 +110,6 @@ export function divider() {
       chalk.gray("· · · · · · · · · · · · · · · · · · · · · · · · · · · ·") +
       "\n"
   );
-}
-
-export function section(title) {
-  console.log();
-  console.log(chalk.cyan("╭─────────────────────────────────────────────╮"));
-  console.log(chalk.cyan(`│ ${title.padEnd(41)} │`));
-  console.log(chalk.cyan("╰─────────────────────────────────────────────╯"));
-  console.log();
 }
 
 export function bullet(text) {
