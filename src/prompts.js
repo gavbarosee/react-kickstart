@@ -4,29 +4,107 @@ import figlet from "figlet";
 import { section } from "./utils/logger.js";
 
 export async function promptUser() {
-  // welcome banner
-  console.log();
-  console.log(
-    chalk.blue(
-      figlet.textSync("React Kickstart", {
-        font: "Standard",
-        horizontalLayout: "full",
-      })
-    )
-  );
-  console.log();
-  console.log(
-    chalk.cyan("  A modern CLI tool for creating React applications")
-  );
-  console.log(chalk.cyan("  ------------------------------------------------"));
-  console.log();
-
   const answers = {};
-
-  // each item in history represents a completed step
   const history = [];
 
+  // clear terminal and show header
+  function refreshDisplay() {
+    process.stdout.write("\x1Bc");
+
+    console.log();
+    console.log(
+      chalk.blue(
+        figlet.textSync("React Kickstart", {
+          font: "Standard",
+          horizontalLayout: "full",
+        })
+      )
+    );
+    console.log();
+    console.log(
+      chalk.cyan("  A modern CLI tool for creating React applications")
+    );
+    console.log(
+      chalk.cyan("  ------------------------------------------------")
+    );
+    console.log();
+
+    // Show a compact summary of previous selections
+    if (Object.keys(answers).length > 0) {
+      console.log(chalk.cyan("  Your selections so far:"));
+
+      if (answers.packageManager) {
+        console.log(
+          `  ${chalk.dim("•")} Package Manager: ${chalk.green(
+            answers.packageManager
+          )}`
+        );
+      }
+
+      if (answers.framework) {
+        console.log(
+          `  ${chalk.dim("•")} Framework: ${chalk.yellow(answers.framework)}`
+        );
+      }
+
+      if (answers.framework === "nextjs" && answers.nextRouting) {
+        console.log(
+          `  ${chalk.dim("•")} Next.js Routing: ${chalk.blue(
+            answers.nextRouting
+          )}`
+        );
+      }
+
+      if (answers.typescript !== undefined) {
+        console.log(
+          `  ${chalk.dim("•")} TypeScript: ${
+            answers.typescript ? chalk.green("Yes") : chalk.red("No")
+          }`
+        );
+      }
+
+      if (answers.linting !== undefined) {
+        console.log(
+          `  ${chalk.dim("•")} Linting: ${
+            answers.linting ? chalk.green("Yes") : chalk.red("No")
+          }`
+        );
+      }
+
+      if (answers.styling) {
+        console.log(
+          `  ${chalk.dim("•")} Styling: ${chalk.magenta(answers.styling)}`
+        );
+      }
+
+      if (answers.initGit !== undefined) {
+        console.log(
+          `  ${chalk.dim("•")} Git Init: ${
+            answers.initGit ? chalk.green("Yes") : chalk.red("No")
+          }`
+        );
+      }
+
+      if (answers.openEditor !== undefined) {
+        console.log(
+          `  ${chalk.dim("•")} Open in Editor: ${
+            answers.openEditor ? chalk.green("Yes") : chalk.red("No")
+          }`
+        );
+
+        if (answers.openEditor && answers.editor) {
+          console.log(
+            `  ${chalk.dim("•")} Editor: ${chalk.blue(answers.editor)}`
+          );
+        }
+      }
+
+      console.log();
+    }
+  }
+
   async function packageManagerPrompt() {
+    refreshDisplay();
     section(`Step 1/8: Package Manager`);
 
     const { packageManager } = await inquirer.prompt([
@@ -48,6 +126,7 @@ export async function promptUser() {
   }
 
   async function frameworkPrompt() {
+    refreshDisplay();
     section(`Step 2/8: Framework Selection`);
 
     const choices = [
@@ -107,6 +186,7 @@ export async function promptUser() {
   }
 
   async function nextjsOptionsPrompt() {
+    refreshDisplay();
     section(`Step 3/8: Next.js Options`);
 
     const choices = [
@@ -151,6 +231,7 @@ export async function promptUser() {
   }
 
   async function languageOptionsPrompt() {
+    refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 4 : 3;
     section(`Step ${stepNum}/8: Language Options`);
 
@@ -174,7 +255,7 @@ export async function promptUser() {
           if (answers.typescript !== undefined) {
             return choices.findIndex((c) => c.value === answers.typescript);
           }
-          return 0;
+          return 1;
         },
       },
     ]);
@@ -194,6 +275,7 @@ export async function promptUser() {
   }
 
   async function codeQualityPrompt() {
+    refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 5 : 4;
     section(`Step ${stepNum}/8: Code Quality`);
 
@@ -234,6 +316,7 @@ export async function promptUser() {
   }
 
   async function stylingSolutionPrompt() {
+    refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 6 : 5;
     section(`Step ${stepNum}/8: Styling Solution`);
 
@@ -283,6 +366,7 @@ export async function promptUser() {
   }
 
   async function gitOptionsPrompt() {
+    refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 7 : 6;
     section(`Step ${stepNum}/8: Git Options`);
 
@@ -322,6 +406,7 @@ export async function promptUser() {
   }
 
   async function editorOptionsPrompt() {
+    refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 8 : 7;
     section(`Step ${stepNum}/8: Editor Options`);
 
@@ -376,10 +461,16 @@ export async function promptUser() {
 
     history.push("editorOptions");
 
+    refreshDisplay();
+    console.log(
+      chalk.green("\n✓ Configuration complete! Here's your full setup:\n")
+    );
+
     return answers;
   }
 
-  // start the prompt flow
+  refreshDisplay();
+
   return packageManagerPrompt();
 }
 
