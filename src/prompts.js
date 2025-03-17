@@ -31,7 +31,7 @@ export async function promptUser() {
 
     // Show a compact summary of previous selections
     if (Object.keys(answers).length > 0) {
-      console.log(chalk.cyan("  Your selections so far:"));
+      console.log(chalk.bgCyan("  Your selections so far:"));
 
       if (answers.packageManager) {
         console.log(
@@ -95,6 +95,25 @@ export async function promptUser() {
         if (answers.openEditor && answers.editor) {
           console.log(
             `  ${chalk.dim("•")} Editor: ${chalk.blue(answers.editor)}`
+          );
+        }
+      }
+
+      if (answers.autoStart !== undefined) {
+        console.log(
+          `  ${chalk.dim("•")} Auto-Start: ${
+            answers.autoStart ? chalk.green("Yes") : chalk.red("No")
+          }`
+        );
+
+        if (answers.autoStart && answers.browser) {
+          const browserName =
+            answers.browser === "default"
+              ? "System Default"
+              : answers.browser.charAt(0).toUpperCase() +
+                answers.browser.slice(1);
+          console.log(
+            `  ${chalk.dim("•")} Browser: ${chalk.blue(browserName)}`
           );
         }
       }
@@ -405,6 +424,130 @@ export async function promptUser() {
     return editorOptionsPrompt();
   }
 
+  async function autoStartPrompt() {
+    refreshDisplay();
+    const stepNum = answers.framework === "nextjs" ? 9 : 8;
+    section(`Step ${stepNum}/9: Auto Start`);
+
+    const choices = [
+      {
+        name: chalk.green("Yes") + " - Start development server after setup",
+        value: true,
+      },
+      { name: chalk.red("No") + " - I'll start it manually", value: false },
+      new inquirer.Separator(),
+      {
+        name: chalk.yellow("← Back to previous step"),
+        value: "BACK_OPTION",
+      },
+    ];
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message:
+          "Would you like to automatically start the development server after creation?",
+        choices: choices,
+        default: function () {
+          if (answers.autoStart !== undefined) {
+            return choices.findIndex((c) => c.value === answers.autoStart);
+          }
+          return 1;
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      return editorOptionsPrompt();
+    }
+
+    answers.autoStart = selection;
+    history.push("autoStart");
+
+    if (answers.autoStart) {
+      return browserSelectionPrompt();
+    }
+
+    refreshDisplay();
+    console.log(
+      chalk.green("\n✓ Configuration complete! Here's your full setup:\n")
+    );
+
+    return answers;
+  }
+
+  async function browserSelectionPrompt() {
+    // only show this prompt if auto-start is enabled
+    if (!answers.autoStart) {
+      return answers;
+    }
+
+    refreshDisplay();
+    const stepNum = answers.framework === "nextjs" ? 10 : 9;
+    section(`Step ${stepNum}/10: Browser Selection`);
+
+    // create browser options with platform-specific variations
+    const browserChoices = [
+      {
+        name: chalk.blue("System Default") + " - Use your default browser",
+        value: "default",
+      },
+      { name: chalk.yellow("Google Chrome"), value: "chrome" },
+      { name: chalk.red("Firefox"), value: "firefox" },
+    ];
+
+    // platform-specific browsers
+    if (process.platform === "darwin") {
+      browserChoices.push({ name: chalk.blue("Safari"), value: "safari" });
+    }
+
+    if (process.platform === "win32") {
+      browserChoices.push({
+        name: chalk.blue("Microsoft Edge"),
+        value: "edge",
+      });
+    }
+
+    // add back option
+    browserChoices.push(new inquirer.Separator());
+    browserChoices.push({
+      name: chalk.yellow("← Back to previous step"),
+      value: "BACK_OPTION",
+    });
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message: "Which browser would you like to use when auto-starting?",
+        choices: browserChoices,
+        default: function () {
+          if (answers.browser) {
+            return browserChoices.findIndex((c) => c.value === answers.browser);
+          }
+          return 0;
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      return autoStartPrompt();
+    }
+
+    answers.browser = selection;
+    history.push("browser");
+
+    refreshDisplay();
+    console.log(
+      chalk.green("\n✓ Configuration complete! Here's your full setup:\n")
+    );
+
+    return answers;
+  }
+
   async function editorOptionsPrompt() {
     refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 8 : 7;
@@ -461,12 +604,13 @@ export async function promptUser() {
 
     history.push("editorOptions");
 
-    refreshDisplay();
-    console.log(
-      chalk.green("\n✓ Configuration complete! Here's your full setup:\n")
-    );
+    // refreshDisplay();
+    // console.log(
+    //   chalk.green("\n✓ Configuration complete! Here's your full setup:\n")
+    // );
 
-    return answers;
+    // return answers;
+    return autoStartPrompt();
   }
 
   refreshDisplay();
@@ -485,5 +629,7 @@ export function getDefaultChoices() {
     initGit: true,
     openEditor: false,
     editor: "vscode",
+    autoStart: false,
+    browser: "default",
   };
 }

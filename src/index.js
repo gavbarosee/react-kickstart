@@ -10,6 +10,7 @@ import { installDependencies } from "./utils/package-manager.js";
 import { error, initSteps, nextStep, divider } from "./utils/logger.js";
 import { showSummaryPrompt } from "./utils/summary.js";
 import { generateCompletionSummary } from "./utils/completion.js";
+import { startProject } from "./utils/start-project.js";
 
 export async function createApp(projectDirectory, options = {}) {
   try {
@@ -101,6 +102,10 @@ export async function createApp(projectDirectory, options = {}) {
         installResult.vulnerabilities
       );
       console.log(completionSummary);
+
+      if (userChoices.autoStart) {
+        await startProject(projectPath, userChoices);
+      }
     } catch (err) {
       handleError(err, options.verbose);
     }

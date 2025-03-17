@@ -15,7 +15,7 @@ export function nextStep(message) {
   currentStep++;
   console.log();
   console.log(
-    chalk.cyan(
+    chalk.bgCyan(
       `${figures.pointer} [Step ${currentStep}/${totalSteps}] ${message}`
     )
   );

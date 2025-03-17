@@ -43,7 +43,7 @@ function getProjectMetrics(projectPath) {
 }
 
 // get framework-specific information
-function getFrameworkInfo(framework) {
+export function getFrameworkInfo(framework) {
   const info = {
     vite: {
       docs: "https://vitejs.dev/guide/",
@@ -74,7 +74,7 @@ function getFrameworkInfo(framework) {
     },
     rsbuild: {
       docs: "https://rsbuild.dev/",
-      port: 5173,
+      port: 8080,
       buildDir: "dist",
       tips: [
         "Performance-focused building with extensive optimizations",
@@ -213,6 +213,18 @@ export function generateCompletionSummary(
     `   ${chalk.cyan("Size:")} ${metrics.estimatedSize} (${
       metrics.totalPackages
     } packages)`,
+    `   ${chalk.cyan("Auto-Start:")} ${
+      userChoices.autoStart ? chalk.green("Yes") : chalk.red("No")
+    }`,
+    ...(userChoices.autoStart
+      ? [
+          `   ${chalk.cyan("Browser:")} ${chalk.blue(
+            userChoices.browser === "default"
+              ? "System Default"
+              : userChoices.browser
+          )}`,
+        ]
+      : []),
   ].join("\n");
 
   // STEP 2: next steps with commands
@@ -223,6 +235,26 @@ export function generateCompletionSummary(
   commandLines.push("");
 
   let cmdIndex = 2;
+
+  if (userChoices.autoStart) {
+    const browserName =
+      userChoices.browser === "default"
+        ? "your default browser"
+        : userChoices.browser;
+
+    commandLines.push(
+      `   ${chalk.bold(
+        `${cmdIndex}️⃣ `
+      )} Development server will start automatically`
+    );
+    commandLines.push(
+      `      ${chalk.gray(
+        `→ Opening ${browserName} to http://localhost:${frameworkInfo.port}`
+      )}`
+    );
+    commandLines.push("");
+    cmdIndex++;
+  }
 
   if (commandExamples.dev) {
     commandLines.push(
