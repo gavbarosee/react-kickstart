@@ -207,7 +207,7 @@ export function generateCompletionSummary(
   // STEP 1: project success header
   const successHeader = [
     "",
-    chalk.green(`${figures.tick} Project Successfully Created!`),
+    chalk.bgGreen(`${figures.tick} Project Successfully Created!`),
     `   ${chalk.cyan("Name:")} ${chalk.bold(projectName)}`,
     `   ${chalk.cyan("Location:")} ${projectPath}`,
     `   ${chalk.cyan("Size:")} ${metrics.estimatedSize} (${
@@ -283,7 +283,7 @@ export function generateCompletionSummary(
 
   const nextStepsSection = [
     "",
-    chalk.cyan(`${figures.pointer} Next Steps:`),
+    chalk.bgMagenta(`${figures.pointer} Next Steps:`),
     ...commandLines,
   ].join("\n");
 
@@ -300,7 +300,7 @@ export function generateCompletionSummary(
     tipsList.length > 0
       ? [
           "",
-          chalk.cyan(`${figures.pointer} Quick Tips for Your Stack:`),
+          chalk.bgYellow(`${figures.pointer} Quick Tips for Your Stack:`),
           ...tipsList,
         ].join("\n")
       : "";
@@ -308,7 +308,7 @@ export function generateCompletionSummary(
   // STEP 4: documentation links
   const docsSection = [
     "",
-    chalk.cyan(`${figures.pointer} Documentation:`),
+    chalk.bgBlue(`${figures.pointer} Documentation:`),
     `   • ${userChoices.framework}: ${chalk.underline(frameworkInfo.docs)}`,
     `   • ${userChoices.styling}: ${chalk.underline(stylingInfo.docs)}`,
     ...(userChoices.typescript
@@ -320,7 +320,7 @@ export function generateCompletionSummary(
   const securitySection =
     vulnerabilities && vulnerabilities.length > 0
       ? [
-          chalk.yellow(
+          chalk.bgYellow(
             `${figures.pointer} Security Notice: ${vulnerabilities.reduce(
               (sum, v) => sum + v.count,
               0
@@ -352,13 +352,15 @@ export function generateCompletionSummary(
       : "";
   // STEP 6: ready to go
   const readyToGoSection = [
-    "",
-    chalk.green(`Ready to go! Run:`),
-    "",
-    `   ${chalk.cyan(`$ cd ${projectName} && ${commandExamples.dev.command}`)}`,
-    "",
-    chalk.green(`Happy hacking! 🚀`),
-    "",
+    // "",
+    // chalk.green(`Ready to go! Run:`),
+    // "",
+    // `   ${chalk.cyan.dim(
+    //   `$ cd ${projectName} && ${commandExamples.dev.command}`
+    // )}`,
+    // "",
+    // chalk.green(`Happy hacking! 🚀`),
+    // "",
   ].join("\n");
 
   return [

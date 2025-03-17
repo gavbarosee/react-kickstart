@@ -31,7 +31,7 @@ export async function promptUser() {
 
     // Show a compact summary of previous selections
     if (Object.keys(answers).length > 0) {
-      console.log(chalk.bgCyan("  Your selections so far:"));
+      console.log(chalk.bgBlue("  Your selections so far:"));
 
       if (answers.packageManager) {
         console.log(
