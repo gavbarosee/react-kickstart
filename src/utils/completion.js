@@ -189,7 +189,8 @@ export function generateCompletionSummary(
   projectPath,
   projectName,
   userChoices,
-  vulnerabilities
+  vulnerabilities,
+  packageCount = null
 ) {
   const metrics = getProjectMetrics(projectPath);
   const frameworkInfo = getFrameworkInfo(userChoices.framework);
@@ -210,9 +211,9 @@ export function generateCompletionSummary(
     chalk.bgGreen(`${figures.tick} Project Successfully Created!`),
     `   ${chalk.cyan("Name:")} ${chalk.bold(projectName)}`,
     `   ${chalk.cyan("Location:")} ${projectPath}`,
-    `   ${chalk.cyan("Size:")} ${metrics.estimatedSize} (${
-      metrics.totalPackages
-    } packages)`,
+    `   ${chalk.cyan("Size:")} ${
+      packageCount ? `~${packageCount} packages` : "N/A"
+    }`,
     `   ${chalk.cyan("Auto-Start:")} ${
       userChoices.autoStart ? chalk.green("Yes") : chalk.red("No")
     }`,

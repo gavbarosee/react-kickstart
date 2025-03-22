@@ -1,10 +1,19 @@
+// src/utils/package-manager.js (updated version)
 import execa from "execa";
 import ora from "ora";
+import path from "path";
 import { error } from "./logger.js";
+import {
+  categorizeDependencies,
+  stepSection,
+  progressBar,
+  displayEstimatedTime,
+  countPackages,
+} from "./enhanced-logger.js";
 
 export async function installDependencies(projectPath, packageManager = "npm") {
   const spinner = ora({
-    text: `Installing dependencies (est. <1 min)...`,
+    text: `Installing dependencies...`,
     color: "green",
     spinner: "bouncingBar",
   }).start();
@@ -12,6 +21,27 @@ export async function installDependencies(projectPath, packageManager = "npm") {
   try {
     const installCmd = packageManager === "yarn" ? "yarn" : "npm";
     const installArgs = packageManager === "yarn" ? [] : ["install"];
+
+    spinner.stop();
+    console.log();
+
+    const packageJsonPath = path.join(projectPath, "package.json");
+    const categorizedDeps = categorizeDependencies(packageJsonPath);
+
+    // change to "Project dependencies" instead of "Resolving dependencies"
+    stepSection(
+      "📥",
+      "Project dependencies:",
+      categorizedDeps.map(({ category, deps }) => ({
+        label: category + ":",
+        description: deps,
+      }))
+    );
+
+    progressBar(15, "Installing packages");
+    displayEstimatedTime(30); // est 30 seconds
+
+    spinner.start();
 
     // capture standard output and error
     const { stdout, stderr } = await execa(installCmd, installArgs, {
@@ -39,11 +69,19 @@ export async function installDependencies(projectPath, packageManager = "npm") {
       }
     }
 
-    spinner.succeed("Dependencies installed successfully!");
+    // get a more realistic package count
+    const totalPackages = countPackages(packageJsonPath);
+    spinner.stop();
+
+    console.log(
+      `  ✅ Dependencies successfully installed (${totalPackages} packages)`
+    );
+    console.log();
 
     return {
       success: true,
       vulnerabilities: vulnerabilities.length > 0 ? vulnerabilities : null,
+      packageCount: totalPackages,
     };
   } catch (err) {
     spinner.fail("Failed to install dependencies");

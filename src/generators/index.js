@@ -1,5 +1,11 @@
 import ora from "ora";
-import { log, frameworkLog, stylingLog } from "../utils/logger.js";
+import { frameworkLog, stylingLog } from "../utils/logger.js";
+import {
+  stepSection,
+  fileGenerationInfo,
+  getProjectStructure,
+  getConfigurationFiles,
+} from "../utils/enhanced-logger.js";
 import generateViteProject from "./vite/index.js";
 import generateNextjsProject from "./nextjs/index.js";
 import generateRsbuildProject from "./rsbuild/index.js";
@@ -10,7 +16,6 @@ export default async function generateProject(
   projectName,
   userChoices
 ) {
-  // const spinner = ora("Generating project files...").start();
   const spinner = ora({
     text: "Generating project files...",
     color: "yellow",
@@ -19,6 +24,33 @@ export default async function generateProject(
 
   try {
     frameworkLog(`Creating a ${userChoices.framework} project...`);
+
+    // project structure information
+    spinner.stop();
+    console.log();
+
+    // directory structure information
+    stepSection(
+      "📋",
+      "Creating project structure:",
+      getProjectStructure(userChoices.framework)
+    );
+
+    // display configuration files information
+    stepSection(
+      "🛠️",
+      "Setting up configuration:",
+      getConfigurationFiles(
+        userChoices.framework,
+        userChoices.typescript,
+        userChoices.styling,
+        userChoices.linting
+      )
+    );
+
+    spinner.text = "Processing...";
+    spinner.start();
+
     switch (userChoices.framework) {
       case "vite":
         await generateViteProject(projectPath, projectName, userChoices);
@@ -39,10 +71,18 @@ export default async function generateProject(
       stylingLog(`Configured with ${userChoices.styling} styling`);
     }
 
-    spinner.succeed("Project files generated successfully!");
+    spinner.stop();
+    fileGenerationInfo(projectPath);
+
+    console.log(
+      `  ✅ Project files successfully generated [${userChoices.framework}]`
+    );
+    console.log();
     return true;
   } catch (error) {
-    spinner.fail(`Failed to generate project files: ${error.message}`);
+    if (spinner.isSpinning) {
+      spinner.fail(`Failed to generate project files: ${error.message}`);
+    }
     throw error;
   }
 }

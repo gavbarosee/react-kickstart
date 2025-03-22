@@ -68,30 +68,52 @@ export async function createApp(projectDirectory, options = {}) {
       }
 
       divider();
-      // display steps during prompting
       initSteps(3);
 
-      // STEP 1: generate project files
+      // STEP 1: generate project files with enhanced output
       nextStep("Generating project files");
+      console.log();
+
+      if (userChoices.styling) {
+        console.log(
+          `Project configured with:\n  ${chalk.magenta("🎨")} ${
+            userChoices.styling
+          } styling`
+        );
+      }
+
+      // stop any running spinner before starting the next step
+      if (typeof spinner !== "undefined" && spinner.isSpinning) {
+        spinner.stop();
+      }
+
       await generateProject(projectPath, projectName, userChoices);
 
-      // STEP 2: install dependencies
+      // STEP 2: install dependencies with enhanced output
       nextStep("Installing dependencies");
+      console.log();
+
       const installResult = await installDependencies(
         projectPath,
         userChoices.packageManager
       );
 
-      // STEP 3: additional setups
+      // STEP 3: additional setups with enhanced output
       nextStep("Finalizing project setup");
+      console.log();
+
       if (userChoices.initGit) {
-        await initGit(projectPath);
+        await initGit(projectPath, userChoices);
       }
 
-      // open in editor if selected
+      // Open in editor if selected - pass userChoices for enhanced logging
       if (userChoices.openEditor) {
-        await openEditor(projectPath, userChoices.editor);
+        await openEditor(projectPath, userChoices.editor, userChoices);
       }
+
+      // Add readme, run initial processing, etc.
+      console.log(`  ✅ Project successfully set up`);
+      console.log();
 
       divider();
 
@@ -99,7 +121,8 @@ export async function createApp(projectDirectory, options = {}) {
         projectPath,
         projectName,
         userChoices,
-        installResult.vulnerabilities
+        installResult.vulnerabilities,
+        installResult.packageCount
       );
       console.log(completionSummary);
 

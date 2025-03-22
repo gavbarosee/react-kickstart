@@ -2,10 +2,12 @@ import execa from "execa";
 import fs from "fs-extra";
 import path from "path";
 import ora from "ora";
-import { log, error } from "./logger.js";
+import { error } from "./logger.js";
+import { displayGitSetup } from "./enhanced-logger.js";
 
-export async function initGit(projectPath) {
-  // const spinner = ora("Initializing git repository...").start();
+export async function initGit(projectPath, userChoices) {
+  const { framework, typescript, linting, styling } = userChoices || {};
+
   const spinner = ora({
     text: "Initializing git repository...",
     color: "blue",
@@ -13,7 +15,6 @@ export async function initGit(projectPath) {
   }).start();
 
   try {
-    // check if git is installed
     try {
       await execa("git", ["--version"]);
     } catch (err) {
@@ -21,8 +22,6 @@ export async function initGit(projectPath) {
       return false;
     }
 
-    // initialize git repository
-    log("Initializing git repository...");
     await execa("git", ["init"], { cwd: projectPath });
 
     // create .gitignore file if it doesn't exist
@@ -40,6 +39,8 @@ export async function initGit(projectPath) {
 # production
 /build
 /dist
+${framework === "nextjs" ? "/.next/\n/out/" : ""}
+${framework === "parcel" ? "/.parcel-cache/" : ""}
 
 # misc
 .DS_Store
@@ -55,7 +56,10 @@ yarn-error.log*
       fs.writeFileSync(gitignorePath, gitignoreContent.trim());
     }
 
-    spinner.succeed("Git repository initialized successfully!");
+    spinner.stop();
+
+    displayGitSetup(linting, framework, typescript);
+
     return true;
   } catch (err) {
     spinner.fail("Failed to initialize git repository");
