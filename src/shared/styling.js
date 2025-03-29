@@ -10,6 +10,10 @@ import path from "path";
  * @returns {void}
  */
 export function setupStyling(projectPath, userChoices, framework = "vite") {
+  if (framework === "nextjs") {
+    return;
+  }
+
   const srcDir = path.join(
     projectPath,
     framework === "nextjs" && userChoices.nextRouting === "app" ? "app" : "src"
@@ -20,30 +24,33 @@ export function setupStyling(projectPath, userChoices, framework = "vite") {
   } else if (userChoices.styling === "css") {
     setupBasicCss(srcDir, framework);
   }
-  // styled-components doesn't require config files and is setup in component templates
 }
 
 /**
  * Sets up Tailwind CSS for a project
  */
 export function setupTailwind(projectPath, srcDir, framework, userChoices) {
-  // Determine the correct CSS filename based on framework
+  if (framework === "nextjs") {
+    return;
+  }
+
+  if (framework === "vite") {
+    return;
+  }
+
   const cssFilename = getCssFilename(framework, userChoices);
 
-  // Standard Tailwind CSS content
   const cssContent = `@tailwind base;
 @tailwind components;
 @tailwind utilities;
 `;
 
-  // Write CSS file to appropriate location
   fs.writeFileSync(path.join(srcDir, cssFilename), cssContent);
 
-  // Create tailwind.config.js with framework-specific content paths
   const contentPaths = getContentPaths(framework);
 
   const tailwindConfig = `/** @type {import('tailwindcss').Config} */
-${framework === "vite" ? "export default" : "module.exports ="} {
+export default {
   content: [
     ${contentPaths.map((path) => `"${path}"`).join(",\n    ")}
   ],
@@ -59,9 +66,7 @@ ${framework === "vite" ? "export default" : "module.exports ="} {
     tailwindConfig
   );
 
-  // Create postcss.config.js with framework-specific format
-  const isEsm = framework === "vite";
-  const postcssConfig = `${isEsm ? "export default" : "module.exports ="} {
+  const postcssConfig = `export default {
   plugins: {
     tailwindcss: {},
     autoprefixer: {},
@@ -76,11 +81,13 @@ ${framework === "vite" ? "export default" : "module.exports ="} {
  * Sets up basic CSS for a project
  */
 export function setupBasicCss(srcDir, framework) {
-  // Determine CSS filename based on framework
+  if (framework === "nextjs") {
+    return;
+  }
+
   const cssFilename = framework === "vite" ? "App.css" : "styles.css";
   const indexCssFilename = getCssFilename(framework);
 
-  // Common CSS content
   const cssContent = `body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -104,7 +111,6 @@ code {
 
   fs.writeFileSync(path.join(srcDir, indexCssFilename), cssContent);
 
-  // Only create App.css for vite and similar frameworks
   if (framework === "vite") {
     const appCssContent = `
 h1 {

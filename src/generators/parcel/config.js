@@ -6,10 +6,11 @@ export function createPackageJson(projectPath, projectName, userChoices) {
     name: projectName,
     version: "0.1.0",
     private: true,
+    type: "module",
     source: "src/index.html",
     scripts: {
-      start: "parcel",
-      build: "parcel build",
+      start: "parcel src/index.html --open",
+      build: "parcel build src/index.html",
       clean: "rimraf dist .parcel-cache",
     },
     dependencies: {
@@ -58,27 +59,7 @@ export function createPackageJson(projectPath, projectName, userChoices) {
   );
 }
 
-export function createHtmlFile(projectPath, projectName, userChoices) {
-  const srcDir = path.join(projectPath, "src");
-  const indexExt = userChoices.typescript ? "tsx" : "jsx";
-
-  const indexHtml = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${projectName}</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="./index.${indexExt}"></script>
-  </body>
-</html>
-`;
-  fs.writeFileSync(path.join(srcDir, "index.html"), indexHtml);
-}
-
-export function createParcelConfig(projectPath) {
+export function createParcelConfig(projectPath, userChoices) {
   const parcelrc = {
     extends: "@parcel/config-default",
     transformers: {

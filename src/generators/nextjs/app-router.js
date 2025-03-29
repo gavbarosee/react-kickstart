@@ -1,7 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
 
-import { setupStyling } from "../../shared/styling.js";
 import {
   getStyledComponentsApp,
   getTailwindApp,
@@ -20,25 +19,22 @@ export function createAppRouterStructure(
 
   createLayoutFile(appDir, projectName, userChoices, ext);
 
-  // Create page file using shared component templates
-  const pageContent = getStyledComponentsApp(ext, "nextjs", true);
+  let pageContent;
+
   if (userChoices.styling === "styled-components") {
-    const pageContent = getStyledComponentsApp(ext, "nextjs", true);
-    fs.writeFileSync(path.join(appDir, `page.${ext}`), pageContent);
+    pageContent = getStyledComponentsApp(ext, "nextjs", true);
   } else if (userChoices.styling === "tailwind") {
-    const pageContent = getTailwindApp(ext, "nextjs", true);
-    fs.writeFileSync(path.join(appDir, `page.${ext}`), pageContent);
+    pageContent = getTailwindApp(ext, "nextjs", true);
   } else {
-    const pageContent = getBasicCssApp(ext, "nextjs", true);
-    fs.writeFileSync(path.join(appDir, `page.${ext}`), pageContent);
+    pageContent = getBasicCssApp(ext, "nextjs", true);
   }
 
-  // Setup Tailwind if needed (using shared module)
+  fs.writeFileSync(path.join(appDir, `page.${ext}`), pageContent);
+
   if (userChoices.styling === "tailwind") {
-    setupStyling(projectPath, { ...userChoices, nextRouting: "app" }, "nextjs");
+    setupTailwindForNextjs(projectPath, "app");
   }
 
-  // Create API route
   createApiRoute(appDir, userChoices);
 }
 
@@ -97,4 +93,45 @@ function createApiRoute(appDir, userChoices) {
     path.join(helloDir, `route.${userChoices.typescript ? "ts" : "js"}`),
     routeHandler
   );
+}
+
+function setupTailwindForNextjs(projectPath, routingType) {
+  const cssDir =
+    routingType === "app"
+      ? path.join(projectPath, "app")
+      : path.join(projectPath, "styles");
+  fs.ensureDirSync(cssDir);
+
+  const cssContent = `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+`;
+  fs.writeFileSync(path.join(cssDir, "globals.css"), cssContent);
+
+  const tailwindConfig = `/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+`;
+  fs.writeFileSync(
+    path.join(projectPath, "tailwind.config.js"),
+    tailwindConfig
+  );
+
+  const postcssConfig = `module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+`;
+  fs.writeFileSync(path.join(projectPath, "postcss.config.js"), postcssConfig);
 }

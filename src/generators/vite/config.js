@@ -57,37 +57,57 @@ export function createPackageJson(projectPath, projectName, userChoices) {
   );
 }
 
-export function createHtmlFile(projectPath, projectName, userChoices) {
-  const fileExt = userChoices.typescript ? "tsx" : "jsx";
-  const indexHtml = `<!doctype html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>${projectName}</title>
-    </head>
-    <body>
-      <div id="root"></div>
-      <script type="module" src="/src/main.${fileExt}"></script>
-    </body>
-  </html>
-  `;
-  fs.writeFileSync(path.join(projectPath, "index.html"), indexHtml);
-}
-
 export function createViteConfig(projectPath, userChoices) {
   const configExt = userChoices.typescript ? "ts" : "js";
+
   const viteConfig = `import { defineConfig } from 'vite';
-  import react from '@vitejs/plugin-react';
-  
-  // https://vitejs.dev/config/
-  export default defineConfig({
-    plugins: [react()],
-  });
-  `;
+import react from '@vitejs/plugin-react';
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  server: {
+    open: true, // Auto-open browser on dev start
+  }
+});
+`;
   fs.writeFileSync(
     path.join(projectPath, `vite.config.${configExt}`),
     viteConfig
+  );
+
+  if (userChoices.styling === "tailwind") {
+    createPostcssConfig(projectPath);
+    createTailwindConfig(projectPath);
+  }
+}
+
+function createPostcssConfig(projectPath) {
+  const postcssConfig = `export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  }
+}
+`;
+  fs.writeFileSync(path.join(projectPath, "postcss.config.js"), postcssConfig);
+}
+
+function createTailwindConfig(projectPath) {
+  const tailwindConfig = `/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+`;
+  fs.writeFileSync(
+    path.join(projectPath, "tailwind.config.js"),
+    tailwindConfig
   );
 }

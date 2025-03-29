@@ -1,14 +1,5 @@
-// src/generators/nextjs/pages-router.js
 import fs from "fs-extra";
 import path from "path";
-
-// Import shared modules
-import { setupStyling } from "../../shared/styling.js";
-import {
-  getStyledComponentsApp,
-  getTailwindApp,
-  getBasicCssApp,
-} from "../../shared/components.js";
 
 export function createPagesRouterStructure(
   projectPath,
@@ -25,24 +16,19 @@ export function createPagesRouterStructure(
 
   const ext = userChoices.typescript ? "tsx" : "jsx";
 
-  // Create _app file
   createAppFile(pagesDir, userChoices, ext);
 
-  // Create _document file if using styled-components
   if (userChoices.styling === "styled-components") {
     createDocumentFile(pagesDir, ext);
   }
 
-  // Create index file using shared component templates
   const indexContent = getPageContent(userChoices, ext);
   fs.writeFileSync(path.join(pagesDir, `index.${ext}`), indexContent);
 
-  // Setup Tailwind if needed (using shared module)
   if (userChoices.styling === "tailwind") {
-    setupStyling(projectPath, userChoices, "nextjs");
+    setupTailwindForNextjs(projectPath, "pages");
   }
 
-  // Create API route
   createApiRoute(apiDir, userChoices);
 }
 
@@ -128,10 +114,48 @@ function createApiRoute(apiDir, userChoices) {
   );
 }
 
-function getPageContent(userChoices, fileExt) {
-  // Special case for Next.js pages - these aren't standard components
-  // so we need additional Next.js-specific imports and structure
+function setupTailwindForNextjs(projectPath, routingType) {
+  const cssDir =
+    routingType === "app"
+      ? path.join(projectPath, "app")
+      : path.join(projectPath, "styles");
+  fs.ensureDirSync(cssDir);
 
+  const cssContent = `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+`;
+  fs.writeFileSync(path.join(cssDir, "globals.css"), cssContent);
+
+  const tailwindConfig = `/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+`;
+  fs.writeFileSync(
+    path.join(projectPath, "tailwind.config.js"),
+    tailwindConfig
+  );
+
+  const postcssConfig = `module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+`;
+  fs.writeFileSync(path.join(projectPath, "postcss.config.js"), postcssConfig);
+}
+
+function getPageContent(userChoices, fileExt) {
   if (userChoices.styling === "styled-components") {
     return `import Head from 'next/head';
 import styled from 'styled-components';

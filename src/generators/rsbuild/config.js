@@ -6,6 +6,7 @@ export function createPackageJson(projectPath, projectName, userChoices) {
     name: projectName,
     version: "0.1.0",
     private: true,
+    type: "module",
     scripts: {
       dev: "rsbuild dev",
       build: "rsbuild build",
@@ -74,24 +75,35 @@ export function createHtmlFile(projectPath, projectName) {
 
 export function createRsbuildConfig(projectPath, userChoices) {
   const configExt = userChoices.typescript ? "ts" : "js";
+  const fileExt = userChoices.typescript ? "tsx" : "jsx";
+
   const rsbuildConfig = `import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 
 export default defineConfig({
   plugins: [pluginReact()],
+  source: {
+    entry: {
+      index: './src/index.${fileExt}'
+    }
+  },
+  dev: {
+    port: 8080,
+    startUrl: true, // Automatically open browser
+  },
+  html: {
+    title: '${path.basename(projectPath)}'
+  },
   ${
     userChoices.styling === "tailwind"
       ? `tools: {
-    postcss: (config) => {
-      const tailwindcss = require('tailwindcss');
-      const autoprefixer = require('autoprefixer');
-      
-      config.postcssOptions = {
-        plugins: [tailwindcss, autoprefixer],
-      };
-      
-      return config;
-    },
+    postcss: {
+      // Use direct plugins array which is easier in ESM context
+      plugins: [
+        'tailwindcss',
+        'autoprefixer',
+      ]
+    }
   },`
       : ""
   }
