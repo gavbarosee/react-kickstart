@@ -5,11 +5,14 @@ import {
   createPackageJson,
   createHtmlFile,
   createViteConfig,
-  setupLinting,
 } from "./config.js";
-import { createSourceFiles } from "./components.js";
-import { setupStyling } from "./styling.js";
-import { setupTypeScript } from "./typescript.js";
+import {
+  createSourceFiles,
+  createDirectoryStructure,
+} from "../../shared/file-generation.js";
+import { setupStyling } from "../../shared/styling.js";
+import { setupLinting } from "../../shared/linting.js";
+import { setupTypeScript } from "../../shared/typescript.js";
 
 export default async function generateViteProject(
   projectPath,
@@ -38,10 +41,4 @@ export default async function generateViteProject(
   }
 
   return true;
-}
-
-function createDirectoryStructure(projectPath) {
-  const srcDir = path.join(projectPath, "src");
-  fs.ensureDirSync(srcDir);
-  fs.ensureDirSync(path.join(projectPath, "public"));
 }
