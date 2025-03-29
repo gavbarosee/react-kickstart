@@ -461,9 +461,7 @@ export async function promptUser() {
 
     history.push("editorOptions");
 
-    // set autoStart to true by default and use default browser
     answers.autoStart = true;
-    answers.browser = "default";
 
     refreshDisplay();
     console.log(

@@ -36,30 +36,6 @@ export function progressBar(percentage, label = "", size = 30) {
   }
 }
 
-export function countPackages(packageJsonPath) {
-  try {
-    const packageData = fs.readJsonSync(packageJsonPath);
-    const dependencies = Object.keys(packageData.dependencies || {}).length;
-    const devDependencies = Object.keys(
-      packageData.devDependencies || {}
-    ).length;
-
-    // count peerDependencies if present
-    const peerDependencies = Object.keys(
-      packageData.peerDependencies || {}
-    ).length;
-
-    // count direct dependencies plus typically installed sub-dependencies for a more realistic count
-    // React projects typically have 3-4x more actual packages than direct dependencies
-    const totalPackages = dependencies + devDependencies + peerDependencies;
-    const estimatedTotal = totalPackages * 2.5; // More realistic estimate
-
-    return Math.round(estimatedTotal);
-  } catch (err) {
-    return 20; // default fallback number for a typical small React project
-  }
-}
-
 export function fileGenerationInfo(projectPath) {
   try {
     // count files and get approximate size
@@ -189,68 +165,6 @@ export function categorizeDependencies(packageJsonPath) {
     // return minimal info if package.json can't be read
     return [{ category: "Dependencies", deps: "package.json dependencies" }];
   }
-}
-
-// display estimated time
-export function displayEstimatedTime(seconds) {
-  console.log(`  ⏱️ Estimated time remaining: ${chalk.cyan(seconds + "s")}`);
-  console.log();
-}
-
-// display detailed Git setup information
-export function displayGitSetup(hasLinting, framework, typescript) {
-  console.log("  🔄 Initializing Git repository");
-  console.log("    → Created .gitignore with framework-specific patterns");
-
-  if (
-    framework === "vite" ||
-    framework === "parcel" ||
-    framework === "rsbuild"
-  ) {
-    console.log(
-      `    → Added ${chalk.cyan("dist/")} and ${chalk.cyan(
-        ".cache/"
-      )} to .gitignore`
-    );
-  } else if (framework === "nextjs") {
-    console.log(
-      `    → Added ${chalk.cyan(".next/")} and ${chalk.cyan(
-        "out/"
-      )} to .gitignore`
-    );
-  }
-
-  console.log("    → Added node_modules/ and environment files to .gitignore");
-  console.log();
-}
-
-// display detailed editor setup information
-export function displayEditorSetup(editor, framework, styling, typescript) {
-  console.log(
-    `  🧰 Setting up ${
-      editor === "vscode" ? "VS Code" : "Cursor"
-    } configuration`
-  );
-
-  if (editor === "vscode" || editor === "cursor") {
-    console.log(
-      "    → Added .vscode/extensions.json with recommended extensions"
-    );
-
-    if (typescript) {
-      console.log("    → Suggested TypeScript and React extensions");
-    }
-
-    if (styling === "tailwind") {
-      console.log("    → Configured settings.json with Tailwind IntelliSense");
-    } else if (styling === "styled-components") {
-      console.log("    → Suggested styled-components syntax highlighting");
-    }
-
-    console.log("    → Added debugging configuration for React");
-  }
-
-  console.log();
 }
 
 // get structure information based on framework

@@ -1,49 +1,9 @@
-// Enhanced and simplified version of startProject function
 import execa from "execa";
 import chalk from "chalk";
 import open from "open";
 import ora from "ora";
 import path from "path";
 import { getFrameworkInfo } from "./completion.js";
-
-function getBrowserLaunchOptions(browserChoice) {
-  // map user-friendly names to what the 'open' package expects
-  const browserMap = {
-    default: undefined, // use system default
-    chrome: {
-      darwin: ["google chrome"], // macOS
-      win32: ["chrome"], // windows
-      linux: ["google-chrome"], // linux
-    },
-    firefox: {
-      darwin: ["firefox"],
-      win32: ["firefox"],
-      linux: ["firefox"],
-    },
-    safari: {
-      darwin: ["safari"],
-    },
-    edge: {
-      win32: ["msedge"],
-    },
-  };
-
-  // if it's the default browser, return undefined to let 'open' use the system default
-  if (browserChoice === "default") {
-    return undefined;
-  }
-
-  // get platform-specific browser names
-  const platformBrowsers = browserMap[browserChoice]?.[process.platform];
-
-  // if we have a mapping for this browser on this platform
-  if (platformBrowsers && platformBrowsers.length > 0) {
-    return { app: { name: platformBrowsers } };
-  }
-
-  // fallback - try using the browser name directly
-  return { app: { name: browserChoice } };
-}
 
 export async function startProject(projectPath, userChoices) {
   const spinner = ora({
