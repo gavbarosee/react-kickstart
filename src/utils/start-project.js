@@ -1,7 +1,9 @@
+// Enhanced and simplified version of startProject function
 import execa from "execa";
 import chalk from "chalk";
 import open from "open";
 import ora from "ora";
+import path from "path";
 import { getFrameworkInfo } from "./completion.js";
 
 function getBrowserLaunchOptions(browserChoice) {
@@ -44,8 +46,6 @@ function getBrowserLaunchOptions(browserChoice) {
 }
 
 export async function startProject(projectPath, userChoices) {
-  if (!userChoices.autoStart) return;
-
   const spinner = ora({
     text: `Starting development server...`,
     color: "green",
@@ -76,41 +76,20 @@ export async function startProject(projectPath, userChoices) {
 
     const subprocess = execa(cmd, args, {
       cwd: projectPath,
-      stdio: "inherit",
-      shell: true,
+      stdio: ["inherit", "pipe", "pipe"],
     });
 
     // after a short delay to let the server start, open the browser
     setTimeout(async () => {
-      const browserName =
-        userChoices.browser === "default"
-          ? "default browser"
-          : userChoices.browser;
-
-      let appOptions = undefined;
-
-      if (userChoices.browser !== "default") {
-        // map browser names to what the 'open' package expects
-        const browserMap = {
-          chrome: process.platform === "darwin" ? "google chrome" : "chrome",
-          firefox: "firefox",
-          safari: "safari",
-          edge: "microsoft-edge",
-        };
-
-        appOptions = {
-          app: { name: browserMap[userChoices.browser] || userChoices.browser },
-        };
-      }
-
+      // Always use default browser
       try {
-        await open(devUrl, appOptions);
+        await open(devUrl);
         // add a small delay to see if we get an error
         await new Promise((resolve) => setTimeout(resolve, 500));
       } catch (err) {
         console.log(
           chalk.yellow(
-            `\nCouldn't open ${browserName}. It might not be installed or properly configured.`
+            `\nCouldn't open your default browser. It might not be installed or properly configured.`
           )
         );
         console.log(
@@ -130,8 +109,21 @@ export async function startProject(projectPath, userChoices) {
     spinner.fail(`Failed to start development server`);
     console.error(chalk.red(`Error: ${err.message || err}`));
     console.log(
-      chalk.cyan("You can start it manually with the commands shown above.")
+      chalk.cyan(
+        `\nYou can start it manually by navigating to the project directory and running:`
+      )
     );
+
+    const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
+    const devCommand =
+      userChoices.framework === "parcel" && userChoices.packageManager === "npm"
+        ? "npm start"
+        : `${pmRun} dev`;
+
+    console.log(chalk.bold(`  cd ${path.basename(projectPath || ".")}`));
+    console.log(chalk.bold(`  ${devCommand}`));
+    console.log();
+
     return null;
   }
 }

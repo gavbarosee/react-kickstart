@@ -172,18 +172,9 @@ export function generateCompletionSummary(
     `   ${chalk.cyan("Name:")} ${chalk.bold(projectName)}`,
     `   ${chalk.cyan("Location:")} ${projectPath}`,
     `   ${chalk.cyan("Size:")} ${projectSizeText}`,
-    `   ${chalk.cyan("Auto-Start:")} ${
-      userChoices.autoStart ? chalk.green("Yes") : chalk.red("No")
-    }`,
-    ...(userChoices.autoStart
-      ? [
-          `   ${chalk.cyan("Browser:")} ${chalk.blue(
-            userChoices.browser === "default"
-              ? "System Default"
-              : userChoices.browser
-          )}`,
-        ]
-      : []),
+    `   ${chalk.cyan("Auto-Start:")} ${chalk.green(
+      "Yes (in default browser)"
+    )}`,
   ].join("\n");
 
   // STEP 2: next steps with commands
@@ -195,33 +186,26 @@ export function generateCompletionSummary(
 
   let cmdIndex = 2;
 
-  if (userChoices.autoStart) {
-    const browserName =
-      userChoices.browser === "default"
-        ? "your default browser"
-        : userChoices.browser;
-
-    commandLines.push(
-      `   ${chalk.bold(
-        `${cmdIndex}️⃣ `
-      )} Development server will start automatically`
-    );
-    commandLines.push(
-      `      ${chalk.gray(
-        `→ Opening ${browserName} to http://localhost:${frameworkInfo.port}`
-      )}`
-    );
-    commandLines.push("");
-    cmdIndex++;
-  }
+  commandLines.push(
+    `   ${chalk.bold(
+      `${cmdIndex}️⃣ `
+    )} Development server starting automatically`
+  );
+  commandLines.push(
+    `      ${chalk.gray(
+      `→ Opening your default browser to http://localhost:${frameworkInfo.port}`
+    )}`
+  );
+  commandLines.push("");
+  cmdIndex++;
 
   if (commandExamples.dev) {
     commandLines.push(
-      `   ${chalk.bold(`${cmdIndex}️⃣ `)} Start development server`
+      `   ${chalk.bold(`${cmdIndex}️⃣ `)} Manual server control`
     );
     commandLines.push(
       `      ${chalk.cyan(`$ ${commandExamples.dev.command}`)} ${chalk.gray(
-        `→ ${commandExamples.dev.description}`
+        `→ Restart development server if needed`
       )}`
     );
     commandLines.push("");

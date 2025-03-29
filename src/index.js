@@ -115,9 +115,7 @@ export async function createApp(projectDirectory, options = {}) {
       );
       console.log(completionSummary);
 
-      if (userChoices.autoStart) {
-        await startProject(projectPath, userChoices);
-      }
+      await startProject(projectPath, userChoices);
     } catch (err) {
       handleError(err, options.verbose);
     }
