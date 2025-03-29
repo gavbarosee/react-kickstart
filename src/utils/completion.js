@@ -3,46 +3,6 @@ import figures from "figures";
 import path from "path";
 import fs from "fs-extra";
 
-function estimatePackageSize(projectPath) {
-  try {
-    const packageJsonPath = path.join(projectPath, "package.json");
-    const packageData = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-
-    const dependencies = Object.keys(packageData.dependencies || {}).length;
-    const devDependencies = Object.keys(
-      packageData.devDependencies || {}
-    ).length;
-    const totalPackages = dependencies + devDependencies;
-
-    // estimate size (very rough approximation)
-    return totalPackages * 4; // ~4MB per package on average
-  } catch (error) {
-    console.error("Error reading package.json:", error.message);
-    return null;
-  }
-}
-
-function getProjectMetrics(projectPath) {
-  try {
-    const estimatedSize = estimatePackageSize(projectPath);
-
-    return {
-      totalPackages,
-      dependencies,
-      devDependencies,
-      estimatedSize: `~${estimatedSize}MB`,
-    };
-  } catch (err) {
-    return {
-      totalPackages: "N/A",
-      dependencies: "N/A",
-      devDependencies: "N/A",
-      estimatedSize: "N/A",
-    };
-  }
-}
-
-// get framework-specific information
 export function getFrameworkInfo(framework) {
   const info = {
     vite: {
@@ -93,7 +53,7 @@ export function getFrameworkInfo(framework) {
   );
 }
 
-// styling-specific information
+// Other helper functions (unchanged)
 function getStylingInfo(styling) {
   const info = {
     tailwind: {
@@ -127,7 +87,6 @@ function getStylingInfo(styling) {
   );
 }
 
-// js or ts specific information
 function getLanguageInfo(typescript) {
   if (typescript) {
     return {
@@ -148,7 +107,6 @@ function getLanguageInfo(typescript) {
   };
 }
 
-// generate command examples based on package manager and framework
 function getCommandExamples(packageManager, framework) {
   const pmRun = packageManager === "yarn" ? "yarn" : "npm run";
   const devCommand =
@@ -184,7 +142,6 @@ function getCommandExamples(packageManager, framework) {
   };
 }
 
-// generate the complete post-creation summary
 export function generateCompletionSummary(
   projectPath,
   projectName,
@@ -192,7 +149,6 @@ export function generateCompletionSummary(
   vulnerabilities,
   packageCount = null
 ) {
-  const metrics = getProjectMetrics(projectPath);
   const frameworkInfo = getFrameworkInfo(userChoices.framework);
   const stylingInfo = getStylingInfo(userChoices.styling);
   const languageInfo = getLanguageInfo(userChoices.typescript);
@@ -200,20 +156,22 @@ export function generateCompletionSummary(
     userChoices.packageManager,
     userChoices.framework
   );
-  const auditFixCommand =
-    userChoices.packageManager === "yarn" ? "yarn audit fix" : "npm audit fix";
-  const auditCommand =
-    userChoices.packageManager === "yarn" ? "yarn audit" : "npm audit";
 
-  // STEP 1: project success header
+  // get project size in MB (approximate)
+  let projectSizeText = "N/A";
+  if (packageCount) {
+    // very rough estimate: each package ~200KB on average
+    const approximateSizeMB = Math.round(packageCount * 0.2);
+    projectSizeText = `~${packageCount} packages (${approximateSizeMB}MB)`;
+  }
+
+  // STEP 1: project success header with updated size info
   const successHeader = [
     "",
     chalk.bgGreen(`${figures.tick} Project Successfully Created!`),
     `   ${chalk.cyan("Name:")} ${chalk.bold(projectName)}`,
     `   ${chalk.cyan("Location:")} ${projectPath}`,
-    `   ${chalk.cyan("Size:")} ${
-      packageCount ? `~${packageCount} packages` : "N/A"
-    }`,
+    `   ${chalk.cyan("Size:")} ${projectSizeText}`,
     `   ${chalk.cyan("Auto-Start:")} ${
       userChoices.autoStart ? chalk.green("Yes") : chalk.red("No")
     }`,
@@ -318,9 +276,15 @@ export function generateCompletionSummary(
   ].join("\n");
 
   // STEP 5: security notice (if any)
+  const auditFixCommand =
+    userChoices.packageManager === "yarn" ? "yarn audit fix" : "npm audit fix";
+  const auditCommand =
+    userChoices.packageManager === "yarn" ? "yarn audit" : "npm audit";
+
   const securitySection =
     vulnerabilities && vulnerabilities.length > 0
       ? [
+          "",
           chalk.bgYellow(
             `${figures.pointer} Security Notice: ${vulnerabilities.reduce(
               (sum, v) => sum + v.count,
@@ -351,18 +315,6 @@ export function generateCompletionSummary(
           )}`,
         ].join("\n")
       : "";
-  // STEP 6: ready to go
-  const readyToGoSection = [
-    // "",
-    // chalk.green(`Ready to go! Run:`),
-    // "",
-    // `   ${chalk.cyan.dim(
-    //   `$ cd ${projectName} && ${commandExamples.dev.command}`
-    // )}`,
-    // "",
-    // chalk.green(`Happy hacking! 🚀`),
-    // "",
-  ].join("\n");
 
   return [
     securitySection,
@@ -370,7 +322,6 @@ export function generateCompletionSummary(
     nextStepsSection,
     tipsSection,
     docsSection,
-    readyToGoSection,
   ]
     .filter((section) => section)
     .join("\n");

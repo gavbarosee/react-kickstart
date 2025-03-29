@@ -2,8 +2,7 @@ import execa from "execa";
 import fs from "fs-extra";
 import path from "path";
 import ora from "ora";
-import { error } from "./logger.js";
-import { displayGitSetup } from "./enhanced-logger.js";
+import { log, error } from "./logger.js";
 
 export async function initGit(projectPath, userChoices) {
   const { framework, typescript, linting, styling } = userChoices || {};
@@ -24,41 +23,92 @@ export async function initGit(projectPath, userChoices) {
 
     await execa("git", ["init"], { cwd: projectPath });
 
-    // create .gitignore file if it doesn't exist
-    const gitignorePath = path.join(projectPath, ".gitignore");
-    if (!fs.existsSync(gitignorePath)) {
-      const gitignoreContent = `
-# dependencies
+    // framework-specific gitignore patterns
+    const frameworkIgnores = {
+      vite: ["# Vite build output", "/dist/", "*.local", ""],
+      nextjs: [
+        "# Next.js build output",
+        "/.next/",
+        "/out/",
+        "next-env.d.ts",
+        "",
+      ],
+      parcel: [
+        "# Parcel build output and cache",
+        "/dist/",
+        "/.parcel-cache/",
+        ".cache/",
+        "",
+      ],
+      rsbuild: ["# Rsbuild build output and cache", "/dist/", "/.rsbuild/", ""],
+    };
+
+    const gitignoreContent = `# dependencies
 /node_modules
 /.pnp
 .pnp.js
+.yarn/install-state.gz
 
 # testing
 /coverage
 
-# production
-/build
-/dist
-${framework === "nextjs" ? "/.next/\n/out/" : ""}
-${framework === "parcel" ? "/.parcel-cache/" : ""}
+${frameworkIgnores[framework]?.join("\n") || "# build output\n/dist/\n"}
 
 # misc
 .DS_Store
+.env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
+# logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 `;
-      fs.writeFileSync(gitignorePath, gitignoreContent.trim());
-    }
+
+    fs.writeFileSync(
+      path.join(projectPath, ".gitignore"),
+      gitignoreContent.trim()
+    );
 
     spinner.stop();
 
-    displayGitSetup(linting, framework, typescript);
+    console.log("  🔄 Initializing Git repository");
+    console.log("    → Created .gitignore with framework-specific patterns");
+
+    if (frameworkIgnores[framework]) {
+      const frameworkName =
+        {
+          vite: "Vite",
+          nextjs: "Next.js",
+          parcel: "Parcel",
+          rsbuild: "Rsbuild",
+        }[framework] || framework;
+
+      console.log(
+        `    → Added ${frameworkName}-specific build artifacts to .gitignore`
+      );
+    }
+
+    console.log(
+      "    → Added node_modules/ and environment files to .gitignore"
+    );
+    console.log();
 
     return true;
   } catch (err) {

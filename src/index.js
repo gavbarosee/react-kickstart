@@ -14,7 +14,6 @@ import { startProject } from "./utils/start-project.js";
 
 export async function createApp(projectDirectory, options = {}) {
   try {
-    // if no project directory is provided, use current directory
     const projectPath = projectDirectory
       ? path.resolve(process.cwd(), projectDirectory)
       : process.cwd();
@@ -44,23 +43,19 @@ export async function createApp(projectDirectory, options = {}) {
     }
 
     try {
-      // use step-by-step prompting system when not using --yes flag
       const userChoices = options.yes
         ? getDefaultChoices()
         : await promptUser();
 
-      // add summary and confirmation step (skip if --no-summary or -y flag is used)
       if (!options.yes && options.summary !== false) {
         divider();
 
-        // show summary and ask for confirmation
         const confirmed = await showSummaryPrompt(
           projectPath,
           projectName,
           userChoices
         );
 
-        // exit if user does not confirm
         if (!confirmed) {
           console.log(chalk.yellow("Setup canceled. No changes were made."));
           process.exit(0);
@@ -70,7 +65,7 @@ export async function createApp(projectDirectory, options = {}) {
       divider();
       initSteps(3);
 
-      // STEP 1: generate project files with enhanced output
+      // STEP 1: generate project files
       nextStep("Generating project files");
       console.log();
 
@@ -82,23 +77,19 @@ export async function createApp(projectDirectory, options = {}) {
         );
       }
 
-      // stop any running spinner before starting the next step
-      if (typeof spinner !== "undefined" && spinner.isSpinning) {
-        spinner.stop();
-      }
-
       await generateProject(projectPath, projectName, userChoices);
 
-      // STEP 2: install dependencies with enhanced output
+      // STEP 2: install dependencies - pass framework info for better progress estimation
       nextStep("Installing dependencies");
       console.log();
 
       const installResult = await installDependencies(
         projectPath,
-        userChoices.packageManager
+        userChoices.packageManager,
+        userChoices.framework
       );
 
-      // STEP 3: additional setups with enhanced output
+      // STEP 3: additional setups
       nextStep("Finalizing project setup");
       console.log();
 
@@ -106,12 +97,10 @@ export async function createApp(projectDirectory, options = {}) {
         await initGit(projectPath, userChoices);
       }
 
-      // Open in editor if selected - pass userChoices for enhanced logging
       if (userChoices.openEditor) {
         await openEditor(projectPath, userChoices.editor, userChoices);
       }
 
-      // Add readme, run initial processing, etc.
       console.log(`  ✅ Project successfully set up`);
       console.log();
 

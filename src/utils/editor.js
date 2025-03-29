@@ -2,14 +2,14 @@ import execa from "execa";
 import fs from "fs-extra";
 import path from "path";
 import ora from "ora";
-import { warning } from "./logger.js";
-import { displayEditorSetup } from "./enhanced-logger.js";
+import { log, warning } from "./logger.js";
 
 export async function openEditor(projectPath, editor = "vscode", userChoices) {
   const { framework, typescript, styling } = userChoices || {};
 
+  const editorName = editor === "vscode" ? "VS Code" : "Cursor";
   const spinner = ora({
-    text: `Opening project in ${editor}...`,
+    text: `Opening project in ${editorName}...`,
     color: "magenta",
     spinner: "simpleDotsScrolling",
   }).start();
@@ -30,21 +30,34 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
         return false;
     }
 
-    // editor configuration files
     createEditorConfig(projectPath, editor, userChoices);
 
-    // stop spinner to show detailed setup info
     spinner.stop();
 
-    // show detailed editor setup information
-    displayEditorSetup(editor, framework, styling, typescript);
+    console.log(`  🧰 Setting up ${editorName} configuration`);
+    console.log(
+      "    → Added .vscode/extensions.json with recommended extensions"
+    );
+
+    if (typescript) {
+      console.log("    → Suggested TypeScript and React extensions");
+    }
+
+    if (styling === "tailwind") {
+      console.log("    → Configured settings.json with Tailwind IntelliSense");
+    } else if (styling === "styled-components") {
+      console.log("    → Suggested styled-components syntax highlighting");
+    }
+
+    console.log("    → Added debugging configuration for React");
+    console.log();
 
     try {
       await execa(command, args);
       return true;
     } catch (err) {
       warning(
-        `Couldn't open ${editor}. It might not be installed or not in PATH.`
+        `Couldn't open ${editorName}. It might not be installed or not in PATH.`
       );
       warning(
         `To open your project in ${editor}, run: ${command} ${projectPath}`
@@ -52,18 +65,17 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
       return false;
     }
   } catch (err) {
-    spinner.fail(`Failed to open project in ${editor}`);
+    spinner.fail(`Failed to open project in ${editorName}`);
     return false;
   }
 }
 
-// create editor config files
 function createEditorConfig(projectPath, editor, userChoices) {
   if (editor !== "vscode" && editor !== "cursor") return;
 
   const { typescript, styling, framework } = userChoices || {};
 
-  // .vscode directory
+  // create .vscode directory (works for both VS Code and Cursor)
   const vscodeDir = path.join(projectPath, ".vscode");
   fs.ensureDirSync(vscodeDir);
 
@@ -79,7 +91,7 @@ function createEditorConfig(projectPath, editor, userChoices) {
     );
   }
 
-  // add styling extensions
+  // styling extensions
   if (styling === "tailwind") {
     extensions.recommendations.push("bradlc.vscode-tailwindcss");
   } else if (styling === "styled-components") {
@@ -88,24 +100,21 @@ function createEditorConfig(projectPath, editor, userChoices) {
     );
   }
 
-  // add basic framework-specific extensions
   if (framework === "vite") {
     extensions.recommendations.push("antfu.vite");
   } else if (framework === "nextjs") {
     extensions.recommendations.push("mskelton.next-js-snippets");
   }
 
-  // write extensions.json
   fs.writeJsonSync(path.join(vscodeDir, "extensions.json"), extensions, {
     spaces: 2,
   });
 
-  // create settings.json with editor settings
+  // settings.json with minimal editor settings
   const settings = {
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.codeActionsOnSave": {
-      "source.fixAll.eslint": true,
+      "source.fixAll.eslint": "explicit",
     },
   };
 
@@ -120,12 +129,20 @@ function createEditorConfig(projectPath, editor, userChoices) {
     }
   }
 
-  // write settings.json
   fs.writeJsonSync(path.join(vscodeDir, "settings.json"), settings, {
     spaces: 2,
   });
 
   // create launch.json for debugging
+  const launchPort =
+    framework === "nextjs"
+      ? 3000
+      : framework === "parcel"
+      ? 1234
+      : framework === "rsbuild"
+      ? 8080
+      : 5173; // default for Vite
+
   const launch = {
     version: "0.2.0",
     configurations: [
@@ -133,19 +150,11 @@ function createEditorConfig(projectPath, editor, userChoices) {
         type: "chrome",
         request: "launch",
         name: "Launch Chrome against localhost",
-        url:
-          framework === "nextjs"
-            ? "http://localhost:3000"
-            : framework === "parcel"
-            ? "http://localhost:1234"
-            : framework === "rsbuild"
-            ? "http://localhost:8080"
-            : "http://localhost:5173",
+        url: `http://localhost:${launchPort}`,
         webRoot: "${workspaceFolder}",
       },
     ],
   };
 
-  // write launch.json
   fs.writeJsonSync(path.join(vscodeDir, "launch.json"), launch, { spaces: 2 });
 }

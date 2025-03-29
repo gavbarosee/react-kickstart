@@ -1,17 +1,100 @@
-// src/utils/package-manager.js (updated version)
 import execa from "execa";
-import ora from "ora";
+import fs from "fs-extra";
 import path from "path";
+import ora from "ora";
+import chalk from "chalk";
 import { error } from "./logger.js";
-import {
-  categorizeDependencies,
-  stepSection,
-  progressBar,
-  displayEstimatedTime,
-  countPackages,
-} from "./enhanced-logger.js";
 
-export async function installDependencies(projectPath, packageManager = "npm") {
+export function countPackages(packageJsonPath) {
+  try {
+    const packageData = fs.readJsonSync(packageJsonPath);
+    const dependencies = Object.keys(packageData.dependencies || {}).length;
+    const devDependencies = Object.keys(
+      packageData.devDependencies || {}
+    ).length;
+    const totalDirectDeps = dependencies + devDependencies;
+
+    return Math.round(totalDirectDeps * 5);
+  } catch (err) {
+    return 25;
+  }
+}
+
+function createProgressBar(framework = "vite") {
+  let progress = 10;
+  let interval;
+
+  const settings = {
+    vite: {
+      interval: 300, // Update every 300ms
+      increment: 15, // Fast increments
+      description: "Fast installation",
+    },
+    rsbuild: {
+      interval: 300, // Update every 300ms
+      increment: 12, // Fairly fast increments
+      description: "Fast installation",
+    },
+    parcel: {
+      interval: 500, // Update every 500ms
+      increment: 3, // Slower increments
+      description: "Standard installation",
+    },
+    nextjs: {
+      interval: 500, // Update every 500ms
+      increment: 2, // Slowest increments
+      description: "Full-stack framework installation",
+    },
+  };
+
+  const config = settings[framework.toLowerCase()] || settings.vite;
+  const progressFinishMessage = config.description
+    ? ` (${config.description})`
+    : "";
+
+  const start = () => {
+    process.stdout.write(
+      `  📊 Installing packages${progressFinishMessage}: ${"░".repeat(30)} 0%\n`
+    );
+
+    let startTime = Date.now();
+    interval = setInterval(() => {
+      progress = Math.min(95, progress + config.increment / 3);
+
+      process.stdout.write("\x1b[1A"); // Move cursor up one line
+      process.stdout.write("\r\x1b[K"); // Clear the line
+
+      const barLength = Math.floor(progress / 3.33);
+      process.stdout.write(
+        `  📊 Installing packages${progressFinishMessage}: ${"█".repeat(
+          barLength
+        )}${"░".repeat(30 - barLength)} ${Math.floor(progress)}%\n`
+      );
+    }, config.interval);
+  };
+
+  return {
+    start,
+    complete: () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+
+      process.stdout.write("\x1b[1A"); // Move cursor up one line
+      process.stdout.write("\r\x1b[K"); // Clear the line
+      process.stdout.write(
+        `  📊 Installing packages: ${"█".repeat(30)} 100%\n\n`
+      );
+    },
+  };
+}
+
+export async function installDependencies(
+  projectPath,
+  packageManager = "npm",
+  framework = "vite"
+) {
   const spinner = ora({
     text: `Installing dependencies...`,
     color: "green",
@@ -26,34 +109,81 @@ export async function installDependencies(projectPath, packageManager = "npm") {
     console.log();
 
     const packageJsonPath = path.join(projectPath, "package.json");
-    const categorizedDeps = categorizeDependencies(packageJsonPath);
 
-    // change to "Project dependencies" instead of "Resolving dependencies"
-    stepSection(
-      "📥",
-      "Project dependencies:",
-      categorizedDeps.map(({ category, deps }) => ({
-        label: category + ":",
-        description: deps,
-      }))
-    );
+    const packageData = fs.readJsonSync(packageJsonPath);
+    const dependencies = Object.keys(packageData.dependencies || {});
+    const devDependencies = Object.keys(packageData.devDependencies || {});
 
-    progressBar(15, "Installing packages");
-    displayEstimatedTime(30); // est 30 seconds
+    const categories = {
+      "React ecosystem": dependencies.filter(
+        (dep) => dep.includes("react") || dep.includes("jsx")
+      ),
+      "UI frameworks": [...dependencies, ...devDependencies].filter(
+        (dep) =>
+          dep.includes("tailwind") ||
+          dep.includes("style") ||
+          dep.includes("css") ||
+          dep.includes("sass") ||
+          dep.includes("postcss")
+      ),
+      "Build tools": [...dependencies, ...devDependencies].filter(
+        (dep) =>
+          dep.includes("vite") ||
+          dep.includes("webpack") ||
+          dep.includes("babel") ||
+          dep.includes("parcel") ||
+          dep.includes("build") ||
+          dep.includes("rsbuild") ||
+          dep.includes("next")
+      ),
+      "Dev tools": devDependencies.filter(
+        (dep) =>
+          dep.includes("eslint") ||
+          dep.includes("prettier") ||
+          dep.includes("typescript") ||
+          dep.includes("test")
+      ),
+    };
 
-    spinner.start();
+    console.log("  📥 Project dependencies:");
 
-    // capture standard output and error
-    const { stdout, stderr } = await execa(installCmd, installArgs, {
-      cwd: projectPath,
-      stdio: ["inherit", "pipe", "pipe"], // only inherit stdin
+    Object.entries(categories).forEach(([category, deps]) => {
+      if (deps.length > 0) {
+        const displayedDeps = deps.slice(0, 3);
+        const remaining = deps.length > 3 ? deps.length - 3 : 0;
+
+        const formattedDeps = displayedDeps
+          .map(
+            (dep) =>
+              `${dep}@${
+                packageData.dependencies?.[dep] ||
+                packageData.devDependencies?.[dep]
+              }`
+          )
+          .join(", ");
+
+        console.log(
+          `     ${category}:`.padEnd(25) +
+            `✓ ${formattedDeps}${remaining ? ` (+${remaining} more)` : ""}`
+        );
+      }
     });
 
-    // parse output for vulnerabilities
+    console.log();
+
+    const progressBar = createProgressBar(framework);
+    progressBar.start();
+
+    const { stdout, stderr } = await execa(installCmd, installArgs, {
+      cwd: projectPath,
+      stdio: ["inherit", "pipe", "pipe"],
+    });
+
+    progressBar.complete();
+
     let vulnerabilities = [];
     const combinedOutput = stdout + "\n" + stderr;
 
-    // look for vulnerability message in the combined output
     const vulnMatch = combinedOutput.match(
       /found (\d+) (\w+) severity vulnerabilit(y|ies)/i
     );
@@ -69,19 +199,17 @@ export async function installDependencies(projectPath, packageManager = "npm") {
       }
     }
 
-    // get a more realistic package count
-    const totalPackages = countPackages(packageJsonPath);
-    spinner.stop();
+    const packageCount = countPackages(packageJsonPath);
 
     console.log(
-      `  ✅ Dependencies successfully installed (${totalPackages} packages)`
+      `  ✅ Dependencies successfully installed (${packageCount} packages)`
     );
     console.log();
 
     return {
       success: true,
       vulnerabilities: vulnerabilities.length > 0 ? vulnerabilities : null,
-      packageCount: totalPackages,
+      packageCount,
     };
   } catch (err) {
     spinner.fail("Failed to install dependencies");
