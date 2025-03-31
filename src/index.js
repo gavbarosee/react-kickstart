@@ -12,9 +12,29 @@ import { showSummaryPrompt } from "./utils/summary.js";
 import { generateCompletionSummary } from "./utils/completion.js";
 import { startProject } from "./utils/start-project.js";
 
-export async function createApp(projectDirectory, options = {}) {
+function cleanupProjectDirectory(projectPath, shouldCleanup = true) {
+  if (!shouldCleanup) return;
+
   try {
-    const projectPath = projectDirectory
+    if (fs.existsSync(projectPath)) {
+      fs.removeSync(projectPath);
+      console.log(
+        chalk.yellow(`\nCleaned up failed project at ${projectPath}`)
+      );
+    }
+  } catch (cleanupErr) {
+    console.error(
+      chalk.red(`Failed to clean up directory: ${cleanupErr.message}`)
+    );
+  }
+}
+
+export async function createApp(projectDirectory, options = {}) {
+  let projectPath = null;
+  let shouldCleanup = false;
+
+  try {
+    projectPath = projectDirectory
       ? path.resolve(process.cwd(), projectDirectory)
       : process.cwd();
 
@@ -32,14 +52,18 @@ export async function createApp(projectDirectory, options = {}) {
       process.exit(1);
     }
 
-    if (fs.existsSync(projectPath)) {
+    const directoryExists = fs.existsSync(projectPath);
+
+    if (directoryExists) {
       const files = fs.readdirSync(projectPath);
       if (files.length > 0) {
         error(`The directory ${chalk.green(projectPath)} is not empty.`);
         process.exit(1);
       }
     } else {
+      // clean up project on error
       fs.mkdirSync(projectPath, { recursive: true });
+      shouldCleanup = true;
     }
 
     try {
@@ -58,6 +82,9 @@ export async function createApp(projectDirectory, options = {}) {
 
         if (!confirmed) {
           console.log(chalk.yellow("Setup canceled. No changes were made."));
+          if (shouldCleanup) {
+            cleanupProjectDirectory(projectPath, shouldCleanup);
+          }
           process.exit(0);
         }
       }
@@ -89,6 +116,12 @@ export async function createApp(projectDirectory, options = {}) {
         userChoices.framework
       );
 
+      if (!installResult.success) {
+        error("Failed to install dependencies. Cleaning up...");
+        cleanupProjectDirectory(projectPath, shouldCleanup);
+        process.exit(1);
+      }
+
       // STEP 3: additional setups
       nextStep("Finalizing project setup");
       console.log();
@@ -117,19 +150,24 @@ export async function createApp(projectDirectory, options = {}) {
 
       await startProject(projectPath, userChoices);
     } catch (err) {
-      handleError(err, options.verbose);
+      handleError(err, options.verbose, projectPath, shouldCleanup);
     }
   } catch (err) {
-    handleError(err, options.verbose);
+    handleError(err, options.verbose, projectPath, shouldCleanup);
   }
 }
 
-function handleError(err, verbose) {
+function handleError(err, verbose, projectPath, shouldCleanup) {
   error("An error occurred during project setup:");
   error(err.message || err);
 
   if (verbose) {
     console.error(err);
+  }
+
+  // clean up the project directory
+  if (projectPath && shouldCleanup) {
+    cleanupProjectDirectory(projectPath, shouldCleanup);
   }
 
   console.log();
