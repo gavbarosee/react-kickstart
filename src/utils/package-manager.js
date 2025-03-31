@@ -218,6 +218,141 @@ export async function installDependencies(
   }
 }
 
+export async function installDependenciesWithRetry(
+  projectPath,
+  packageManager = "npm",
+  framework = "vite",
+  maxRetries = 3
+) {
+  let attempts = 0;
+  let result;
+
+  while (attempts < maxRetries) {
+    attempts++;
+
+    if (attempts > 1) {
+      console.log(
+        chalk.yellow(
+          `\nRetrying dependency installation (attempt ${attempts}/${maxRetries})...`
+        )
+      );
+    }
+
+    try {
+      result = await installDependencies(
+        projectPath,
+        packageManager,
+        framework
+      );
+      if (result.success) return result;
+    } catch (err) {
+      const errorMsg = err.message || String(err);
+
+      if (attempts >= maxRetries) {
+        break; // no more retries, will prompt user below
+      }
+
+      // contextual guidance based on error patterns
+      console.log(chalk.red(`\nDependency installation failed: ${errorMsg}`));
+
+      if (errorMsg.includes("ENOTFOUND") || errorMsg.includes("ETIMEDOUT")) {
+        console.log(
+          chalk.cyan(
+            "\nThis appears to be a network issue. Please check your internet connection."
+          )
+        );
+      } else if (
+        errorMsg.includes("ENOENT") &&
+        errorMsg.includes(packageManager)
+      ) {
+        console.log(
+          chalk.cyan(
+            `\nThe ${packageManager} command was not found. Make sure it's installed and in your PATH.`
+          )
+        );
+      } else if (
+        errorMsg.includes("EACCES") ||
+        errorMsg.includes("permission")
+      ) {
+        console.log(
+          chalk.cyan(
+            "\nThis appears to be a permissions issue. You might need to run as administrator."
+          )
+        );
+      }
+    }
+
+    // provide recovery options
+    const { action } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "action",
+        message: "How would you like to proceed?",
+        choices: [
+          { name: "Retry installation", value: "retry" },
+          {
+            name: `Switch to ${packageManager === "npm" ? "yarn" : "npm"}`,
+            value: "switch",
+          },
+          {
+            name: "Skip dependencies (project may not work properly)",
+            value: "skip",
+          },
+          { name: "Abort setup", value: "abort" },
+        ],
+      },
+    ]);
+
+    if (action === "retry") {
+      continue;
+    } else if (action === "switch") {
+      packageManager = packageManager === "npm" ? "yarn" : "npm";
+      console.log(chalk.cyan(`Switching to ${packageManager}...`));
+      continue;
+    } else if (action === "skip") {
+      console.log(
+        chalk.yellow(
+          "\nSkipping dependency installation. The project may not work properly."
+        )
+      );
+      return { success: true, skipped: true };
+    } else {
+      throw new Error("Setup aborted by user");
+    }
+  }
+
+  // final fallback after exhausting retries
+  if (!result || !result.success) {
+    console.log(
+      chalk.red("\nFailed to install dependencies after multiple attempts.")
+    );
+
+    const { finalAction } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "finalAction",
+        message:
+          "All installation attempts failed. How would you like to proceed?",
+        choices: [
+          {
+            name: "Continue without dependencies (project may not work)",
+            value: "continue",
+          },
+          { name: "Abort setup", value: "abort" },
+        ],
+      },
+    ]);
+
+    if (finalAction === "continue") {
+      return { success: true, skipped: true };
+    } else {
+      throw new Error("Dependency installation failed");
+    }
+  }
+
+  return result;
+}
+
 export function getPackageManagerCommand(packageManager) {
   if (packageManager === "yarn") {
     return {

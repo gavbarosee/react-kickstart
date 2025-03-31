@@ -6,7 +6,7 @@ import { promptUser, getDefaultChoices } from "./prompts.js";
 import generateProject from "./generators/index.js";
 import { initGit } from "./utils/git.js";
 import { openEditor } from "./utils/editor.js";
-import { installDependencies } from "./utils/package-manager.js";
+import { installDependenciesWithRetry } from "./utils/package-manager.js";
 import { error, initSteps, nextStep, divider } from "./utils/logger.js";
 import { showSummaryPrompt } from "./utils/summary.js";
 import { generateCompletionSummary } from "./utils/completion.js";
@@ -198,13 +198,19 @@ export async function createApp(projectDirectory, options = {}) {
       nextStep("Installing dependencies");
       console.log();
 
-      const installResult = await installDependencies(
+      const installResult = await installDependenciesWithRetry(
         projectPath,
         userChoices.packageManager,
         userChoices.framework
       );
 
-      if (!installResult.success) {
+      if (installResult.skipped) {
+        console.log(
+          chalk.yellow(
+            "⚠️ Dependency installation was skipped. Some features may not work properly."
+          )
+        );
+      } else if (!installResult.success) {
         error("Failed to install dependencies. Cleaning up...");
         cleanupProjectDirectory(projectPath, shouldCleanup);
         process.exit(1);
