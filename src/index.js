@@ -16,6 +16,29 @@ function cleanupProjectDirectory(projectPath, shouldCleanup = true) {
   if (!shouldCleanup) return;
 
   try {
+    // don't delete if it's not the directory we just created or if it's a root-like path
+    if (!projectPath || projectPath === "/" || projectPath === process.cwd()) {
+      console.error(
+        chalk.yellow(`\nSkipping cleanup for safety: ${projectPath}`)
+      );
+      return;
+    }
+
+    // extra safety: ensure the directory isn't too old (might not be user's generated one)
+    const stats = fs.statSync(projectPath);
+    const creationTime = new Date(stats.birthtime).getTime();
+    const now = new Date().getTime();
+    const fiveMinutesAgo = now - 5 * 60 * 1000; // 5 minutes in milliseconds
+
+    if (creationTime < fiveMinutesAgo) {
+      console.error(
+        chalk.yellow(
+          `\nSkipping cleanup of directory older than 5 minutes: ${projectPath}`
+        )
+      );
+      return;
+    }
+
     if (fs.existsSync(projectPath)) {
       fs.removeSync(projectPath);
       console.log(

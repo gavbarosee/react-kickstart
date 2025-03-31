@@ -58,6 +58,13 @@ export function fileGenerationInfo(projectPath) {
       }
     }
 
+    if (!fs.existsSync(projectPath)) {
+      console.log(
+        `  ⚠️ Project path '${projectPath}' doesn't exist to count files`
+      );
+      return;
+    }
+
     countFilesRecursive(projectPath);
 
     // convert to KB for readability
@@ -70,9 +77,17 @@ export function fileGenerationInfo(projectPath) {
     );
     console.log();
   } catch (err) {
-    // silently fail but return minimal information
-    console.log(`  📦 Project files generated successfully`);
+    // log the error but don't crash the application
+    console.log(`  ⚠️ Error calculating project stats: ${err.message}`);
+    console.log(
+      `  📦 Project files generated successfully but couldn't count them`
+    );
     console.log();
+
+    // if in verbose mode (tba later), show the stack trace
+    // if (verbose) {
+    //   console.error(err);
+    // }
   }
 }
 
