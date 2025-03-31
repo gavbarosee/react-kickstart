@@ -92,7 +92,7 @@ export async function createApp(projectDirectory, options = {}) {
     try {
       const userChoices = options.yes
         ? getDefaultChoices()
-        : await promptUser();
+        : await promptUser({ verbose: options.verbose });
 
       if (!options.yes && options.summary !== false) {
         divider();

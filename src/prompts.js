@@ -2,10 +2,22 @@ import inquirer from "inquirer";
 import chalk from "chalk";
 import figlet from "figlet";
 import { section } from "./utils/logger.js";
+import {
+  detectPackageManagers,
+  formatPackageManagerChoices,
+  getDefaultPackageManager,
+} from "./utils/package-manager-detection.js";
 
-export async function promptUser() {
+export async function promptUser(options = {}) {
+  const { verbose = false } = options;
   const answers = {};
   const history = [];
+
+  // Detect available package managers before showing prompts
+  const packageManagers = await detectPackageManagers({ verbose });
+
+  // Get default package manager
+  const defaultPackageManager = getDefaultPackageManager(packageManagers);
 
   // clear terminal and show header
   function refreshDisplay() {
@@ -107,18 +119,40 @@ export async function promptUser() {
     refreshDisplay();
     section(`Step 1/8: Package Manager`);
 
+    const choices = formatPackageManagerChoices(packageManagers);
+
+    // No available package managers and user chose not to proceed with npm
+    if (choices.length === 0) {
+      console.log(
+        chalk.red(
+          "No package managers detected. Please install Node.js or Yarn and try again."
+        )
+      );
+      process.exit(1);
+    }
+
+    if (history.length > 0) {
+      choices.push(new inquirer.Separator());
+      choices.push({
+        name: chalk.yellow("← Back to previous step"),
+        value: "BACK_OPTION",
+      });
+    }
+
     const { packageManager } = await inquirer.prompt([
       {
         type: "list",
         name: "packageManager",
         message: "Which package manager would you like to use?",
-        choices: [
-          { name: chalk.green("📦 npm"), value: "npm" },
-          { name: chalk.blue("🧶 yarn"), value: "yarn" },
-        ],
-        default: answers.packageManager || "npm",
+        choices: choices,
+        default: answers.packageManager || defaultPackageManager || "npm",
       },
     ]);
+
+    if (packageManager === "BACK_OPTION") {
+      history.pop();
+      return packageManagerPrompt();
+    }
 
     answers.packageManager = packageManager;
     history.push("packageManager");
