@@ -5,88 +5,82 @@ import ora from "ora";
 import path from "path";
 import { getFrameworkInfo } from "./completion.js";
 
-// global tracking of running processes
-const runningProcesses = new Set();
+let devProcess = null;
+let isShuttingDown = false;
 
-function cleanupAllProcesses() {
-  if (runningProcesses.size === 0) return;
+/**
+ * Cleanup function that properly terminates the development server
+ */
+function cleanupDevServer() {
+  if (!devProcess || isShuttingDown) return;
 
-  console.log(chalk.yellow("\nStopping development servers..."));
+  isShuttingDown = true;
+  console.log(chalk.yellow("\nStopping development server..."));
 
-  // try graceful termination first
-  for (const proc of runningProcesses) {
-    if (!proc.killed) {
-      try {
-        proc.kill("SIGTERM");
-      } catch (err) {
-        // ignore errors when attempting to kill
-      }
-    }
-  }
+  try {
+    // try graceful termination first with SIGTERM
+    if (!devProcess.killed) {
+      devProcess.kill("SIGTERM");
 
-  // set a timeout to force kill any processes that don't exit gracefully
-  setTimeout(() => {
-    let killCount = 0;
-    for (const proc of runningProcesses) {
-      if (!proc.killed) {
-        try {
-          proc.kill("SIGKILL");
-          killCount++;
-        } catch (err) {
-          // last resort: try to kill by process ID
+      // give it a moment to terminate gracefully, then force if needed
+      setTimeout(() => {
+        if (devProcess && !devProcess.killed) {
+          console.log(chalk.yellow("Forcing development server to stop..."));
           try {
-            if (proc.pid) {
-              process.kill(proc.pid, "SIGKILL");
-              killCount++;
+            devProcess.kill("SIGKILL");
+          } catch (err) {
+            // last resort attempt by PID
+            try {
+              if (devProcess.pid) {
+                process.kill(devProcess.pid, "SIGKILL");
+              }
+            } catch (killError) {
+              console.error(
+                chalk.red(`Unable to terminate process: ${killError.message}`)
+              );
             }
-          } catch (killError) {
-            // ignore final kill errors
           }
         }
-      }
+        devProcess = null;
+        isShuttingDown = false;
+      }, 2000);
     }
-
-    if (killCount > 0) {
-      console.log(
-        chalk.yellow(
-          `Force-killed ${killCount} processes that didn't terminate gracefully`
-        )
-      );
-    }
-
-    runningProcesses.clear();
-  }, 3000);
+  } catch (err) {
+    console.error(chalk.red(`Error stopping server: ${err.message}`));
+    devProcess = null;
+    isShuttingDown = false;
+  }
 }
 
-let handlersRegistered = false;
+/**
+ * Register process termination handlers
+ */
 function registerCleanupHandlers() {
-  if (handlersRegistered) return;
-
-  const terminationHandler = () => {
-    cleanupAllProcesses();
-
+  // clean up on terminal exit signals
+  process.on("SIGINT", () => {
+    cleanupDevServer();
     setTimeout(() => process.exit(0), 100);
-  };
+  });
 
-  process.on("SIGINT", terminationHandler);
-  process.on("SIGTERM", terminationHandler);
+  process.on("SIGTERM", () => {
+    cleanupDevServer();
+    setTimeout(() => process.exit(0), 100);
+  });
 
-  // Handle abnormal terminations
-  process.on("exit", cleanupAllProcesses);
+  // handle abnormal terminations
+  process.on("exit", cleanupDevServer);
 
   process.on("uncaughtException", (err) => {
     console.error(chalk.red(`Uncaught exception: ${err.message}`));
-    cleanupAllProcesses();
+    cleanupDevServer();
     setTimeout(() => process.exit(1), 100);
   });
 
   process.on("unhandledRejection", (reason) => {
     console.error(chalk.red(`Unhandled rejection: ${reason}`));
-    cleanupAllProcesses();
+    cleanupDevServer();
     setTimeout(() => process.exit(1), 100);
   });
-
-  handlersRegistered = true;
 }
 
 async function checkServerAndOpenBrowser(devUrl) {
@@ -163,7 +157,7 @@ async function checkServerAndOpenBrowser(devUrl) {
 }
 
 export async function startProject(projectPath, userChoices) {
-  // register cleanup handlers on first run
+  // register cleanup handlers only once
   registerCleanupHandlers();
 
   const spinner = ora({
@@ -194,36 +188,34 @@ export async function startProject(projectPath, userChoices) {
 
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // start the process and track it
-    const subprocess = execa(cmd, args, {
+    // start the process with improved tracking
+    devProcess = execa(cmd, args, {
       cwd: projectPath,
       stdio: ["inherit", "pipe", "pipe"],
       killSignal: "SIGTERM",
       cleanup: true,
+      // important: don't use detached mode to ensure process is killed with parent
       detached: false,
     });
 
-    // add to tracking set
-    runningProcesses.add(subprocess);
-
     // handle subprocess events
-    subprocess.on("exit", (code, signal) => {
+    devProcess.on("exit", (code, signal) => {
       const exitMessage = signal
         ? `Development server was terminated by signal: ${signal}`
         : `Development server exited with code: ${code}`;
       console.log(chalk.cyan(exitMessage));
 
-      // rm from tracking
-      runningProcesses.delete(subprocess);
+      // clear the reference to allow garbage collection
+      devProcess = null;
     });
 
-    subprocess.on("error", (err) => {
+    devProcess.on("error", (err) => {
       console.error(chalk.red(`Development server error: ${err.message}`));
-      runningProcesses.delete(subprocess);
+      devProcess = null;
     });
 
     // log any stderr output from the subprocess that might indicate problems
-    subprocess.stderr.on("data", (data) => {
+    devProcess.stderr.on("data", (data) => {
       const errorOutput = data.toString().trim();
       if (errorOutput && errorOutput.toLowerCase().includes("error")) {
         console.error(chalk.red(`Server error: ${errorOutput}`));
@@ -232,7 +224,7 @@ export async function startProject(projectPath, userChoices) {
 
     checkServerAndOpenBrowser(devUrl);
 
-    return subprocess;
+    return devProcess;
   } catch (err) {
     spinner.fail(`Failed to start development server`);
     console.error(chalk.red(`Error: ${err.message || err}`));
