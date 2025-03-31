@@ -1,5 +1,13 @@
 import fs from "fs-extra";
 import path from "path";
+import {
+  getCoreDependencies,
+  getTypescriptDependencies,
+  getTailwindDependencies,
+  getStyledComponentsDependencies,
+  getLintingDependencies,
+  frameworks,
+} from "../../config/dependencies.js";
 
 export function createPackageJson(projectPath, projectName, userChoices) {
   const packageJson = {
@@ -14,43 +22,39 @@ export function createPackageJson(projectPath, projectName, userChoices) {
       clean: "rimraf dist .parcel-cache",
     },
     dependencies: {
-      react: "^18.2.0",
-      "react-dom": "^18.2.0",
+      ...getCoreDependencies(),
     },
     devDependencies: {
-      parcel: "^2.10.3",
-      process: "^0.11.10",
-      rimraf: "^5.0.5",
+      parcel: frameworks.parcel.parcel,
+      process: frameworks.parcel.process,
+      rimraf: frameworks.parcel.rimraf,
     },
   };
 
   if (userChoices.typescript) {
-    packageJson.devDependencies.typescript = "^5.3.2";
-    packageJson.devDependencies["@types/react"] = "^18.2.39";
-    packageJson.devDependencies["@types/react-dom"] = "^18.2.17";
+    packageJson.devDependencies = {
+      ...packageJson.devDependencies,
+      ...getTypescriptDependencies(),
+    };
   }
 
   if (userChoices.styling === "tailwind") {
-    packageJson.devDependencies.tailwindcss = "^3.3.5";
-    packageJson.devDependencies.postcss = "^8.4.31";
-    packageJson.devDependencies.autoprefixer = "^10.4.16";
+    packageJson.devDependencies = {
+      ...packageJson.devDependencies,
+      ...getTailwindDependencies(),
+    };
   } else if (userChoices.styling === "styled-components") {
-    packageJson.dependencies["styled-components"] = "^6.1.1";
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...getStyledComponentsDependencies(),
+    };
   }
 
   if (userChoices.linting) {
-    packageJson.devDependencies.eslint = "^8.55.0";
-    packageJson.devDependencies["eslint-plugin-react"] = "^7.33.2";
-    packageJson.devDependencies["eslint-plugin-react-hooks"] = "^4.6.0";
-    packageJson.devDependencies.prettier = "^3.1.0";
-    packageJson.devDependencies["eslint-plugin-prettier"] = "^5.0.1";
-    packageJson.devDependencies["eslint-config-prettier"] = "^9.1.0";
-
-    if (userChoices.typescript) {
-      packageJson.devDependencies["@typescript-eslint/eslint-plugin"] =
-        "^6.13.1";
-      packageJson.devDependencies["@typescript-eslint/parser"] = "^6.13.1";
-    }
+    packageJson.devDependencies = {
+      ...packageJson.devDependencies,
+      ...getLintingDependencies(userChoices.typescript),
+    };
   }
 
   fs.writeFileSync(

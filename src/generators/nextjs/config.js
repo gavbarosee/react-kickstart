@@ -1,5 +1,12 @@
 import fs from "fs-extra";
 import path from "path";
+import {
+  getCoreDependencies,
+  getTypescriptDependencies,
+  getTailwindDependencies,
+  getStyledComponentsDependencies,
+  frameworks,
+} from "../../config/dependencies.js";
 
 export function createPackageJson(projectPath, projectName, userChoices) {
   const packageJson = {
@@ -13,26 +20,29 @@ export function createPackageJson(projectPath, projectName, userChoices) {
       lint: "next lint",
     },
     dependencies: {
-      next: "^14.0.3",
-      react: "^18.2.0",
-      "react-dom": "^18.2.0",
+      ...getCoreDependencies(),
+      next: frameworks.nextjs.next,
     },
   };
 
   if (userChoices.typescript) {
-    packageJson.dependencies.typescript = "^5.3.2";
-    packageJson.dependencies["@types/node"] = "^20.10.0";
-    packageJson.dependencies["@types/react"] = "^18.2.39";
-    packageJson.dependencies["@types/react-dom"] = "^18.2.17";
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...getTypescriptDependencies(false), // include as regular dependencies for Next.js
+    };
   }
 
   if (userChoices.styling === "tailwind") {
-    packageJson.dependencies.tailwindcss = "^3.3.5";
-    packageJson.dependencies.postcss = "^8.4.31";
-    packageJson.dependencies.autoprefixer = "^10.4.16";
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...getTailwindDependencies(false), // next.js uses these as regular dependencies
+    };
   } else if (userChoices.styling === "styled-components") {
-    packageJson.dependencies["styled-components"] = "^6.1.1";
-    packageJson.dependencies["babel-plugin-styled-components"] = "^2.1.4";
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...getStyledComponentsDependencies(),
+      "babel-plugin-styled-components": styling.babelPluginStyledComponents,
+    };
   }
 
   fs.writeFileSync(
