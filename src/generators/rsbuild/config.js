@@ -97,19 +97,6 @@ export default defineConfig({
   },
   html: {
     title: '${path.basename(projectPath)}'
-  },
-  ${
-    userChoices.styling === "tailwind"
-      ? `tools: {
-    postcss: {
-      // Use direct plugins array which is easier in ESM context
-      plugins: [
-        'tailwindcss',
-        'autoprefixer',
-      ]
-    }
-  },`
-      : ""
   }
 });
 `;

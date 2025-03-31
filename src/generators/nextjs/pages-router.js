@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import { setupStyling } from "../../shared/styling.js";
 
 export function createPagesRouterStructure(
   projectPath,
@@ -26,7 +27,7 @@ export function createPagesRouterStructure(
   fs.writeFileSync(path.join(pagesDir, `index.${ext}`), indexContent);
 
   if (userChoices.styling === "tailwind") {
-    setupTailwindForNextjs(projectPath, "pages");
+    setupStyling(projectPath, userChoices, "nextjs");
   }
 
   createApiRoute(apiDir, userChoices);
@@ -112,47 +113,6 @@ function createApiRoute(apiDir, userChoices) {
     path.join(apiDir, `hello.${userChoices.typescript ? "ts" : "js"}`),
     apiRouteContent
   );
-}
-
-function setupTailwindForNextjs(projectPath, routingType) {
-  const cssDir =
-    routingType === "app"
-      ? path.join(projectPath, "app")
-      : path.join(projectPath, "styles");
-  fs.ensureDirSync(cssDir);
-
-  const cssContent = `@tailwind base;
-@tailwind components;
-@tailwind utilities;
-`;
-  fs.writeFileSync(path.join(cssDir, "globals.css"), cssContent);
-
-  const tailwindConfig = `/** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    './app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-`;
-  fs.writeFileSync(
-    path.join(projectPath, "tailwind.config.js"),
-    tailwindConfig
-  );
-
-  const postcssConfig = `module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
-`;
-  fs.writeFileSync(path.join(projectPath, "postcss.config.js"), postcssConfig);
 }
 
 function getPageContent(userChoices, fileExt) {

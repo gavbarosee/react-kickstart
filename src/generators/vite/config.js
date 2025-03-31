@@ -79,39 +79,4 @@ export default defineConfig({
     path.join(projectPath, `vite.config.${configExt}`),
     viteConfig
   );
-
-  if (userChoices.styling === "tailwind") {
-    createPostcssConfig(projectPath);
-    createTailwindConfig(projectPath);
-  }
-}
-
-function createPostcssConfig(projectPath) {
-  const postcssConfig = `export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  }
-}
-`;
-  fs.writeFileSync(path.join(projectPath, "postcss.config.js"), postcssConfig);
-}
-
-function createTailwindConfig(projectPath) {
-  const tailwindConfig = `/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-`;
-  fs.writeFileSync(
-    path.join(projectPath, "tailwind.config.js"),
-    tailwindConfig
-  );
 }

@@ -10,85 +10,113 @@ import path from "path";
  * @returns {void}
  */
 export function setupStyling(projectPath, userChoices, framework = "vite") {
-  if (framework === "nextjs") {
-    return;
-  }
-
-  const srcDir = path.join(
-    projectPath,
-    framework === "nextjs" && userChoices.nextRouting === "app" ? "app" : "src"
-  );
+  const stylingInfo = getStylingInfo(framework, userChoices);
 
   if (userChoices.styling === "tailwind") {
-    setupTailwind(projectPath, srcDir, framework, userChoices);
+    setupTailwind(projectPath, stylingInfo, userChoices);
   } else if (userChoices.styling === "css") {
-    setupBasicCss(srcDir, framework);
+    setupBasicCss(projectPath, stylingInfo);
   }
+}
+
+/**
+ * Returns styling-related info for the specific framework
+ * This centralizes all framework-specific CSS paths and conventions
+ */
+function getStylingInfo(framework, userChoices) {
+  // default CSS location and filenames
+  const info = {
+    cssDir: "src", //  where CSS files should be placed
+    mainCssFilename: "index.css", // main CSS file used for imports/global styles
+    componentCssFilename: "App.css", // component-specific CSS file (if needed)
+    usesComponentCss: false, //     // whether this framework uses a separate component CSS file
+    tailwindContentPaths: ["./src/**/*.{js,ts,jsx,tsx}"], // path patterns for Tailwind content configuration
+    createPostcssConfig: true, // whether to create PostCSS config as a separate file
+    skipCssSetup: false, // whether the framework handles CSS setup internally
+  };
+
+  // override defaults with framework-specific settings
+  switch (framework) {
+    case "vite":
+      info.usesComponentCss = true;
+      info.tailwindContentPaths = [
+        "./index.html",
+        "./src/**/*.{js,ts,jsx,tsx}",
+      ];
+      break;
+
+    case "nextjs":
+      info.skipCssSetup = true; // next.js has its own CSS setup
+      info.mainCssFilename = "globals.css";
+
+      if (userChoices.nextRouting === "app") {
+        info.cssDir = "app";
+      } else {
+        info.cssDir = "styles";
+      }
+
+      info.tailwindContentPaths = [
+        "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+        "./components/**/*.{js,ts,jsx,tsx,mdx}",
+        "./app/**/*.{js,ts,jsx,tsx,mdx}",
+      ];
+      break;
+
+    case "parcel":
+      info.mainCssFilename = "styles.css";
+      info.tailwindContentPaths = ["./src/**/*.{html,js,jsx,ts,tsx}"];
+      break;
+
+    case "rsbuild":
+      info.tailwindContentPaths = [
+        "./src/**/*.{js,jsx,ts,tsx}",
+        "./index.html",
+      ];
+      break;
+  }
+
+  return info;
 }
 
 /**
  * Sets up Tailwind CSS for a project
  */
-export function setupTailwind(projectPath, srcDir, framework, userChoices) {
-  if (framework === "nextjs") {
+export function setupTailwind(projectPath, stylingInfo, userChoices) {
+  // skip if the framework handles CSS setup internally
+  if (stylingInfo.skipCssSetup) {
+    setupTailwindForNextjs(projectPath, userChoices.nextRouting);
     return;
   }
 
-  if (framework === "vite") {
-    return;
-  }
+  const cssDir = path.join(projectPath, stylingInfo.cssDir);
+  fs.ensureDirSync(cssDir);
 
-  const cssFilename = getCssFilename(framework, userChoices);
-
+  // create the main CSS file with Tailwind directives
   const cssContent = `@tailwind base;
 @tailwind components;
 @tailwind utilities;
 `;
+  fs.writeFileSync(path.join(cssDir, stylingInfo.mainCssFilename), cssContent);
 
-  fs.writeFileSync(path.join(srcDir, cssFilename), cssContent);
+  createTailwindConfig(projectPath, stylingInfo.tailwindContentPaths);
 
-  const contentPaths = getContentPaths(framework);
-
-  const tailwindConfig = `/** @type {import('tailwindcss').Config} */
-export default {
-  content: [
-    ${contentPaths.map((path) => `"${path}"`).join(",\n    ")}
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-`;
-
-  fs.writeFileSync(
-    path.join(projectPath, "tailwind.config.js"),
-    tailwindConfig
-  );
-
-  const postcssConfig = `export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
-`;
-
-  fs.writeFileSync(path.join(projectPath, "postcss.config.js"), postcssConfig);
+  if (stylingInfo.createPostcssConfig) {
+    createPostcssConfig(projectPath);
+  }
 }
 
 /**
  * Sets up basic CSS for a project
  */
-export function setupBasicCss(srcDir, framework) {
-  if (framework === "nextjs") {
+export function setupBasicCss(projectPath, stylingInfo) {
+  if (stylingInfo.skipCssSetup) {
     return;
   }
 
-  const cssFilename = framework === "vite" ? "App.css" : "styles.css";
-  const indexCssFilename = getCssFilename(framework);
+  const cssDir = path.join(projectPath, stylingInfo.cssDir);
+  fs.ensureDirSync(cssDir);
 
-  const cssContent = `body {
+  const mainCssContent = `body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
@@ -108,11 +136,13 @@ code {
   text-align: center;
 }
 `;
+  fs.writeFileSync(
+    path.join(cssDir, stylingInfo.mainCssFilename),
+    mainCssContent
+  );
 
-  fs.writeFileSync(path.join(srcDir, indexCssFilename), cssContent);
-
-  if (framework === "vite") {
-    const appCssContent = `
+  if (stylingInfo.usesComponentCss) {
+    const componentCssContent = `
 h1 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
@@ -135,41 +165,93 @@ button:hover {
   border-color: #646cff;
 }
 `;
-    fs.writeFileSync(path.join(srcDir, "App.css"), appCssContent);
+    fs.writeFileSync(
+      path.join(cssDir, stylingInfo.componentCssFilename),
+      componentCssContent
+    );
   }
 }
 
 /**
- * Determines the content paths for Tailwind configuration based on framework
+ * Creates a Tailwind CSS configuration file
  */
-function getContentPaths(framework) {
-  switch (framework) {
-    case "nextjs":
-      return [
-        "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-        "./components/**/*.{js,ts,jsx,tsx,mdx}",
-        "./app/**/*.{js,ts,jsx,tsx,mdx}",
-      ];
-    case "vite":
-      return ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"];
-    case "parcel":
-      return ["./src/**/*.{html,js,jsx,ts,tsx}"];
-    case "rsbuild":
-      return ["./src/**/*.{js,jsx,ts,tsx}", "./index.html"];
-    default:
-      return ["./src/**/*.{js,jsx,ts,tsx}", "./index.html"];
-  }
+function createTailwindConfig(projectPath, contentPaths) {
+  const tailwindConfig = `/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    ${contentPaths.map((path) => `"${path}"`).join(",\n    ")}
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+`;
+  fs.writeFileSync(
+    path.join(projectPath, "tailwind.config.js"),
+    tailwindConfig
+  );
 }
 
 /**
- * Determines the CSS filename based on framework
+ * Creates a PostCSS configuration file
  */
-function getCssFilename(framework, userChoices = {}) {
-  if (framework === "nextjs") {
-    return userChoices.nextRouting === "app" ? "globals.css" : "globals.css";
-  } else if (framework === "vite") {
-    return "index.css";
-  } else {
-    return "styles.css";
+function createPostcssConfig(projectPath) {
+  const postcssConfig = `export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
   }
+}
+`;
+  fs.writeFileSync(path.join(projectPath, "postcss.config.js"), postcssConfig);
+}
+
+/**
+ * Sets up Tailwind CSS specifically for Next.js projects
+ * This handles both app and pages router types
+ */
+function setupTailwindForNextjs(projectPath, routingType) {
+  const cssDir =
+    routingType === "app"
+      ? path.join(projectPath, "app")
+      : path.join(projectPath, "styles");
+
+  fs.ensureDirSync(cssDir);
+
+  // create globals.css for Tailwind
+  const cssContent = `@tailwind base;
+@tailwind components;
+@tailwind utilities;
+`;
+  fs.writeFileSync(path.join(cssDir, "globals.css"), cssContent);
+
+  // next.js uses CommonJS for its config files
+  const tailwindConfig = `/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+`;
+  fs.writeFileSync(
+    path.join(projectPath, "tailwind.config.js"),
+    tailwindConfig
+  );
+
+  // next.js also uses CommonJS for PostCSS config
+  const postcssConfig = `module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+`;
+  fs.writeFileSync(path.join(projectPath, "postcss.config.js"), postcssConfig);
 }
