@@ -39,9 +39,27 @@ export async function startProject(projectPath, userChoices) {
       stdio: ["inherit", "pipe", "pipe"],
     });
 
+    const cleanup = () => {
+      if (subprocess && !subprocess.killed) {
+        console.log(chalk.yellow("\nStopping development server..."));
+        subprocess.kill("SIGTERM");
+      }
+    };
+
+    // handle termination signals
+    process.on("SIGINT", cleanup);
+    process.on("SIGTERM", cleanup);
+    process.on("exit", cleanup);
+
+    // handle uncaught exceptions
+    process.on("uncaughtException", (err) => {
+      console.error(chalk.red(`Uncaught exception: ${err.message}`));
+      cleanup();
+      process.exit(1);
+    });
+
     // after a short delay to let the server start, open the browser
     setTimeout(async () => {
-      // Always use default browser
       try {
         await open(devUrl);
         // add a small delay to see if we get an error
