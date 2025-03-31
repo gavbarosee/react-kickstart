@@ -107,26 +107,100 @@ export async function startProject(projectPath, userChoices) {
 
     await new Promise((resolve) => setTimeout(resolve, 500));
 
+    // flag to prevent concurrent cleanup operations
+    let isCleanupInProgress = false;
+
     const subprocess = execa(cmd, args, {
       cwd: projectPath,
       stdio: ["inherit", "pipe", "pipe"],
+      killSignal: "SIGTERM", // ensure we use SIGTERM by default
+      cleanup: true, // kill process and all its child processes
+      detached: false, // don't detach from parent process
     });
 
-    const cleanup = () => {
+    const cleanup = async () => {
+      if (isCleanupInProgress) return;
+      isCleanupInProgress = true;
+
       if (subprocess && !subprocess.killed) {
         console.log(chalk.yellow("\nStopping development server..."));
-        subprocess.kill("SIGTERM");
+
+        try {
+          // first try SIGTERM
+          subprocess.kill("SIGTERM");
+
+          // wait for up to 3 seconds for graceful termination
+          const terminated = await Promise.race([
+            new Promise((resolve) => {
+              subprocess.once("exit", () => resolve(true));
+              subprocess.once("error", () => resolve(true)); // consider errors as "terminated"
+            }),
+            new Promise((resolve) => setTimeout(() => resolve(false), 3000)),
+          ]);
+
+          // if not terminated gracefully, force kill with SIGKILL
+          if (!terminated && !subprocess.killed) {
+            console.log(
+              chalk.yellow(
+                "Development server did not terminate gracefully, forcing exit..."
+              )
+            );
+            subprocess.kill("SIGKILL");
+          }
+        } catch (err) {
+          console.error(
+            chalk.red(`Error while terminating process: ${err.message}`)
+          );
+
+          // last resort: try to kill by process ID if we have it
+          try {
+            if (subprocess.pid) {
+              process.kill(subprocess.pid, "SIGKILL");
+            }
+          } catch (killError) {
+            console.error(
+              chalk.red(`Failed to force kill process: ${killError.message}`)
+            );
+          }
+        }
       }
+
+      // always clean up the listeners regardless of subprocess termination success
+      removeAllListeners();
+      isCleanupInProgress = false;
     };
 
-    // store event listener references so we can remove them later
-    const handleSigInt = () => cleanup();
-    const handleSigTerm = () => cleanup();
-    const handleExit = () => cleanup();
-    const handleUncaughtException = (err) => {
+    // enhanced signal handlers that are async to handle the cleanup promises
+    const handleSigInt = async () => {
+      await cleanup();
+      // use a small delay to allow cleanup logs to be printed
+      setTimeout(() => process.exit(0), 100);
+    };
+
+    const handleSigTerm = async () => {
+      await cleanup();
+      setTimeout(() => process.exit(0), 100);
+    };
+
+    const handleExit = async () => {
+      await cleanup();
+    };
+
+    const handleUncaughtException = async (err) => {
       console.error(chalk.red(`Uncaught exception: ${err.message}`));
-      cleanup();
-      process.exit(1);
+      await cleanup();
+      setTimeout(() => process.exit(1), 100);
+    };
+
+    const handleUnhandledRejection = async (reason, promise) => {
+      console.error(
+        chalk.red(`Unhandled rejection at:`),
+        promise,
+        chalk.red(`reason:`),
+        reason
+      );
+      await cleanup();
+      setTimeout(() => process.exit(1), 100);
     };
 
     // add event listeners
@@ -134,18 +208,37 @@ export async function startProject(projectPath, userChoices) {
     process.on("SIGTERM", handleSigTerm);
     process.on("exit", handleExit);
     process.on("uncaughtException", handleUncaughtException);
+    process.on("unhandledRejection", handleUnhandledRejection);
 
-    // set up a function to remove all listeners when no longer needed
+    // remove all listeners
     const removeAllListeners = () => {
       process.removeListener("SIGINT", handleSigInt);
       process.removeListener("SIGTERM", handleSigTerm);
       process.removeListener("exit", handleExit);
       process.removeListener("uncaughtException", handleUncaughtException);
+      process.removeListener("unhandledRejection", handleUnhandledRejection);
     };
 
-    // remove listeners when the subprocess exits
-    subprocess.on("exit", () => {
+    // handle subprocess-specific events
+    subprocess.on("exit", (code, signal) => {
+      const exitMessage = signal
+        ? `Development server was terminated by signal: ${signal}`
+        : `Development server exited with code: ${code}`;
+      console.log(chalk.cyan(exitMessage));
       removeAllListeners();
+    });
+
+    subprocess.on("error", (err) => {
+      console.error(chalk.red(`Development server error: ${err.message}`));
+      cleanup();
+    });
+
+    // log any stderr output from the subprocess that might indicate problems
+    subprocess.stderr.on("data", (data) => {
+      const errorOutput = data.toString().trim();
+      if (errorOutput && errorOutput.toLowerCase().includes("error")) {
+        console.error(chalk.red(`Server error: ${errorOutput}`));
+      }
     });
 
     // check server and open browser
