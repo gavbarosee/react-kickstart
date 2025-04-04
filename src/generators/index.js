@@ -44,7 +44,8 @@ export default async function generateProject(
         userChoices.framework,
         userChoices.typescript,
         userChoices.styling,
-        userChoices.linting
+        userChoices.linting,
+        userChoices.stateManagement
       )
     );
 

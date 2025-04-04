@@ -7,6 +7,7 @@ import {
   getStyledComponentsDependencies,
   getLintingDependencies,
   frameworks,
+  getReduxDependencies,
 } from "../../config/dependencies.js";
 
 export function createPackageJson(projectPath, projectName, userChoices) {
@@ -52,6 +53,13 @@ export function createPackageJson(projectPath, projectName, userChoices) {
     packageJson.dependencies = {
       ...packageJson.dependencies,
       ...getStyledComponentsDependencies(),
+    };
+  }
+
+  if (userChoices.stateManagement === "redux") {
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...getReduxDependencies(),
     };
   }
 

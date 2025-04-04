@@ -58,6 +58,18 @@ export const frameworks = {
   },
 };
 
+export const redux = {
+  reduxToolkit: "^2.0.1",
+  reactRedux: "^9.0.4",
+};
+
+export function getReduxDependencies() {
+  return {
+    "@reduxjs/toolkit": redux.reduxToolkit,
+    "react-redux": redux.reactRedux,
+  };
+}
+
 export function getCoreDependencies() {
   return {
     react: core.react,

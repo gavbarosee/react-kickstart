@@ -11,6 +11,7 @@ import {
 import { setupStyling } from "../../shared/styling.js";
 import { setupLinting } from "../../shared/linting.js";
 import { setupTypeScript } from "../../shared/typescript.js";
+import { setupRedux } from "../../shared/redux/index.js";
 
 export default async function generateParcelProject(
   projectPath,
@@ -19,37 +20,32 @@ export default async function generateParcelProject(
 ) {
   log("Creating a Parcel React project...");
 
-  // Create base directory structure using shared module
   createDirectoryStructure(projectPath, "parcel");
 
-  // Create package.json
   createPackageJson(projectPath, projectName, userChoices);
 
-  // Create Parcel config (Parcel-specific)
   createParcelConfig(projectPath, userChoices);
 
-  // Create HTML entry file using shared module
   createHtmlFile(projectPath, projectName, userChoices, "parcel");
 
-  // Create source files using shared module
   createSourceFiles(projectPath, userChoices, "parcel");
 
-  // Generate CSS files and Tailwind config using shared styling module
   if (userChoices.styling === "tailwind" || userChoices.styling === "css") {
     setupStyling(projectPath, userChoices, "parcel");
   }
 
-  // Setup linting using shared module
   if (userChoices.linting) {
     setupLinting(projectPath, userChoices, "parcel");
   }
 
-  // Setup TypeScript using shared module
   if (userChoices.typescript) {
     setupTypeScript(projectPath, userChoices, "parcel");
   }
 
-  // Handle any Parcel-specific files that aren't covered by shared modules
+  if (userChoices.stateManagement === "redux") {
+    setupRedux(projectPath, userChoices, "parcel");
+  }
+
   ensureParcelSpecificFiles(projectPath, userChoices);
 
   return true;

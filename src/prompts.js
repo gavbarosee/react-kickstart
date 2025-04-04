@@ -13,10 +13,7 @@ export async function promptUser(options = {}) {
   const answers = {};
   const history = [];
 
-  // Detect available package managers before showing prompts
   const packageManagers = await detectPackageManagers({ verbose });
-
-  // Get default package manager
   const defaultPackageManager = getDefaultPackageManager(packageManagers);
 
   // clear terminal and show header
@@ -117,7 +114,7 @@ export async function promptUser(options = {}) {
 
   async function packageManagerPrompt() {
     refreshDisplay();
-    section(`Step 1/8: Package Manager`);
+    section(`Step 1/9: Package Manager`);
 
     const choices = formatPackageManagerChoices(packageManagers);
 
@@ -161,7 +158,7 @@ export async function promptUser(options = {}) {
 
   async function frameworkPrompt() {
     refreshDisplay();
-    section(`Step 2/8: Framework Selection`);
+    section(`Step 2/9: Framework Selection`);
 
     const choices = [
       {
@@ -221,7 +218,7 @@ export async function promptUser(options = {}) {
 
   async function nextjsOptionsPrompt() {
     refreshDisplay();
-    section(`Step 3/8: Next.js Options`);
+    section(`Step 3/9: Next.js Options`);
 
     const choices = [
       {
@@ -267,7 +264,7 @@ export async function promptUser(options = {}) {
   async function languageOptionsPrompt() {
     refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 4 : 3;
-    section(`Step ${stepNum}/8: Language Options`);
+    section(`Step ${stepNum}/9: Language Options`);
 
     const choices = [
       { name: chalk.green("Yes"), value: true },
@@ -311,7 +308,7 @@ export async function promptUser(options = {}) {
   async function codeQualityPrompt() {
     refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 5 : 4;
-    section(`Step ${stepNum}/8: Code Quality`);
+    section(`Step ${stepNum}/9: Code Quality`);
 
     const choices = [
       { name: chalk.green("Yes"), value: true },
@@ -352,7 +349,7 @@ export async function promptUser(options = {}) {
   async function stylingSolutionPrompt() {
     refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 6 : 5;
-    section(`Step ${stepNum}/8: Styling Solution`);
+    section(`Step ${stepNum}/9: Styling Solution`);
 
     const choices = [
       {
@@ -396,13 +393,63 @@ export async function promptUser(options = {}) {
 
     answers.styling = selection;
     history.push("styling");
+    return stateManagementPrompt();
+  }
+
+  async function stateManagementPrompt() {
+    refreshDisplay();
+    const stepNum = answers.framework === "nextjs" ? 7 : 6;
+    section(`Step ${stepNum}/9: State Management`);
+
+    const choices = [
+      {
+        name:
+          chalk.blue("📦 Redux Toolkit") +
+          " - Powerful state management library",
+        value: "redux",
+      },
+      {
+        name: chalk.gray("None") + " - No global state management",
+        value: "none",
+      },
+      new inquirer.Separator(),
+      {
+        name: chalk.yellow("← Back to previous step"),
+        value: "BACK_OPTION",
+      },
+    ];
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message: "Would you like to add global state management?",
+        choices: choices,
+        default: function () {
+          if (answers.stateManagement !== undefined) {
+            return choices.findIndex(
+              (c) => c.value === answers.stateManagement
+            );
+          }
+          return 1;
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      return stylingSolutionPrompt();
+    }
+
+    answers.stateManagement = selection;
+    history.push("stateManagement");
     return gitOptionsPrompt();
   }
 
   async function gitOptionsPrompt() {
     refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 7 : 6;
-    section(`Step ${stepNum}/8: Git Options`);
+    section(`Step ${stepNum}/9: Git Options`);
 
     const choices = [
       { name: chalk.green("Yes"), value: true },
@@ -431,7 +478,7 @@ export async function promptUser(options = {}) {
 
     if (selection === "BACK_OPTION") {
       history.pop();
-      return stylingSolutionPrompt();
+      return stateManagementPrompt();
     }
 
     answers.initGit = selection;
@@ -442,7 +489,7 @@ export async function promptUser(options = {}) {
   async function editorOptionsPrompt() {
     refreshDisplay();
     const stepNum = answers.framework === "nextjs" ? 8 : 7;
-    section(`Step ${stepNum}/8: Editor Options`);
+    section(`Step ${stepNum}/9: Editor Options`);
 
     const choices = [
       { name: chalk.green("Yes"), value: true },

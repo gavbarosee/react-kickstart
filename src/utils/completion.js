@@ -3,6 +3,17 @@ import figures from "figures";
 import path from "path";
 import fs from "fs-extra";
 
+function getReduxInfo() {
+  return {
+    docs: "https://redux-toolkit.js.org/introduction/getting-started",
+    tips: [
+      "Use createSlice to define actions and reducers together",
+      "TypedHooks provide automatic type inference for state and dispatch",
+      "Use redux dev tools extension for debugging your state changes",
+    ],
+  };
+}
+
 export function getFrameworkInfo(framework) {
   const info = {
     vite: {
@@ -53,7 +64,6 @@ export function getFrameworkInfo(framework) {
   );
 }
 
-// Other helper functions (unchanged)
 function getStylingInfo(styling) {
   const info = {
     tailwind: {
@@ -237,6 +247,9 @@ export function generateCompletionSummary(
     ...(userChoices.typescript
       ? languageInfo.tips.map((tip) => `   • TypeScript: ${tip}`)
       : []),
+    ...(userChoices.stateManagement === "redux"
+      ? getReduxInfo().tips.map((tip) => `   • Redux Toolkit: ${tip}`)
+      : []),
   ];
 
   const tipsSection =
@@ -256,6 +269,9 @@ export function generateCompletionSummary(
     `   • ${userChoices.styling}: ${chalk.underline(stylingInfo.docs)}`,
     ...(userChoices.typescript
       ? [`   • TypeScript: ${chalk.underline(languageInfo.docs)}`]
+      : []),
+    ...(userChoices.stateManagement === "redux"
+      ? [`   • Redux Toolkit: ${chalk.underline(getReduxInfo().docs)}`]
       : []),
   ].join("\n");
 

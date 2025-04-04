@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 import { log } from "../../utils/logger.js";
 import { createPackageJson, createRsbuildConfig } from "./config.js";
+import { setupRedux } from "../../shared/redux/index.js";
 
 import {
   createSourceFiles,
@@ -39,6 +40,10 @@ export default async function generateRsbuildProject(
 
   if (userChoices.typescript) {
     setupTypeScript(projectPath, userChoices, "rsbuild");
+  }
+
+  if (userChoices.stateManagement === "redux") {
+    setupRedux(projectPath, userChoices, "rsbuild");
   }
 
   ensureRsbuildSpecificFiles(projectPath, userChoices);

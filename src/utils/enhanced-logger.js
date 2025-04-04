@@ -216,7 +216,13 @@ export function getProjectStructure(framework) {
 }
 
 // get configuration files based on framework and options
-export function getConfigurationFiles(framework, typescript, styling, linting) {
+export function getConfigurationFiles(
+  framework,
+  typescript,
+  styling,
+  linting,
+  stateManagement
+) {
   const configs = [];
 
   if (framework === "vite") {
@@ -268,6 +274,28 @@ export function getConfigurationFiles(framework, typescript, styling, linting) {
       label: ".prettierrc",
       description: "Code formatting rules",
     });
+  }
+
+  if (stateManagement === "redux") {
+    if (framework === "nextjs") {
+      configs.push({
+        label: `lib/store.${typescript ? "ts" : "js"}`,
+        description: "Redux Toolkit store configuration",
+      });
+      configs.push({
+        label: `lib/hooks.${typescript ? "ts" : "js"}`,
+        description: "Redux hooks with TypeScript support",
+      });
+    } else {
+      configs.push({
+        label: `src/store/store.${typescript ? "ts" : "js"}`,
+        description: "Redux Toolkit store configuration",
+      });
+      configs.push({
+        label: `src/store/counterSlice.${typescript ? "ts" : "js"}`,
+        description: "Redux Toolkit counter slice",
+      });
+    }
   }
 
   return configs;
