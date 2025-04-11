@@ -13,6 +13,7 @@ import {
 import { setupStyling } from "../../shared/styling.js";
 import { setupLinting } from "../../shared/linting.js";
 import { setupTypeScript } from "../../shared/typescript.js";
+import { setupMobx } from "../../shared/mobx/index.js";
 
 export default async function generateRsbuildProject(
   projectPath,
@@ -48,6 +49,9 @@ export default async function generateRsbuildProject(
   }
   if (userChoices.stateManagement === "zustand") {
     setupZustand(projectPath, userChoices, "rsbuild");
+  }
+  if (userChoices.stateManagement === "mobx") {
+    setupMobx(projectPath, userChoices, "rsbuild");
   }
 
   ensureRsbuildSpecificFiles(projectPath, userChoices);

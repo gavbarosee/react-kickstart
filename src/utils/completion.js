@@ -25,6 +25,17 @@ function getZustandInfo() {
   };
 }
 
+function getMobxInfo() {
+  return {
+    docs: "https://mobx.js.org/README.html",
+    tips: [
+      "Use makeAutoObservable for simple class-based stores",
+      "Wrap components with observer() to make them reactive",
+      "Use computed values for derived state",
+    ],
+  };
+}
+
 export function getFrameworkInfo(framework) {
   const info = {
     vite: {
@@ -264,6 +275,9 @@ export function generateCompletionSummary(
     ...(userChoices.stateManagement === "zustand"
       ? getZustandInfo().tips.map((tip) => `   • Zustand: ${tip}`)
       : []),
+    ...(userChoices.stateManagement === "mobx"
+      ? getMobxInfo().tips.map((tip) => `   • MobX: ${tip}`)
+      : []),
   ];
 
   const tipsSection =
@@ -289,6 +303,9 @@ export function generateCompletionSummary(
       : []),
     ...(userChoices.stateManagement === "zustand"
       ? [`   • Zustand: ${chalk.underline(getZustandInfo().docs)}`]
+      : []),
+    ...(userChoices.stateManagement === "mobx"
+      ? [`   • MobX: ${chalk.underline(getMobxInfo().docs)}`]
       : []),
   ].join("\n");
 

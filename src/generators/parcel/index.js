@@ -13,6 +13,7 @@ import { setupLinting } from "../../shared/linting.js";
 import { setupTypeScript } from "../../shared/typescript.js";
 import { setupRedux } from "../../shared/redux/index.js";
 import { setupZustand } from "../../shared/zustand/index.js";
+import { setupMobx } from "../../shared/mobx/index.js";
 
 export default async function generateParcelProject(
   projectPath,
@@ -48,6 +49,9 @@ export default async function generateParcelProject(
   }
   if (userChoices.stateManagement === "zustand") {
     setupZustand(projectPath, userChoices, "parcel");
+  }
+  if (userChoices.stateManagement === "mobx") {
+    setupMobx(projectPath, userChoices, "parcel");
   }
 
   ensureParcelSpecificFiles(projectPath, userChoices);

@@ -415,6 +415,12 @@ export async function promptUser(options = {}) {
         value: "zustand",
       },
       {
+        name:
+          chalk.cyan("🔄 MobX") +
+          " - Simple, scalable state management with observables",
+        value: "mobx",
+      },
+      {
         name: chalk.gray("None") + " - No global state management",
         value: "none",
       },
