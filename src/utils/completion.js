@@ -14,6 +14,17 @@ function getReduxInfo() {
   };
 }
 
+function getZustandInfo() {
+  return {
+    docs: "https://zustand-demo.pmnd.rs/",
+    tips: [
+      "Create custom hooks with create() for different state slices",
+      "Use middleware for persistent storage, tracking, etc.",
+      "Remember state is shared between components without context providers",
+    ],
+  };
+}
+
 export function getFrameworkInfo(framework) {
   const info = {
     vite: {
@@ -250,6 +261,9 @@ export function generateCompletionSummary(
     ...(userChoices.stateManagement === "redux"
       ? getReduxInfo().tips.map((tip) => `   • Redux Toolkit: ${tip}`)
       : []),
+    ...(userChoices.stateManagement === "zustand"
+      ? getZustandInfo().tips.map((tip) => `   • Zustand: ${tip}`)
+      : []),
   ];
 
   const tipsSection =
@@ -272,6 +286,9 @@ export function generateCompletionSummary(
       : []),
     ...(userChoices.stateManagement === "redux"
       ? [`   • Redux Toolkit: ${chalk.underline(getReduxInfo().docs)}`]
+      : []),
+    ...(userChoices.stateManagement === "zustand"
+      ? [`   • Zustand: ${chalk.underline(getZustandInfo().docs)}`]
       : []),
   ].join("\n");
 

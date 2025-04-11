@@ -409,6 +409,12 @@ export async function promptUser(options = {}) {
         value: "redux",
       },
       {
+        name:
+          chalk.green("🐻 Zustand") +
+          " - Lightweight state management solution",
+        value: "zustand",
+      },
+      {
         name: chalk.gray("None") + " - No global state management",
         value: "none",
       },
@@ -431,7 +437,7 @@ export async function promptUser(options = {}) {
               (c) => c.value === answers.stateManagement
             );
           }
-          return 1;
+          return 2;
         },
       },
     ]);

@@ -3,6 +3,7 @@ import path from "path";
 import { log } from "../../utils/logger.js";
 import { createPackageJson, createViteConfig } from "./config.js";
 import { setupRedux } from "../../shared/redux/index.js";
+import { setupZustand } from "../../shared/zustand/index.js";
 
 import {
   createSourceFiles,
@@ -44,6 +45,9 @@ export default async function generateViteProject(
 
   if (userChoices.stateManagement === "redux") {
     setupRedux(projectPath, userChoices, "vite");
+  }
+  if (userChoices.stateManagement === "zustand") {
+    setupZustand(projectPath, userChoices, "vite");
   }
 
   ensureViteSpecificFiles(projectPath, userChoices);

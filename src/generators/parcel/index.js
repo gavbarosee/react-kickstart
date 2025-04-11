@@ -12,6 +12,7 @@ import { setupStyling } from "../../shared/styling.js";
 import { setupLinting } from "../../shared/linting.js";
 import { setupTypeScript } from "../../shared/typescript.js";
 import { setupRedux } from "../../shared/redux/index.js";
+import { setupZustand } from "../../shared/zustand/index.js";
 
 export default async function generateParcelProject(
   projectPath,
@@ -44,6 +45,9 @@ export default async function generateParcelProject(
 
   if (userChoices.stateManagement === "redux") {
     setupRedux(projectPath, userChoices, "parcel");
+  }
+  if (userChoices.stateManagement === "zustand") {
+    setupZustand(projectPath, userChoices, "parcel");
   }
 
   ensureParcelSpecificFiles(projectPath, userChoices);

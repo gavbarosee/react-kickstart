@@ -70,6 +70,16 @@ export function getReduxDependencies() {
   };
 }
 
+export const zustand = {
+  zustand: "^4.4.7",
+};
+
+export function getZustandDependencies() {
+  return {
+    zustand: zustand.zustand,
+  };
+}
+
 export function getCoreDependencies() {
   return {
     react: core.react,

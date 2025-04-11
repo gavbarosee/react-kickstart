@@ -3,6 +3,7 @@ import path from "path";
 import { log } from "../../utils/logger.js";
 import { createPackageJson, createNextConfig } from "./config.js";
 import { setupRedux } from "../../shared/redux/index.js";
+import { setupZustand } from "../../shared/zustand/index.js";
 
 import { createAppRouterStructure } from "./app-router.js";
 import { createPagesRouterStructure } from "./pages-router.js";
@@ -42,6 +43,9 @@ export default async function generateNextjsProject(
 
   if (userChoices.stateManagement === "redux") {
     setupRedux(projectPath, userChoices, "nextjs");
+  }
+  if (userChoices.stateManagement === "zustand") {
+    setupZustand(projectPath, userChoices, "nextjs");
   }
 
   ensureNextjsSpecificFiles(projectPath, userChoices);

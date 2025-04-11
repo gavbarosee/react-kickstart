@@ -3,6 +3,7 @@ import path from "path";
 import { log } from "../../utils/logger.js";
 import { createPackageJson, createRsbuildConfig } from "./config.js";
 import { setupRedux } from "../../shared/redux/index.js";
+import { setupZustand } from "../../shared/zustand/index.js";
 
 import {
   createSourceFiles,
@@ -44,6 +45,9 @@ export default async function generateRsbuildProject(
 
   if (userChoices.stateManagement === "redux") {
     setupRedux(projectPath, userChoices, "rsbuild");
+  }
+  if (userChoices.stateManagement === "zustand") {
+    setupZustand(projectPath, userChoices, "rsbuild");
   }
 
   ensureRsbuildSpecificFiles(projectPath, userChoices);
