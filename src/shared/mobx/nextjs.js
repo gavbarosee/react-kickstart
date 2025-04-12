@@ -13,18 +13,15 @@ export function setupNextjsMobxStore(projectPath, userChoices) {
   const ext = userChoices.typescript ? "ts" : "js";
   const componentExt = userChoices.typescript ? "tsx" : "jsx";
 
-  // create lib directory for the store
   const libDir = path.join(projectPath, "lib");
   fs.ensureDirSync(libDir);
 
   createCounterStore(libDir, userChoices);
 
-  // For Next.js, we need a provider to ensure state doesn't bleed between requests
-  createStoreProvider(libDir, userChoices);
+  createStoreProvider(libDir, projectPath, userChoices);
 
   createCounterComponent(projectPath, userChoices);
 
-  // update the main page to use the Counter component
   updateMainPage(projectPath, userChoices);
 }
 
@@ -84,92 +81,85 @@ export class CounterStore {
   fs.writeFileSync(path.join(libDir, `counterStore.${ext}`), content);
 }
 
-function createStoreProvider(libDir, userChoices) {
-  const ext = userChoices.typescript ? "ts" : "js";
+function createStoreProvider(libDir, projectPath, userChoices) {
   const componentExt = userChoices.typescript ? "tsx" : "jsx";
 
   let content;
 
   if (userChoices.typescript) {
     content = `'use client';
-
-import React, { createContext, useContext } from 'react';
-import { CounterStore } from './counterStore';
-import { enableStaticRendering } from 'mobx-react-lite';
-
-// Enable static rendering in SSR environment
-enableStaticRendering(typeof window === 'undefined');
-
-// Define store context type
-type StoreContextValue = {
-  counterStore: CounterStore;
-};
-
-// Create context with default null value that will be checked before use
-const StoreContext = createContext<StoreContextValue | null>(null);
-
-// Hook to ensure stores are only created once per request
-export function useMobxStores() {
-  const context = useContext(StoreContext);
-  if (!context) {
-    throw new Error('useStores must be used within StoreProvider');
+  
+  import React, { createContext, useContext } from 'react';
+  import { CounterStore } from './counterStore';
+  import { enableStaticRendering } from 'mobx-react-lite';
+  
+  enableStaticRendering(typeof window === 'undefined');
+  
+  type StoreContextValue = {
+    counterStore: CounterStore;
+  };
+  
+  const StoreContext = createContext<StoreContextValue | null>(null);
+  
+  export function useMobxStores() {
+    const context = useContext(StoreContext);
+    if (!context) {
+      throw new Error('useStores must be used within StoreProvider');
+    }
+    return context;
   }
-  return context;
-}
-
-export function StoreProvider({ children }: { children: React.ReactNode }) {
-  // Initialize stores only once
-  const [stores] = React.useState(() => ({
-    counterStore: new CounterStore()
-  }));
-
-  return (
-    <StoreContext.Provider value={stores}>
-      {children}
-    </StoreContext.Provider>
-  );
-}
-`;
+  
+  export function StoreProvider({ children }: { children: React.ReactNode }) {
+    const [stores] = React.useState(() => ({
+      counterStore: new CounterStore()
+    }));
+  
+    return (
+      <StoreContext.Provider value={stores}>
+        {children}
+      </StoreContext.Provider>
+    );
+  }
+  `;
   } else {
     content = `'use client';
+  
+  import React, { createContext, useContext } from 'react';
+  import { CounterStore } from './counterStore';
+  import { enableStaticRendering } from 'mobx-react-lite';
+  
 
-import React, { createContext, useContext } from 'react';
-import { CounterStore } from './counterStore';
-import { enableStaticRendering } from 'mobx-react-lite';
+  enableStaticRendering(typeof window === 'undefined');
+  
 
-// Enable static rendering in SSR environment
-enableStaticRendering(typeof window === 'undefined');
+  const StoreContext = createContext(null);
+  
 
-// Create context with default null value that will be checked before use
-const StoreContext = createContext(null);
-
-// Hook to ensure stores are only created once per request
-export function useMobxStores() {
-  const context = useContext(StoreContext);
-  if (!context) {
-    throw new Error('useStores must be used within StoreProvider');
+  export function useMobxStores() {
+    const context = useContext(StoreContext);
+    if (!context) {
+      throw new Error('useStores must be used within StoreProvider');
+    }
+    return context;
   }
-  return context;
-}
+  
+  export function StoreProvider({ children }) {
 
-export function StoreProvider({ children }) {
-  // Initialize stores only once
-  const [stores] = React.useState(() => ({
-    counterStore: new CounterStore()
-  }));
-
-  return (
-    <StoreContext.Provider value={stores}>
-      {children}
-    </StoreContext.Provider>
-  );
-}
-`;
+    const [stores] = React.useState(() => ({
+      counterStore: new CounterStore()
+    }));
+  
+    return (
+      <StoreContext.Provider value={stores}>
+        {children}
+      </StoreContext.Provider>
+    );
+  }
+  `;
   }
 
-  fs.writeFileSync(path.join(libDir, `storeProvider.${ext}`), content);
+  fs.writeFileSync(path.join(libDir, `storeProvider.${componentExt}`), content);
 
-  // If using App Router, we need to update the layout to include the provider
   if (userChoices.nextRouting === "app") {
     updateLayoutWithProvider(projectPath, userChoices);
   } else {
@@ -185,37 +175,72 @@ function updateLayoutWithProvider(projectPath, userChoices) {
 
   let content = fs.readFileSync(layoutPath, "utf-8");
 
-  // Add import for StoreProvider
-  if (!content.includes("import { StoreProvider }")) {
-    if (content.includes("import")) {
-      // Add after existing imports
-      content = content.replace(
-        /import [^;]*;(?![^]*?import)/,
-        "$&\nimport { StoreProvider } from '../lib/storeProvider';"
-      );
-    } else {
-      // Add at the beginning (potentially after 'use client')
-      if (content.includes("'use client'")) {
-        content = content.replace(
-          /'use client';/,
-          "'use client';\nimport { StoreProvider } from '../lib/storeProvider';"
-        );
-      } else {
-        content =
-          "import { StoreProvider } from '../lib/storeProvider';\n" + content;
-      }
-    }
+  const clientLayoutPath = path.join(
+    projectPath,
+    "app",
+    `ClientLayout.${componentExt}`
+  );
+  const clientLayoutContent = userChoices.typescript
+    ? `'use client';
+  
+  import React from 'react';
+  import { StoreProvider } from '../lib/storeProvider';
+  
+  export default function ClientLayout({ children }: { children: React.ReactNode }) {
+    return <StoreProvider>{children}</StoreProvider>;
   }
+  `
+    : `'use client';
+  
+  import React from 'react';
+  import { StoreProvider } from '../lib/storeProvider';
+  
+  export default function ClientLayout({ children }) {
+    return <StoreProvider>{children}</StoreProvider>;
+  }
+  `;
 
-  // Wrap children with StoreProvider
-  if (!content.includes("<StoreProvider>")) {
-    content = content.replace(
-      /<body[^>]*>([\s\S]*?)<\/body>/,
-      "<body><StoreProvider>$1</StoreProvider></body>"
+  fs.writeFileSync(clientLayoutPath, clientLayoutContent);
+
+  const newLayoutContent = userChoices.typescript
+    ? `import ClientLayout from './ClientLayout';
+  import './globals.css';
+  
+  export const metadata = {
+    title: '${path.basename(projectPath)}',
+    description: 'Created with React Kickstart',
+  };
+  
+  export default function RootLayout({
+    children,
+  }: {
+    children: React.ReactNode;
+  }) {
+    return (
+      <html lang="en">
+        <body><ClientLayout>{children}</ClientLayout></body>
+      </html>
     );
   }
+  `
+    : `import ClientLayout from './ClientLayout';
+  import './globals.css';
+  
+  export const metadata = {
+    title: '${path.basename(projectPath)}',
+    description: 'Created with React Kickstart',
+  };
+  
+  export default function RootLayout({ children }) {
+    return (
+      <html lang="en">
+        <body><ClientLayout>{children}</ClientLayout></body>
+      </html>
+    );
+  }
+  `;
 
-  fs.writeFileSync(layoutPath, content);
+  fs.writeFileSync(layoutPath, newLayoutContent);
 }
 
 function updateAppWithProvider(projectPath, userChoices) {
@@ -258,70 +283,72 @@ function createCounterComponent(projectPath, userChoices) {
   fs.ensureDirSync(componentsDir);
 
   const content = `'use client';
-
-${
-  userChoices.typescript ? "import React from 'react';\n" : ""
-}import { observer } from 'mobx-react-lite';
-import { useMobxStores } from '../lib/storeProvider';
   
-export const Counter = observer(() => {
-  const { counterStore } = useMobxStores();
-
-  return (
-    <div${
-      userChoices.styling === "tailwind"
-        ? ' className="p-4 border rounded shadow-sm my-4 max-w-sm mx-auto"'
-        : ""
-    }>
-      <h2${
-        userChoices.styling === "tailwind"
-          ? ' className="text-xl font-bold mb-4"'
-          : ""
-      }>MobX Counter</h2>
+  ${
+    userChoices.typescript ? "import React from 'react';\n" : ""
+  }import { observer } from 'mobx-react-lite';
+  import { useMobxStores } from '../lib/storeProvider';
+    
+  export const Counter = observer(() => {
+    const { counterStore } = useMobxStores();
+  
+    return (
       <div${
         userChoices.styling === "tailwind"
-          ? ' className="flex items-center justify-center space-x-4 mb-4"'
+          ? ' className="p-4 border rounded shadow-sm my-4 max-w-sm mx-auto"'
           : ""
       }>
-        <button
-          ${
-            userChoices.styling === "tailwind"
-              ? 'className="px-4 py-2 bg-red-500 text-white rounded"'
-              : "style={{ padding: '8px 16px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}"
-          }
-          onClick={() => counterStore.decrement()}
-        >
-          -
-        </button>
-        <span${
+        <h2${
           userChoices.styling === "tailwind"
-            ? ' className="text-2xl font-bold"'
+            ? ' className="text-xl font-bold mb-4"'
             : ""
-        }>{counterStore.count}</span>
+        }>MobX Counter</h2>
+        <div${
+          userChoices.styling === "tailwind"
+            ? ' className="flex items-center justify-center space-x-4 mb-4"'
+            : ""
+        }>
+          <button
+            ${
+              userChoices.styling === "tailwind"
+                ? 'className="px-4 py-2 bg-red-500 text-white rounded"'
+                : "style={{ padding: '8px 16px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}"
+            }
+            onClick={() => counterStore.decrement()}
+          >
+            -
+          </button>
+          <span${
+            userChoices.styling === "tailwind"
+              ? ' className="text-2xl font-bold"'
+              : ""
+          }>{counterStore.count}</span>
+          <button
+            ${
+              userChoices.styling === "tailwind"
+                ? 'className="px-4 py-2 bg-blue-500 text-white rounded"'
+                : "style={{ padding: '8px 16px', backgroundColor: '#2196f3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}"
+            }
+            onClick={() => counterStore.increment()}
+          >
+            +
+          </button>
+        </div>
         <button
           ${
             userChoices.styling === "tailwind"
-              ? 'className="px-4 py-2 bg-blue-500 text-white rounded"'
-              : "style={{ padding: '8px 16px', backgroundColor: '#2196f3', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}"
+              ? 'className="px-4 py-2 bg-green-500 text-white rounded w-full"'
+              : "style={{ padding: '8px 16px', backgroundColor: '#4caf50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '100%' }}"
           }
-          onClick={() => counterStore.increment()}
+          onClick={() => counterStore.incrementByAmount(5)}
         >
-          +
+          Add 5
         </button>
       </div>
-      <button
-        ${
-          userChoices.styling === "tailwind"
-            ? 'className="px-4 py-2 bg-green-500 text-white rounded w-full"'
-            : "style={{ padding: '8px 16px', backgroundColor: '#4caf50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '100%' }}"
-        }
-        onClick={() => counterStore.incrementByAmount(5)}
-      >
-        Add 5
-      </button>
-    </div>
-  );
-});`;
+    );
+  });`;
+
+  fs.writeFileSync(path.join(componentsDir, `Counter.${ext}`), content);
 }
 
 function updateMainPage(projectPath, userChoices) {
