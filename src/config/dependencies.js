@@ -58,6 +58,41 @@ export const frameworks = {
   },
 };
 
+export const routing = {
+  reactRouter: {
+    reactRouterDom: "^6.21.1",
+  },
+  tanstackRouter: {
+    router: "^0.0.1-beta.28",
+    routerDevtools: "^0.0.1-beta.28",
+    routerReact: "^0.0.1-beta.28",
+  },
+  wouter: {
+    wouter: "^2.12.1",
+  },
+};
+
+export function getRoutingDependencies(routingOption) {
+  switch (routingOption) {
+    case "react-router":
+      return {
+        "react-router-dom": routing.reactRouter.reactRouterDom,
+      };
+    case "tanstack-router":
+      return {
+        "@tanstack/router": routing.tanstackRouter.router,
+        "@tanstack/router-devtools": routing.tanstackRouter.routerDevtools,
+        "@tanstack/react-router": routing.tanstackRouter.routerReact,
+      };
+    case "wouter":
+      return {
+        wouter: routing.wouter.wouter,
+      };
+    default:
+      return {};
+  }
+}
+
 export const redux = {
   reduxToolkit: "^2.0.1",
   reactRedux: "^9.0.4",

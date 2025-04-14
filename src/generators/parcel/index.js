@@ -14,6 +14,7 @@ import { setupTypeScript } from "../../shared/typescript.js";
 import { setupRedux } from "../../shared/redux/index.js";
 import { setupZustand } from "../../shared/zustand/index.js";
 import { setupMobx } from "../../shared/mobx/index.js";
+import { setupRouting } from "../../shared/routing/index.js";
 
 export default async function generateParcelProject(
   projectPath,
@@ -31,6 +32,10 @@ export default async function generateParcelProject(
   createHtmlFile(projectPath, projectName, userChoices, "parcel");
 
   createSourceFiles(projectPath, userChoices, "parcel");
+
+  if (userChoices.routing && userChoices.routing !== "none") {
+    setupRouting(projectPath, userChoices, "parcel");
+  }
 
   if (userChoices.styling === "tailwind" || userChoices.styling === "css") {
     setupStyling(projectPath, userChoices, "parcel");

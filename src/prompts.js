@@ -212,8 +212,74 @@ export async function promptUser(options = {}) {
     if (selection === "nextjs") {
       return nextjsOptionsPrompt();
     } else {
+      return routingOptionsPrompt();
+    }
+  }
+
+  async function routingOptionsPrompt() {
+    refreshDisplay();
+
+    // skip routing prompt for Next.js since it has its own routing system
+    if (answers.framework === "nextjs") {
       return languageOptionsPrompt();
     }
+
+    const stepNum = 3;
+    section(`Step ${stepNum}/10: Routing Options`);
+
+    const choices = [
+      {
+        name:
+          chalk.blue("React Router") +
+          chalk.gray(" - Popular, comprehensive routing"),
+        value: "react-router",
+      },
+      {
+        name:
+          chalk.green("TanStack Router") +
+          chalk.gray(" - Type-safe routing with data loading"),
+        value: "tanstack-router",
+      },
+      {
+        name:
+          chalk.yellow("Wouter") +
+          chalk.gray(" - Lightweight, hook-based router"),
+        value: "wouter",
+      },
+      {
+        name: chalk.gray("None") + chalk.gray(" - No routing library"),
+        value: "none",
+      },
+      new inquirer.Separator(),
+      {
+        name: chalk.yellow("← Back to previous step"),
+        value: "BACK_OPTION",
+      },
+    ];
+
+    const { selection } = await inquirer.prompt([
+      {
+        type: "list",
+        name: "selection",
+        message: "Which routing library would you like to use?",
+        choices: choices,
+        default: function () {
+          if (answers.routing) {
+            return choices.findIndex((c) => c.value === answers.routing);
+          }
+          return 0; // Default to React Router
+        },
+      },
+    ]);
+
+    if (selection === "BACK_OPTION") {
+      history.pop();
+      return frameworkPrompt();
+    }
+
+    answers.routing = selection;
+    history.push("routing");
+    return languageOptionsPrompt();
   }
 
   async function nextjsOptionsPrompt() {
@@ -580,10 +646,10 @@ export function getDefaultChoices() {
     typescript: false,
     linting: true,
     styling: "tailwind",
+    routing: "none",
     initGit: true,
     openEditor: false,
     editor: "vscode",
     autoStart: true,
-    browser: "default",
   };
 }

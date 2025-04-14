@@ -21,6 +21,15 @@ function getStylingDescriptor(styling) {
   return descriptors[styling] || "";
 }
 
+function getRoutingDescriptor(routing) {
+  const descriptors = {
+    "react-router": "Popular, comprehensive routing",
+    "tanstack-router": "Type-safe routing with data loading",
+    wouter: "Lightweight, hook-based router",
+  };
+  return descriptors[routing] || "";
+}
+
 export function generateSummary(projectPath, projectName, userChoices) {
   const getStatusSymbol = (value) =>
     value ? chalk.green("✓") : chalk.red("✗");
@@ -53,6 +62,17 @@ export function generateSummary(projectPath, projectName, userChoices) {
       chalk.yellow(userChoices.framework),
       getFrameworkDescriptor(userChoices.framework)
     ),
+
+    userChoices.framework !== "nextjs" &&
+    userChoices.routing &&
+    userChoices.routing !== "none"
+      ? formatItem(
+          "🔄",
+          "Routing",
+          chalk.yellow(userChoices.routing),
+          getRoutingDescriptor(userChoices.routing)
+        )
+      : "",
 
     // conditionally show routing for next.js
     userChoices.framework === "nextjs"

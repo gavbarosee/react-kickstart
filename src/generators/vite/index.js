@@ -14,6 +14,7 @@ import { setupStyling } from "../../shared/styling.js";
 import { setupLinting } from "../../shared/linting.js";
 import { setupTypeScript } from "../../shared/typescript.js";
 import { setupMobx } from "../../shared/mobx/index.js";
+import { setupRouting } from "../../shared/routing/index.js";
 
 export default async function generateViteProject(
   projectPath,
@@ -31,6 +32,10 @@ export default async function generateViteProject(
   createViteConfig(projectPath, userChoices);
 
   createSourceFiles(projectPath, userChoices, "vite");
+
+  if (userChoices.routing && userChoices.routing !== "none") {
+    setupRouting(projectPath, userChoices, "vite");
+  }
 
   if (userChoices.styling === "tailwind" || userChoices.styling === "css") {
     setupStyling(projectPath, userChoices, "vite");

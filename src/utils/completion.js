@@ -86,6 +86,36 @@ export function getFrameworkInfo(framework) {
   );
 }
 
+function getRoutingInfo(routing) {
+  const info = {
+    "react-router": {
+      docs: "https://reactrouter.com/en/main",
+      tips: [
+        "Use useParams() for route parameters",
+        "Explore useNavigate() for programmatic navigation",
+        "Consider React Router's data API for data loading",
+      ],
+    },
+    "tanstack-router": {
+      docs: "https://tanstack.com/router/latest",
+      tips: [
+        "Use type-safe route definitions",
+        "Take advantage of built-in loaders for data fetching",
+        "Explore the devtools for debugging routes",
+      ],
+    },
+    wouter: {
+      docs: "https://github.com/molefrog/wouter",
+      tips: [
+        "Use useRoute for matching patterns",
+        "Explore useLocation for current path",
+        "Try the hook-based API for simplicity",
+      ],
+    },
+  };
+  return info[routing] || { docs: "", tips: [] };
+}
+
 function getStylingInfo(styling) {
   const info = {
     tailwind: {
@@ -266,6 +296,13 @@ export function generateCompletionSummary(
   const tipsList = [
     ...frameworkInfo.tips.map((tip) => `   • ${userChoices.framework}: ${tip}`),
     ...stylingInfo.tips.map((tip) => `   • ${userChoices.styling}: ${tip}`),
+    ...(userChoices.framework !== "nextjs" &&
+    userChoices.routing &&
+    userChoices.routing !== "none"
+      ? getRoutingInfo(userChoices.routing).tips.map(
+          (tip) => `   • ${userChoices.routing}: ${tip}`
+        )
+      : []),
     ...(userChoices.typescript
       ? languageInfo.tips.map((tip) => `   • TypeScript: ${tip}`)
       : []),
@@ -295,6 +332,15 @@ export function generateCompletionSummary(
     chalk.bgBlue(`${figures.pointer} Documentation:`),
     `   • ${userChoices.framework}: ${chalk.underline(frameworkInfo.docs)}`,
     `   • ${userChoices.styling}: ${chalk.underline(stylingInfo.docs)}`,
+    ...(userChoices.framework !== "nextjs" &&
+    userChoices.routing &&
+    userChoices.routing !== "none"
+      ? [
+          `   • ${userChoices.routing}: ${chalk.underline(
+            getRoutingInfo(userChoices.routing).docs
+          )}`,
+        ]
+      : []),
     ...(userChoices.typescript
       ? [`   • TypeScript: ${chalk.underline(languageInfo.docs)}`]
       : []),

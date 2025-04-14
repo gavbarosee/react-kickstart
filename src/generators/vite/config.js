@@ -10,6 +10,7 @@ import {
   getZustandDependencies,
   getReduxDependencies,
   getMobxDependencies,
+  getRoutingDependencies,
 } from "../../config/dependencies.js";
 
 export function createPackageJson(projectPath, projectName, userChoices) {
@@ -31,6 +32,13 @@ export function createPackageJson(projectPath, projectName, userChoices) {
       vite: frameworks.vite.vite,
     },
   };
+
+  if (userChoices.routing && userChoices.routing !== "none") {
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...getRoutingDependencies(userChoices.routing),
+    };
+  }
 
   if (userChoices.typescript) {
     packageJson.devDependencies = {

@@ -10,6 +10,7 @@ import {
   getReduxDependencies,
   getZustandDependencies,
   getMobxDependencies,
+  getRoutingDependencies,
 } from "../../config/dependencies.js";
 
 export function createPackageJson(projectPath, projectName, userChoices) {
@@ -33,6 +34,13 @@ export function createPackageJson(projectPath, projectName, userChoices) {
       rimraf: frameworks.parcel.rimraf,
     },
   };
+
+  if (userChoices.routing && userChoices.routing !== "none") {
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...getRoutingDependencies(userChoices.routing),
+    };
+  }
 
   if (userChoices.typescript) {
     packageJson.devDependencies = {
