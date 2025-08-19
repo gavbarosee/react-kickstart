@@ -33,14 +33,6 @@ export async function initGit(projectPath, userChoices) {
         "next-env.d.ts",
         "",
       ],
-      parcel: [
-        "# Parcel build output and cache",
-        "/dist/",
-        "/.parcel-cache/",
-        ".cache/",
-        "",
-      ],
-      rsbuild: ["# Rsbuild build output and cache", "/dist/", "/.rsbuild/", ""],
     };
 
     const gitignoreContent = `# dependencies
@@ -96,8 +88,6 @@ pnpm-debug.log*
         {
           vite: "Vite",
           nextjs: "Next.js",
-          parcel: "Parcel",
-          rsbuild: "Rsbuild",
         }[framework] || framework;
 
       console.log(

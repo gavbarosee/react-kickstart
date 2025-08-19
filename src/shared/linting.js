@@ -6,7 +6,7 @@ import path from "path";
  *
  * @param {string} projectPath - Path to the project root
  * @param {Object} userChoices - User configuration options
- * @param {string} framework - The framework being used (vite, nextjs, rsbuild, parcel)
+ * @param {string} framework - The framework being used (vite, nextjs)
  * @returns {void}
  */
 export function setupLinting(projectPath, userChoices, framework = "vite") {

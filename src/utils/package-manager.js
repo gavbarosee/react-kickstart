@@ -31,16 +31,7 @@ function createProgressBar(framework = "vite") {
       increment: 15, // Fast increments
       description: "Fast installation",
     },
-    rsbuild: {
-      interval: 300, // Update every 300ms
-      increment: 12, // Fairly fast increments
-      description: "Fast installation",
-    },
-    parcel: {
-      interval: 500, // Update every 500ms
-      increment: 3, // Slower increments
-      description: "Standard installation",
-    },
+
     nextjs: {
       interval: 500, // Update every 500ms
       increment: 2, // Slowest increments
@@ -132,9 +123,7 @@ export async function installDependencies(
           dep.includes("vite") ||
           dep.includes("webpack") ||
           dep.includes("babel") ||
-          dep.includes("parcel") ||
           dep.includes("build") ||
-          dep.includes("rsbuild") ||
           dep.includes("next")
       ),
       "Dev tools": devDependencies.filter(

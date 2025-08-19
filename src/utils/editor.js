@@ -134,14 +134,7 @@ function createEditorConfig(projectPath, editor, userChoices) {
   });
 
   // create launch.json for debugging
-  const launchPort =
-    framework === "nextjs"
-      ? 3000
-      : framework === "parcel"
-      ? 1234
-      : framework === "rsbuild"
-      ? 8080
-      : 5173; // default for Vite
+  const launchPort = framework === "nextjs" ? 3000 : 5173; // default for Vite
 
   const launch = {
     version: "0.2.0",

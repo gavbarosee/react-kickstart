@@ -56,24 +56,6 @@ export function getFrameworkInfo(framework) {
         "Use next/image for optimized image loading",
       ],
     },
-    parcel: {
-      docs: "https://parceljs.org/docs/",
-      port: 1234,
-      buildDir: "dist",
-      tips: [
-        "Zero-configuration by default",
-        "Add transformations via package.json if needed",
-      ],
-    },
-    rsbuild: {
-      docs: "https://rsbuild.dev/",
-      port: 8080,
-      buildDir: "dist",
-      tips: [
-        "Performance-focused building with extensive optimizations",
-        "Configure in rsbuild.config.js",
-      ],
-    },
   };
 
   return (
@@ -171,10 +153,7 @@ function getLanguageInfo(typescript) {
 
 function getCommandExamples(packageManager, framework) {
   const pmRun = packageManager === "yarn" ? "yarn" : "npm run";
-  const devCommand =
-    framework === "parcel" && packageManager === "npm"
-      ? "npm start"
-      : `${pmRun} dev`;
+  const devCommand = `${pmRun} dev`;
 
   const frameworkInfo = getFrameworkInfo(framework);
 

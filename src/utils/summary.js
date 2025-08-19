@@ -6,8 +6,6 @@ function getFrameworkDescriptor(framework) {
   const descriptors = {
     vite: "Fast dev server, optimized builds",
     nextjs: "SSR, full-stack framework",
-    rsbuild: "Performance-focused bundler",
-    parcel: "Zero-configuration bundler",
   };
   return descriptors[framework] || "";
 }

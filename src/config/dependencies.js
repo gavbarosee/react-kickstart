@@ -47,15 +47,6 @@ export const frameworks = {
   nextjs: {
     next: "^14.0.3",
   },
-  rsbuild: {
-    core: "^0.2.3",
-    pluginReact: "^0.2.3",
-  },
-  parcel: {
-    parcel: "^2.10.3",
-    process: "^0.11.10",
-    rimraf: "^5.0.5",
-  },
 };
 
 export const routing = {

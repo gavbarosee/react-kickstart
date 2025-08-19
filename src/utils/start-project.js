@@ -171,10 +171,7 @@ export async function startProject(projectPath, userChoices) {
     const devUrl = `http://localhost:${frameworkInfo.port}`;
 
     const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
-    const devCommand =
-      userChoices.framework === "parcel" && userChoices.packageManager === "npm"
-        ? "npm start"
-        : `${pmRun} dev`;
+    const devCommand = false ? "npm start" : `${pmRun} dev`;
 
     const [cmd, ...args] = devCommand.split(" ");
 
@@ -235,10 +232,7 @@ export async function startProject(projectPath, userChoices) {
     );
 
     const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
-    const devCommand =
-      userChoices.framework === "parcel" && userChoices.packageManager === "npm"
-        ? "npm start"
-        : `${pmRun} dev`;
+    const devCommand = false ? "npm start" : `${pmRun} dev`;
 
     console.log(chalk.bold(`  cd ${path.basename(projectPath || ".")}`));
     console.log(chalk.bold(`  ${devCommand}`));

@@ -8,8 +8,6 @@ import {
 } from "../utils/enhanced-logger.js";
 import generateViteProject from "./vite/index.js";
 import generateNextjsProject from "./nextjs/index.js";
-import generateRsbuildProject from "./rsbuild/index.js";
-import generateParcelProject from "./parcel/index.js";
 
 export default async function generateProject(
   projectPath,
@@ -58,12 +56,6 @@ export default async function generateProject(
         break;
       case "nextjs":
         await generateNextjsProject(projectPath, projectName, userChoices);
-        break;
-      case "rsbuild":
-        await generateRsbuildProject(projectPath, projectName, userChoices);
-        break;
-      case "parcel":
-        await generateParcelProject(projectPath, projectName, userChoices);
         break;
       default:
         throw new Error(`Unsupported framework: ${userChoices.framework}`);

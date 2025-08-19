@@ -13,7 +13,7 @@ import {
  *
  * @param {string} projectPath - Path to the project root
  * @param {Object} userChoices - User configuration options
- * @param {string} framework - The framework being used (vite, nextjs, rsbuild, parcel)
+ * @param {string} framework - The framework being used (vite, nextjs)
  * @returns {void}
  */
 export function createSourceFiles(
@@ -114,11 +114,7 @@ export function createHtmlFile(
 
   const fileExt = userChoices.typescript ? "tsx" : "jsx";
 
-  // For Parcel, the HTML file goes in the src directory
-  const htmlPath =
-    framework === "parcel"
-      ? path.join(projectPath, "src", "index.html")
-      : path.join(projectPath, "index.html");
+  const htmlPath = path.join(projectPath, "index.html");
 
   // Create different HTML content based on the framework
   let htmlContent;
@@ -138,22 +134,8 @@ export function createHtmlFile(
   </body>
 </html>
 `;
-  } else if (framework === "parcel") {
-    htmlContent = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${projectName}</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="./index.${fileExt}"></script>
-  </body>
-</html>
-`;
   } else {
-    // Default for Rsbuild and others
+    // Default for other frameworks
     htmlContent = `<!DOCTYPE html>
 <html lang="en">
   <head>

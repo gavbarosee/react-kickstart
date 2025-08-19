@@ -16,9 +16,7 @@
     "cli",
     "generator",
     "vite",
-    "nextjs",
-    "rsbuild",
-    "parcel"
+    "nextjs"
   ],
   "author": "Gav Barosee",
   "license": "MIT",

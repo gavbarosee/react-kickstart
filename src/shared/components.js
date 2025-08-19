@@ -9,7 +9,7 @@
  * Creates a React component using styled-components
  *
  * @param {string} fileExt - File extension (jsx or tsx)
- * @param {string} framework - Framework name (vite, nextjs, parcel, rsbuild)
+ * @param {string} framework - Framework name (vite, nextjs)
  * @param {boolean} isNextAppRouter - Whether this is a Next.js app router component
  * @returns {string} Component code
  */
@@ -119,45 +119,6 @@ export function getStyledComponentsApp(
       );
     }
     `;
-  } else if (framework === "rsbuild") {
-    // Specific template for Rsbuild
-    return `${imports}const Container = styled.div\`
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    text-align: center;
-  \`;
-  
-  const Title = styled.h1\`
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-  \`;
-  
-  const Button = styled.button\`
-    background-color: #0070f3;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    cursor: pointer;
-    
-    &:hover {
-      background-color: #0051a2;
-    }
-  \`;
-  
-  function App() {
-    return (
-      <Container>
-        <Title>Welcome to React with Rsbuild</Title>
-        <p>Edit <code>src/App.${fileExt}</code> to get started</p>
-        <Button>Get Started</Button>
-      </Container>
-    );
-  }
-  
-  export default App;`;
   } else {
     return `${imports}const Container = styled.div\`
       max-width: 1200px;
@@ -204,7 +165,7 @@ export function getStyledComponentsApp(
  * Creates a React component using Tailwind CSS
  *
  * @param {string} fileExt - File extension (jsx or tsx)
- * @param {string} framework - Framework name (vite, nextjs, parcel, rsbuild)
+ * @param {string} framework - Framework name (vite, nextjs)
  * @param {boolean} isNextAppRouter - Whether this is a Next.js app router component
  * @returns {string} Component code
  */
@@ -252,23 +213,6 @@ export function getTailwindApp(
       );
     }
     `;
-  } else if (framework === "rsbuild") {
-    // Specific template for Rsbuild
-    return `import React from 'react';
-  
-  function App() {
-    return (
-      <div className="max-w-4xl mx-auto p-8 text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to React with Rsbuild</h1>
-        <p className="mb-4">Edit <code className="bg-gray-100 p-1 rounded">src/App.${fileExt}</code> to get started</p>
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Get Started
-        </button>
-      </div>
-    );
-  }
-  
-  export default App;`;
   } else {
     // Default for other frameworks (Parcel, Next.js pages)
     return `import React from 'react';
@@ -294,7 +238,7 @@ export function getTailwindApp(
  * Creates a React component using plain CSS
  *
  * @param {string} fileExt - File extension (jsx or tsx)
- * @param {string} framework - Framework name (vite, nextjs, parcel, rsbuild)
+ * @param {string} framework - Framework name (vite, nextjs)
  * @param {boolean} isNextAppRouter - Whether this is a Next.js app router component
  * @returns {string} Component code
  */
@@ -338,22 +282,6 @@ export function getBasicCssApp(
       );
     }
     `;
-  } else if (framework === "rsbuild") {
-    return `import React from 'react';
-    import './App.css';
-    
-    function App() {
-      return (
-        <div className="container">
-          <h1>Welcome to React with Rsbuild</h1>
-          <p>Edit <code>src/App.${fileExt}</code> to get started</p>
-          <button>Get Started</button>
-        </div>
-      );
-    }
-    
-    export default App;
-    `;
   } else {
     // Default for other frameworks (Parcel, Next.js pages)
     return `import React from 'react';
@@ -379,7 +307,7 @@ export function getBasicCssApp(
  *
  * @param {string} fileExt - File extension (jsx or tsx)
  * @param {Object} userChoices - User configuration options
- * @param {string} framework - Framework name (vite, parcel, rsbuild)
+ * @param {string} framework - Framework name (vite, nextjs)
  * @returns {string} Entry point file code
  */
 export function createEntryPointContent(
@@ -401,32 +329,6 @@ export function createEntryPointContent(
         <App />
       </React.StrictMode>,
     )
-    `;
-  } else if (framework === "parcel") {
-    return `import React from 'react';
-    import { createRoot } from 'react-dom/client';
-    import App from './App';
-    ${hasCss ? `import './styles.css';` : ""}
-    
-    const root = createRoot(document.getElementById('root'));
-    root.render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    );
-    `;
-  } else if (framework === "rsbuild") {
-    // Specific entry point content for Rsbuild
-    return `import React from 'react';
-    import ReactDOM from 'react-dom/client';
-    import App from './App';
-    ${hasCss ? `import './index.css';` : ""}
-    
-    ReactDOM.createRoot(document.getElementById('root')).render(
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    );
     `;
   } else {
     // Default for others

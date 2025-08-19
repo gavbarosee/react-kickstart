@@ -126,10 +126,8 @@ export function categorizeDependencies(packageJsonPath) {
       } else if (
         name.includes("vite") ||
         name.includes("webpack") ||
-        name.includes("parcel") ||
         name.includes("babel") ||
-        name.includes("build") ||
-        name.includes("rsbuild")
+        name.includes("build")
       ) {
         categories["Build tools"].push(dep);
       } else if (
@@ -200,16 +198,6 @@ export function getProjectStructure(framework) {
       { label: "public/", description: "Static assets" },
       { label: "styles/", description: "CSS/styling files" },
     ];
-  } else if (framework === "rsbuild") {
-    return [
-      ...commonStructure,
-      { label: "config/", description: "Build configuration" },
-    ];
-  } else if (framework === "parcel") {
-    return [
-      ...commonStructure,
-      { label: "src/index.html", description: "Entry HTML file" },
-    ];
   }
 
   return commonStructure;
@@ -234,16 +222,6 @@ export function getConfigurationFiles(
     configs.push({
       label: "next.config.js",
       description: "Next.js configuration",
-    });
-  } else if (framework === "rsbuild") {
-    configs.push({
-      label: `rsbuild.config.${typescript ? "ts" : "js"}`,
-      description: "Rsbuild configuration",
-    });
-  } else if (framework === "parcel") {
-    configs.push({
-      label: ".parcelrc",
-      description: "Parcel configuration",
     });
   }
 

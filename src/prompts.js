@@ -169,14 +169,6 @@ export async function promptUser(options = {}) {
         name: chalk.blue("▲  Next.js") + " - SSR, full-stack framework",
         value: "nextjs",
       },
-      {
-        name: chalk.cyan("🚀 Rsbuild") + " - Performance-focused bundler",
-        value: "rsbuild",
-      },
-      {
-        name: chalk.magenta("📦 Parcel") + " - Zero-configuration bundler",
-        value: "parcel",
-      },
     ];
 
     // add back option (except for first step)
@@ -225,7 +217,7 @@ export async function promptUser(options = {}) {
     }
 
     const stepNum = 3;
-    section(`Step ${stepNum}/10: Routing Options`);
+    section(`Step ${stepNum}/9: Routing Options`);
 
     const choices = [
       {

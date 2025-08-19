@@ -6,7 +6,7 @@ import path from "path";
  *
  * @param {string} projectPath - Path to the project root
  * @param {Object} userChoices - User configuration options
- * @param {string} framework - The framework being used (vite, nextjs, rsbuild, parcel)
+ * @param {string} framework - The framework being used (vite, nextjs)
  * @returns {void}
  */
 export function setupStyling(projectPath, userChoices, framework = "vite") {
@@ -59,18 +59,6 @@ function getStylingInfo(framework, userChoices) {
         "./pages/**/*.{js,ts,jsx,tsx,mdx}",
         "./components/**/*.{js,ts,jsx,tsx,mdx}",
         "./app/**/*.{js,ts,jsx,tsx,mdx}",
-      ];
-      break;
-
-    case "parcel":
-      info.mainCssFilename = "styles.css";
-      info.tailwindContentPaths = ["./src/**/*.{html,js,jsx,ts,tsx}"];
-      break;
-
-    case "rsbuild":
-      info.tailwindContentPaths = [
-        "./src/**/*.{js,jsx,ts,tsx}",
-        "./index.html",
       ];
       break;
   }

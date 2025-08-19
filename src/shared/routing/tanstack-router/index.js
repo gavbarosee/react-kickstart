@@ -1,8 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
 import { setupViteTanStackRouter } from "./vite.js";
-import { setupRsbuildTanStackRouter } from "./rsbuild.js";
-import { setupParcelTanStackRouter } from "./parcel.js";
 
 /**
  * Sets up TanStack Router based on the framework
@@ -18,12 +16,6 @@ export function setupTanStackRouter(projectPath, userChoices, framework) {
   switch (framework) {
     case "vite":
       setupViteTanStackRouter(projectPath, userChoices);
-      break;
-    case "rsbuild":
-      setupRsbuildTanStackRouter(projectPath, userChoices);
-      break;
-    case "parcel":
-      setupParcelTanStackRouter(projectPath, userChoices);
       break;
   }
 }

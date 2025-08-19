@@ -1,8 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
 import { setupViteWouter } from "./vite.js";
-import { setupRsbuildWouter } from "./rsbuild.js";
-import { setupParcelWouter } from "./parcel.js";
 
 /**
  * Sets up Wouter based on the framework
@@ -19,12 +17,6 @@ export function setupWouter(projectPath, userChoices, framework) {
   switch (framework) {
     case "vite":
       setupViteWouter(projectPath, userChoices);
-      break;
-    case "rsbuild":
-      setupRsbuildWouter(projectPath, userChoices);
-      break;
-    case "parcel":
-      setupParcelWouter(projectPath, userChoices);
       break;
   }
 }
