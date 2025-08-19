@@ -460,12 +460,7 @@ export async function promptUser(options = {}) {
           " - Lightweight state management solution",
         value: "zustand",
       },
-      {
-        name:
-          chalk.cyan("🔄 MobX") +
-          " - Simple, scalable state management with observables",
-        value: "mobx",
-      },
+
       {
         name: chalk.gray("None") + " - No global state management",
         value: "none",
@@ -489,7 +484,7 @@ export async function promptUser(options = {}) {
               (c) => c.value === answers.stateManagement
             );
           }
-          return 2;
+          return 1;
         },
       },
     ]);

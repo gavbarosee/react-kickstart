@@ -13,7 +13,7 @@ import {
 import { setupStyling } from "../../shared/styling.js";
 import { setupLinting } from "../../shared/linting.js";
 import { setupTypeScript } from "../../shared/typescript.js";
-import { setupMobx } from "../../shared/mobx/index.js";
+
 import { setupRouting } from "../../shared/routing/index.js";
 
 export default async function generateViteProject(
@@ -54,9 +54,6 @@ export default async function generateViteProject(
   }
   if (userChoices.stateManagement === "zustand") {
     setupZustand(projectPath, userChoices, "vite");
-  }
-  if (userChoices.stateManagement === "mobx") {
-    setupMobx(projectPath, userChoices, "vite");
   }
 
   ensureViteSpecificFiles(projectPath, userChoices);

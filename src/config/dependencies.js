@@ -88,18 +88,6 @@ export function getZustandDependencies() {
   };
 }
 
-export const mobx = {
-  mobx: "^6.12.0",
-  mobxReactLite: "^4.0.5",
-};
-
-export function getMobxDependencies() {
-  return {
-    mobx: mobx.mobx,
-    "mobx-react-lite": mobx.mobxReactLite,
-  };
-}
-
 export function getCoreDependencies() {
   return {
     react: core.react,

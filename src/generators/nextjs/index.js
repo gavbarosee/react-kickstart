@@ -11,7 +11,6 @@ import { createPagesRouterStructure } from "./pages-router.js";
 import { createDirectoryStructure } from "../../shared/file-generation.js";
 import { setupLinting } from "../../shared/linting.js";
 import { setupTypeScript } from "../../shared/typescript.js";
-import { setupMobx } from "../../shared/mobx/index.js";
 
 export default async function generateNextjsProject(
   projectPath,
@@ -47,9 +46,6 @@ export default async function generateNextjsProject(
   }
   if (userChoices.stateManagement === "zustand") {
     setupZustand(projectPath, userChoices, "nextjs");
-  }
-  if (userChoices.stateManagement === "mobx") {
-    setupMobx(projectPath, userChoices, "nextjs");
   }
 
   ensureNextjsSpecificFiles(projectPath, userChoices);

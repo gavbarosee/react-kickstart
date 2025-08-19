@@ -9,7 +9,6 @@ import {
   frameworks,
   getZustandDependencies,
   getReduxDependencies,
-  getMobxDependencies,
   getRoutingDependencies,
 } from "../../config/dependencies.js";
 
@@ -77,12 +76,6 @@ export function createPackageJson(projectPath, projectName, userChoices) {
     packageJson.dependencies = {
       ...packageJson.dependencies,
       ...getZustandDependencies(),
-    };
-  }
-  if (userChoices.stateManagement === "mobx") {
-    packageJson.dependencies = {
-      ...packageJson.dependencies,
-      ...getMobxDependencies(),
     };
   }
 
