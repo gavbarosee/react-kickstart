@@ -22,8 +22,6 @@ function getStylingDescriptor(styling) {
 function getRoutingDescriptor(routing) {
   const descriptors = {
     "react-router": "Popular, comprehensive routing",
-    "tanstack-router": "Type-safe routing with data loading",
-    wouter: "Lightweight, hook-based router",
   };
   return descriptors[routing] || "";
 }

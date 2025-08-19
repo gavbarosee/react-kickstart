@@ -1,8 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
 import { setupReactRouter } from "./react-router/index.js";
-import { setupTanStackRouter } from "./tanstack-router/index.js";
-import { setupWouter } from "./wouter/index.js";
 
 /**
  * Sets up routing based on the framework
@@ -17,12 +15,6 @@ export function setupRouting(projectPath, userChoices, framework) {
   switch (userChoices.routing) {
     case "react-router":
       setupReactRouter(projectPath, userChoices, framework);
-      break;
-    case "tanstack-router":
-      setupTanStackRouter(projectPath, userChoices, framework);
-      break;
-    case "wouter":
-      setupWouter(projectPath, userChoices, framework);
       break;
   }
 }

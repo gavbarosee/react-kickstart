@@ -78,22 +78,6 @@ function getRoutingInfo(routing) {
         "Consider React Router's data API for data loading",
       ],
     },
-    "tanstack-router": {
-      docs: "https://tanstack.com/router/latest",
-      tips: [
-        "Use type-safe route definitions",
-        "Take advantage of built-in loaders for data fetching",
-        "Explore the devtools for debugging routes",
-      ],
-    },
-    wouter: {
-      docs: "https://github.com/molefrog/wouter",
-      tips: [
-        "Use useRoute for matching patterns",
-        "Explore useLocation for current path",
-        "Try the hook-based API for simplicity",
-      ],
-    },
   };
   return info[routing] || { docs: "", tips: [] };
 }

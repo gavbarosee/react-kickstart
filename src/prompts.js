@@ -227,18 +227,6 @@ export async function promptUser(options = {}) {
         value: "react-router",
       },
       {
-        name:
-          chalk.green("TanStack Router") +
-          chalk.gray(" - Type-safe routing with data loading"),
-        value: "tanstack-router",
-      },
-      {
-        name:
-          chalk.yellow("Wouter") +
-          chalk.gray(" - Lightweight, hook-based router"),
-        value: "wouter",
-      },
-      {
         name: chalk.gray("None") + chalk.gray(" - No routing library"),
         value: "none",
       },
