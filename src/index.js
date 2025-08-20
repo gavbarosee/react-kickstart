@@ -31,7 +31,7 @@ export async function createApp(projectDirectory, options = {}) {
 
       // Validate project name
       const validationResult = CORE_UTILS.validateProjectName(projectName);
-      if (!validationResult.validForNewPackages) {
+      if (!validationResult.valid) {
         const validationErrors = [
           ...(validationResult.errors || []),
           ...(validationResult.warnings || []),
