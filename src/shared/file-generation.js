@@ -7,7 +7,7 @@ import {
   getBasicCssApp,
   createEntryPointContent,
 } from "./components.js";
-import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
+
 import { createFileTemplateEngine } from "../templates/index.js";
 
 /**

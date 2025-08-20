@@ -1,5 +1,3 @@
-import fs from "fs-extra";
-import path from "path";
 import { setupReactRouter } from "./react-router/index.js";
 
 /**

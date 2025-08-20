@@ -4,6 +4,5 @@
 
 // Re-export UI utilities with clear categorization
 export * from "./logging.js";
-export * from "./progress.js";
 export * from "./summary.js";
-export * from "./prompts.js";
+export * from "./completion.js";

@@ -2,8 +2,8 @@ import execa from "execa";
 import fs from "fs-extra";
 import path from "path";
 import ora from "ora";
-import { log, warning } from "./index.js";
-import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
+import { UI_UTILS } from "../index.js";
+import { createErrorHandler, ERROR_TYPES } from "../../errors/index.js";
 
 export async function openEditor(projectPath, editor = "vscode", userChoices) {
   const errorHandler = createErrorHandler();
@@ -67,10 +67,10 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
         await execa(command, args);
         return true;
       } catch (err) {
-        warning(
+        UI_UTILS.warning(
           `Couldn't open ${editorName}. It might not be installed or not in PATH.`
         );
-        warning(
+        UI_UTILS.warning(
           `To open your project in ${editor}, run: ${command} ${projectPath}`
         );
         return false;

@@ -3,16 +3,7 @@
  *
  * This provides a clean, organized way to import utilities throughout the application
  * using clearly named utility objects that immediately show their category.
- *
- * Usage examples:
- * import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "../utils/index.js";
- *
- * const isValid = CORE_UTILS.validateProjectNameInput(name);
- * UI_UTILS.log("Starting project setup...");
- * const managers = await PROCESS_UTILS.detectPackageManagers();
- *
- * Or destructure specific functions:
- * import { CORE_UTILS: { validateProjectNameInput }, UI_UTILS: { log } } from "../utils/index.js";
+
  */
 
 // Import all utilities from their respective modules
@@ -22,14 +13,14 @@ import * as projectAnalysis from "./core/project-analysis.js";
 import * as dataFormatting from "./core/data-formatting.js";
 import * as packageManagers from "./process/package-managers.js";
 import * as uiLogging from "./ui/logging.js";
-import * as git from "./git.js";
-import * as editor from "./editor.js";
-import * as startProject from "./start-project.js";
-import * as summary from "./summary.js";
-import * as completion from "./completion.js";
+import * as git from "./process/git.js";
+import * as editor from "./process/editor.js";
+import * as startProject from "./process/start-project.js";
+import * as summary from "./ui/summary.js";
+import * as completion from "./ui/completion.js";
 
 // ============================================================================
-// 🔧 CORE_UTILS - Fundamental functions used throughout the application
+// CORE_UTILS - Fundamental functions used throughout the application
 // ============================================================================
 export const CORE_UTILS = {
   // Filesystem utilities
@@ -52,7 +43,7 @@ export const CORE_UTILS = {
 };
 
 // ============================================================================
-// ⚙️ PROCESS_UTILS - External command execution and process management
+// PROCESS_UTILS - External command execution and process management
 // ============================================================================
 export const PROCESS_UTILS = {
   // Package manager utilities
@@ -72,7 +63,7 @@ export const PROCESS_UTILS = {
 };
 
 // ============================================================================
-// 🎨 UI_UTILS - User interface and display functions
+// UI_UTILS - User interface and display functions
 // ============================================================================
 export const UI_UTILS = {
   // Logging and display utilities
@@ -82,26 +73,3 @@ export const UI_UTILS = {
   ...summary,
   ...completion,
 };
-
-// ============================================================================
-// 🔄 BACKWARD COMPATIBILITY - Individual exports for existing code
-// ============================================================================
-// Export everything individually for backward compatibility with existing imports
-export * from "./core/filesystem.js";
-export * from "./core/validation.js";
-export * from "./core/project-analysis.js";
-export * from "./core/data-formatting.js";
-export * from "./process/package-managers.js";
-export * from "./ui/logging.js";
-export * from "./git.js";
-export * from "./editor.js";
-export * from "./start-project.js";
-export * from "./summary.js";
-export * from "./completion.js";
-
-// Convenience aliases
-export { validateProjectNameInput as validateProjectName } from "./core/validation.js";
-export { isProjectCreatedByTool as isDirectoryCreatedByTool } from "./core/filesystem.js";
-export { getProjectFileInfo as fileGenerationInfo } from "./core/filesystem.js";
-export { formatSummaryItem as formatItem } from "./core/data-formatting.js";
-export { installDependenciesWithRetry as installDependencies } from "./process/package-managers.js";

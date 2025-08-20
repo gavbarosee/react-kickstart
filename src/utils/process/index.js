@@ -4,6 +4,6 @@
 
 // Re-export process utilities with clear categorization
 export * from "./package-managers.js";
-export * from "./development-server.js";
-export * from "./git-operations.js";
-export * from "./editor-integration.js";
+export * from "./git.js";
+export * from "./editor.js";
+export * from "./start-project.js";

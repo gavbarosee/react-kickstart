@@ -1,81 +1,11 @@
 import path from "path";
 import fs from "fs-extra";
-// validateProjectName will be accessed via CORE_UTILS.validateProjectName
 import chalk from "chalk";
 import { promptUser, getDefaultChoices } from "./prompts.js";
 import generateProject from "./generators/index.js";
 import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "./utils/index.js";
 import { createErrorHandler, ERROR_TYPES } from "./errors/index.js";
 
-// Legacy cleanup function - now replaced by CleanupManager in error handling system
-// This function is kept for any remaining backward compatibility but should not be used
-function cleanupProjectDirectory(projectPath, shouldCleanup = true) {
-  console.warn(
-    "cleanupProjectDirectory is deprecated. Use CleanupManager from error handling system instead."
-  );
-  // Fallback to basic cleanup for any edge cases
-  if (shouldCleanup && projectPath && fs.existsSync(projectPath)) {
-    try {
-      fs.removeSync(projectPath);
-    } catch (err) {
-      console.error(`Cleanup failed: ${err.message}`);
-    }
-  }
-}
-
-/**
- * Checks if a directory appears to have been created by our tool.
- * @param {string} dirPath - Path to the directory to check
- * @returns {boolean} - Whether the directory appears to have been created by our tool
- */
-function isDirectoryCreatedByTool(dirPath) {
-  try {
-    // check if package.json exists and has expected content
-    const packageJsonPath = path.join(dirPath, "package.json");
-    if (fs.existsSync(packageJsonPath)) {
-      const packageJson = fs.readJsonSync(packageJsonPath);
-
-      // check if scripts contain expected keys (like dev, build, etc.)
-      const hasExpectedScripts =
-        packageJson.scripts &&
-        (packageJson.scripts.dev ||
-          packageJson.scripts.build ||
-          packageJson.scripts.start);
-
-      // check if dependencies contain React
-      const hasReactDep =
-        packageJson.dependencies &&
-        (packageJson.dependencies.react ||
-          packageJson.dependencies["react-dom"]);
-
-      if (hasExpectedScripts && hasReactDep) {
-        return true;
-      }
-    }
-
-    // alternatively, check for the presence of certain directories that our tool would create
-    const srcExists = fs.existsSync(path.join(dirPath, "src"));
-    const publicExists = fs.existsSync(path.join(dirPath, "public"));
-
-    // check for framework-specific directories
-    const appExists = fs.existsSync(path.join(dirPath, "app")); // Next.js app router
-    const pagesExists = fs.existsSync(path.join(dirPath, "pages")); // Next.js pages router
-
-    // if we find evidence of our generated structure, it's likely our tool created it
-    if ((srcExists && publicExists) || appExists || pagesExists) {
-      return true;
-    }
-
-    // not enough evidence to confidently say this directory was created by our tool
-    return false;
-  } catch (err) {
-    // if we can't check the directory contents, err on the side of caution
-    console.error(
-      chalk.red(`Error checking directory contents: ${err.message}`)
-    );
-    return false;
-  }
-}
 export async function createApp(projectDirectory, options = {}) {
   // Initialize error handler
   const errorHandler = createErrorHandler();

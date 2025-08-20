@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import boxen from "boxen";
 import inquirer from "inquirer";
-import { createUIRenderer } from "../templates/index.js";
+import { createUIRenderer } from "../../templates/index.js";
 
 function getFrameworkDescriptor(framework) {
   const descriptors = {

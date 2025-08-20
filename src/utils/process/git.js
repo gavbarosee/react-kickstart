@@ -2,8 +2,8 @@ import execa from "execa";
 import fs from "fs-extra";
 import path from "path";
 import ora from "ora";
-import { log, error } from "./index.js";
-import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
+import { UI_UTILS } from "../index.js";
+import { createErrorHandler, ERROR_TYPES } from "../../errors/index.js";
 
 export async function initGit(projectPath, userChoices) {
   const errorHandler = createErrorHandler();

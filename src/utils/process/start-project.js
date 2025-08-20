@@ -3,8 +3,8 @@ import chalk from "chalk";
 import open from "open";
 import ora from "ora";
 import path from "path";
-import { getFrameworkDocumentation } from "./completion.js";
-import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
+import { getFrameworkDocumentation } from "../ui/completion.js";
+import { createErrorHandler, ERROR_TYPES } from "../../errors/index.js";
 
 let devProcess = null;
 let isShuttingDown = false;
