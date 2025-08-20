@@ -32,7 +32,10 @@ export function createAppRouterStructure(
 
   fs.writeFileSync(path.join(appDir, `page.${ext}`), pageContent);
 
-  if (userChoices.styling === "tailwind") {
+  if (
+    userChoices.styling === "tailwind" ||
+    userChoices.styling === "styled-components"
+  ) {
     setupStyling(projectPath, userChoices, "nextjs");
   }
 

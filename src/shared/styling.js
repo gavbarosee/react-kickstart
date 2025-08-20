@@ -16,6 +16,8 @@ export function setupStyling(projectPath, userChoices, framework = "vite") {
     setupTailwind(projectPath, stylingInfo, userChoices);
   } else if (userChoices.styling === "css") {
     setupBasicCss(projectPath, stylingInfo);
+  } else if (userChoices.styling === "styled-components") {
+    setupStyledComponents(projectPath, stylingInfo);
   }
 }
 
@@ -158,6 +160,22 @@ button:hover {
       componentCssContent
     );
   }
+}
+
+/**
+ * Sets up styled-components for a project
+ */
+export function setupStyledComponents(projectPath, stylingInfo) {
+  // styled-components is CSS-in-JS, so no additional CSS files needed
+  // The dependencies are handled by the generator configs
+  // This function mainly serves as a placeholder for consistency
+  if (stylingInfo.skipCssSetup) {
+    // Framework handles CSS setup internally (like Next.js)
+    return;
+  }
+
+  // For frameworks like Vite, no additional setup is required
+  // since styled-components works out of the box after installing dependencies
 }
 
 /**

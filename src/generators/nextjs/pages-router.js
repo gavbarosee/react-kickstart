@@ -26,7 +26,10 @@ export function createPagesRouterStructure(
   const indexContent = getPageContent(userChoices, ext);
   fs.writeFileSync(path.join(pagesDir, `index.${ext}`), indexContent);
 
-  if (userChoices.styling === "tailwind") {
+  if (
+    userChoices.styling === "tailwind" ||
+    userChoices.styling === "styled-components"
+  ) {
     setupStyling(projectPath, userChoices, "nextjs");
   }
 
