@@ -46,7 +46,7 @@ function createLayoutFile(appDir, projectName, userChoices, ext) {
   let layoutContent = ``;
 
   if (userChoices.styling === "tailwind") {
-    layoutContent = `import './globals.css'
+    layoutContent = `import './globals.css';
 
 export const metadata = {
   title: '${projectName}',
