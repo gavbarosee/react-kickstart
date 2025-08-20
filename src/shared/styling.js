@@ -99,10 +99,6 @@ export function setupTailwind(projectPath, stylingInfo, userChoices) {
  * Sets up basic CSS for a project
  */
 export function setupBasicCss(projectPath, stylingInfo) {
-  if (stylingInfo.skipCssSetup) {
-    return;
-  }
-
   const cssDir = path.join(projectPath, stylingInfo.cssDir);
   fs.ensureDirSync(cssDir);
 

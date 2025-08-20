@@ -26,12 +26,8 @@ export function createPagesRouterStructure(
   const indexContent = getPageContent(userChoices, ext);
   fs.writeFileSync(path.join(pagesDir, `index.${ext}`), indexContent);
 
-  if (
-    userChoices.styling === "tailwind" ||
-    userChoices.styling === "styled-components"
-  ) {
-    setupStyling(projectPath, userChoices, "nextjs");
-  }
+  // Ensure styling setup for all styling options (tailwind, styled-components, plain css)
+  setupStyling(projectPath, userChoices, "nextjs");
 
   createApiRoute(apiDir, userChoices);
 }
@@ -39,7 +35,7 @@ export function createPagesRouterStructure(
 function createAppFile(pagesDir, userChoices, ext) {
   let appContent;
 
-  if (userChoices.styling === "tailwind") {
+  if (userChoices.styling === "tailwind" || userChoices.styling === "css") {
     appContent = `import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }) {
@@ -217,7 +213,7 @@ export default function Home() {
 
 export default function Home() {
   return (
-    <div>
+    <div className="container">
       <Head>
         <title>Next.js Project</title>
         <meta name="description" content="Created with React Kickstart" />

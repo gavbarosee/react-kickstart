@@ -272,7 +272,7 @@ export function getBasicCssApp(
   } else if (framework === "nextjs" && isNextAppRouter) {
     return `export default function Home() {
       return (
-        <main>
+        <main className="container">
           <h1>Welcome to Next.js</h1>
           <p>Edit <code>app/page.${fileExt}</code> to get started</p>
           <div>

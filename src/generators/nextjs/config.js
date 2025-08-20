@@ -8,6 +8,7 @@ import {
   frameworks,
   getReduxDependencies,
   getZustandDependencies,
+  styling,
 } from "../../config/dependencies.js";
 
 export function createPackageJson(projectPath, projectName, userChoices) {

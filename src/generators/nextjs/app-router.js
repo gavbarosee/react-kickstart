@@ -32,12 +32,8 @@ export function createAppRouterStructure(
 
   fs.writeFileSync(path.join(appDir, `page.${ext}`), pageContent);
 
-  if (
-    userChoices.styling === "tailwind" ||
-    userChoices.styling === "styled-components"
-  ) {
-    setupStyling(projectPath, userChoices, "nextjs");
-  }
+  // Ensure styling setup for all styling options (tailwind, styled-components, plain css)
+  setupStyling(projectPath, userChoices, "nextjs");
 
   createApiRoute(appDir, userChoices);
 }
@@ -45,15 +41,18 @@ export function createAppRouterStructure(
 function createLayoutFile(appDir, projectName, userChoices, ext) {
   let layoutContent = ``;
 
-  if (userChoices.styling === "tailwind") {
-    layoutContent = `import './globals.css';
+  if (userChoices.styling === "tailwind" || userChoices.styling === "css") {
+    const typeImport =
+      ext === "tsx" ? `import type { ReactNode } from 'react';\n` : "";
+    const childrenType = ext === "tsx" ? `: { children: ReactNode }` : "";
+    layoutContent = `${typeImport}import './globals.css';
 
 export const metadata = {
   title: '${projectName}',
   description: 'Created with React Kickstart',
 }
 
-export default function RootLayout({ children }) {
+export default function RootLayout({ children }${childrenType}) {
   return (
     <html lang="en">
       <body>{children}</body>
@@ -61,6 +60,81 @@ export default function RootLayout({ children }) {
   )
 }
 `;
+  } else if (userChoices.styling === "styled-components") {
+    // Use Styled Components Registry for proper SSR in App Router
+    const typeImport =
+      ext === "tsx" ? `import type { ReactNode } from 'react';\n` : "";
+    const childrenType = ext === "tsx" ? `: { children: ReactNode }` : "";
+    layoutContent = `${typeImport}import StyledComponentsRegistry from './styled-components-registry.${ext}';
+
+export const metadata = {
+  title: '${projectName}',
+  description: 'Created with React Kickstart',
+}
+
+export default function RootLayout({ children }${childrenType}) {
+  return (
+    <html lang="en">
+      <body>
+        <StyledComponentsRegistry>
+          {children}
+        </StyledComponentsRegistry>
+      </body>
+    </html>
+  )
+}
+`;
+    // Create the Styled Components Registry file alongside layout
+    const registryContent =
+      ext === "tsx"
+        ? `"use client";
+import React, { useState, type ReactNode } from 'react';
+import { useServerInsertedHTML } from 'next/navigation';
+import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
+
+export default function StyledComponentsRegistry({ children }: { children: ReactNode }) {
+  const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet());
+
+  useServerInsertedHTML(() => {
+    const styles = styledComponentsStyleSheet.getStyleElement();
+    return <>{styles}</>;
+  });
+
+  if (typeof window !== 'undefined') return <>{children}</>;
+
+  return (
+    <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
+      {children}
+    </StyleSheetManager>
+  );
+}
+`
+        : `"use client";
+import React from 'react';
+import { useServerInsertedHTML } from 'next/navigation';
+import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
+
+export default function StyledComponentsRegistry({ children }) {
+  const [styledComponentsStyleSheet] = React.useState(() => new ServerStyleSheet());
+
+  useServerInsertedHTML(() => {
+    const styles = styledComponentsStyleSheet.getStyleElement();
+    return <>{styles}</>;
+  });
+
+  if (typeof window !== 'undefined') return <>{children}</>;
+
+  return (
+    <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
+      {children}
+    </StyleSheetManager>
+  );
+}
+`;
+    fs.writeFileSync(
+      path.join(appDir, `styled-components-registry.${ext}`),
+      registryContent
+    );
   } else {
     layoutContent = `export const metadata = {
   title: '${projectName}',
