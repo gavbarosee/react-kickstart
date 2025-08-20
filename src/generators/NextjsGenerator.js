@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 import { log } from "../utils/logger.js";
 import { BaseGenerator } from "./BaseGenerator.js";
-import { createPackageJson, createNextConfig } from "./nextjs/config.js";
+import { createConfigurationBuilder } from "../config/index.js";
 import { createAppRouterStructure } from "./nextjs/app-router.js";
 import { createPagesRouterStructure } from "./nextjs/pages-router.js";
 
@@ -12,6 +12,7 @@ import { createPagesRouterStructure } from "./nextjs/pages-router.js";
 export class NextjsGenerator extends BaseGenerator {
   constructor() {
     super("nextjs");
+    this.configBuilder = createConfigurationBuilder("nextjs");
   }
 
   /**
@@ -26,14 +27,18 @@ export class NextjsGenerator extends BaseGenerator {
    * Create package.json for Next.js projects
    */
   async createPackageConfiguration(projectPath, projectName, userChoices) {
-    createPackageJson(projectPath, projectName, userChoices);
+    return this.configBuilder.generatePackageJson(
+      projectPath,
+      projectName,
+      userChoices
+    );
   }
 
   /**
    * Create Next.js-specific configuration files
    */
   async createFrameworkConfiguration(projectPath, userChoices) {
-    createNextConfig(projectPath, userChoices);
+    return this.configBuilder.generateNextjsConfig(projectPath, userChoices);
   }
 
   /**
@@ -100,17 +105,6 @@ export class NextjsGenerator extends BaseGenerator {
    * Create jsconfig.json for JavaScript projects
    */
   createJsConfig(projectPath) {
-    const jsConfig = {
-      compilerOptions: {
-        paths: {
-          "@/*": ["./*"],
-        },
-      },
-    };
-
-    fs.writeFileSync(
-      path.join(projectPath, "jsconfig.json"),
-      JSON.stringify(jsConfig, null, 2)
-    );
+    return this.configBuilder.generateJsConfig(projectPath);
   }
 }

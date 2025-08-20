@@ -1,106 +1,30 @@
-import fs from "fs-extra";
-import path from "path";
 import {
-  getCoreDependencies,
-  getTypescriptDependencies,
-  getTailwindDependencies,
-  getStyledComponentsDependencies,
-  getLintingDependencies,
-  frameworks,
-  getZustandDependencies,
-  getReduxDependencies,
-  getRoutingDependencies,
-} from "../../config/dependencies.js";
+  createPackageJsonBuilder,
+  createConfigurationBuilder,
+} from "../../config/index.js";
 
+/**
+ * Create package.json for Vite projects using centralized builder
+ */
 export function createPackageJson(projectPath, projectName, userChoices) {
-  const packageJson = {
-    name: projectName,
-    private: true,
-    version: "0.0.0",
-    type: "module",
-    scripts: {
-      dev: "vite",
-      build: "vite build",
-      preview: "vite preview",
-    },
-    dependencies: {
-      ...getCoreDependencies(),
-    },
-    devDependencies: {
-      "@vitejs/plugin-react": frameworks.vite.pluginReact,
-      vite: frameworks.vite.vite,
-    },
-  };
-
-  if (userChoices.routing && userChoices.routing !== "none") {
-    packageJson.dependencies = {
-      ...packageJson.dependencies,
-      ...getRoutingDependencies(userChoices.routing),
-    };
-  }
-
-  if (userChoices.typescript) {
-    packageJson.devDependencies = {
-      ...packageJson.devDependencies,
-      ...getTypescriptDependencies(),
-    };
-  }
-
-  if (userChoices.linting) {
-    packageJson.devDependencies = {
-      ...packageJson.devDependencies,
-      ...getLintingDependencies(userChoices.typescript),
-    };
-  }
-
-  if (userChoices.styling === "tailwind") {
-    packageJson.devDependencies = {
-      ...packageJson.devDependencies,
-      ...getTailwindDependencies(),
-    };
-  } else if (userChoices.styling === "styled-components") {
-    packageJson.dependencies = {
-      ...packageJson.dependencies,
-      ...getStyledComponentsDependencies(),
-    };
-  }
-
-  if (userChoices.stateManagement === "redux") {
-    packageJson.dependencies = {
-      ...packageJson.dependencies,
-      ...getReduxDependencies(),
-    };
-  }
-
-  if (userChoices.stateManagement === "zustand") {
-    packageJson.dependencies = {
-      ...packageJson.dependencies,
-      ...getZustandDependencies(),
-    };
-  }
-
-  fs.writeFileSync(
-    path.join(projectPath, "package.json"),
-    JSON.stringify(packageJson, null, 2)
-  );
+  const builder = createPackageJsonBuilder("vite");
+  return builder
+    .setBasicInfo(projectName)
+    .setScripts()
+    .addCoreDependencies()
+    .addFrameworkDependencies()
+    .addTypeScriptDependencies(userChoices)
+    .addLintingDependencies(userChoices)
+    .addStylingDependencies(userChoices)
+    .addRoutingDependencies(userChoices)
+    .addStateManagementDependencies(userChoices)
+    .buildAndWrite(projectPath);
 }
 
+/**
+ * Create Vite configuration using centralized builder
+ */
 export function createViteConfig(projectPath, userChoices) {
-  const configExt = userChoices.typescript ? "ts" : "js";
-
-  const viteConfig = `import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    open: true, // Auto-open browser on dev start
-  }
-});
-`;
-  fs.writeFileSync(
-    path.join(projectPath, `vite.config.${configExt}`),
-    viteConfig
-  );
+  const configBuilder = createConfigurationBuilder("vite");
+  return configBuilder.generateViteConfig(projectPath, userChoices);
 }

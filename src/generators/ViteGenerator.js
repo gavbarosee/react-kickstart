@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { BaseGenerator } from "./BaseGenerator.js";
-import { createPackageJson, createViteConfig } from "./vite/config.js";
+import { createConfigurationBuilder } from "../config/index.js";
 import {
   createSourceFiles,
   createHtmlFile,
@@ -15,20 +15,25 @@ import { setupRouting } from "../shared/routing/index.js";
 export class ViteGenerator extends BaseGenerator {
   constructor() {
     super("vite");
+    this.configBuilder = createConfigurationBuilder("vite");
   }
 
   /**
    * Create package.json for Vite projects
    */
   async createPackageConfiguration(projectPath, projectName, userChoices) {
-    createPackageJson(projectPath, projectName, userChoices);
+    return this.configBuilder.generatePackageJson(
+      projectPath,
+      projectName,
+      userChoices
+    );
   }
 
   /**
    * Create Vite-specific configuration files
    */
   async createFrameworkConfiguration(projectPath, userChoices) {
-    createViteConfig(projectPath, userChoices);
+    return this.configBuilder.generateViteConfig(projectPath, userChoices);
   }
 
   /**
