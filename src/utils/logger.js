@@ -2,10 +2,14 @@ import chalk from "chalk";
 import symbols from "log-symbols";
 import figures from "figures";
 import { createUserErrorReporter } from "../errors/index.js";
+import { createUIRenderer } from "../templates/index.js";
 
 // to track steps during prompts selection
 let currentStep = 0;
 let totalSteps = 0;
+
+// Create UI renderer instance
+const uiRenderer = createUIRenderer();
 
 export function initSteps(total) {
   totalSteps = total;
@@ -14,12 +18,7 @@ export function initSteps(total) {
 
 export function nextStep(message) {
   currentStep++;
-  console.log();
-  console.log(
-    chalk.bgCyan(
-      `${figures.pointer} [Step ${currentStep}/${totalSteps}] ${message}`
-    )
-  );
+  uiRenderer.stepIndicator(currentStep, totalSteps, message, figures.pointer);
 }
 
 export function log(message) {
@@ -69,54 +68,29 @@ export function section(title) {
     const currentStep = parseInt(stepMatch[1]);
     const totalSteps = parseInt(stepMatch[2]);
     const stepTitle = stepMatch[3];
-
     const icon = stepIcons[stepTitle] || stepIcons.default;
 
-    console.log();
-    console.log(
-      chalk.bold.cyan(` ${icon} STEP ${currentStep} OF ${totalSteps}`)
-    );
-    console.log(chalk.bold.white(` ${stepTitle}`));
-    console.log(chalk.cyan("━".repeat(40)));
-    console.log();
+    uiRenderer.stepIndicator(currentStep, totalSteps, stepTitle, icon);
   } else {
     // fallback for sections that don't follow the step pattern
-    console.log();
-    console.log(chalk.bold.cyan(`• ${title}`));
-    console.log(chalk.cyan("━".repeat(40)));
-    console.log();
+    uiRenderer.section(title);
   }
 }
 
 export function mainHeader(title) {
-  console.log("\n");
-  console.log(
-    chalk.bold.cyan("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-  );
-  console.log(chalk.bold.cyan(`  ${title}`));
-  console.log(
-    chalk.bold.cyan("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-  );
-  console.log("\n");
+  uiRenderer.header(title, { width: 54 });
 }
 
 export function subHeader(title) {
-  console.log("\n");
-  console.log(chalk.cyan(`  ${figures.play} ${chalk.bold(title)}`));
-  console.log(chalk.cyan("  " + "─".repeat(40)));
-  console.log("\n");
+  uiRenderer.section(title, figures.play, { width: 40 });
 }
 
 export function divider() {
-  console.log(
-    "\n" +
-      chalk.gray("· · · · · · · · · · · · · · · · · · · · · · · · · · · ·") +
-      "\n"
-  );
+  uiRenderer.divider("·", 47);
 }
 
 export function bullet(text) {
-  console.log(`  ${chalk.cyan(figures.bullet)} ${text}`);
+  uiRenderer.bulletList([text], { indent: 2, bullet: figures.bullet });
 }
 
 export function frameworkLog(message) {

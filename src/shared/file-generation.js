@@ -8,6 +8,7 @@ import {
   createEntryPointContent,
 } from "./components.js";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
+import { createFileTemplateEngine } from "../templates/index.js";
 
 /**
  * Creates the source files for a React project
@@ -104,7 +105,7 @@ function createAppComponent(srcDir, fileExt, userChoices, framework) {
  * @param {string} framework - The framework being used
  * @returns {void}
  */
-export function createHtmlFile(
+export async function createHtmlFile(
   projectPath,
   projectName,
   userChoices,
@@ -113,49 +114,16 @@ export function createHtmlFile(
   // Skip for Next.js since it doesn't need a direct HTML file
   if (framework === "nextjs") return;
 
-  const fileExt = userChoices.typescript ? "tsx" : "jsx";
-
+  const fileTemplateEngine = createFileTemplateEngine();
   const htmlPath = path.join(projectPath, "index.html");
 
-  // Create different HTML content based on the framework
-  let htmlContent;
+  const options = {
+    framework,
+    typescript: userChoices.typescript,
+    entryPoint: framework === "vite" ? "main" : "index",
+  };
 
-  if (framework === "vite") {
-    htmlContent = `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${projectName}</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.${fileExt}"></script>
-  </body>
-</html>
-`;
-  } else {
-    // Default for other frameworks
-    htmlContent = `<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${projectName}</title>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
-</html>
-`;
-  }
-
-  // Create directories if needed
-  fs.ensureDirSync(path.dirname(htmlPath));
-
-  // Write the HTML file
-  fs.writeFileSync(htmlPath, htmlContent);
+  await fileTemplateEngine.generateHtmlFile(htmlPath, projectName, options);
 }
 
 /**

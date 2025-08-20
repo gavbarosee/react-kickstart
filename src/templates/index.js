@@ -1,0 +1,47 @@
+// Import classes first
+import { TemplateEngine } from "./TemplateEngine.js";
+import { UIRenderer } from "./UIRenderer.js";
+import { FileTemplateEngine } from "./FileTemplateEngine.js";
+
+// Export template system classes
+export { TemplateEngine, UIRenderer, FileTemplateEngine };
+
+// Export factory functions for easy instantiation
+export function createUIRenderer(theme = "default") {
+  return new UIRenderer(theme);
+}
+
+export function createFileTemplateEngine() {
+  return new FileTemplateEngine();
+}
+
+export function createTemplateEngine(theme = "default") {
+  return new TemplateEngine(theme);
+}
+
+// Export template themes for easy access
+export const THEMES = {
+  DEFAULT: "default",
+  MODERN: "modern",
+  MINIMAL: "minimal",
+};
+
+// Export template types for categorization
+export const TEMPLATE_TYPES = {
+  UI: "ui",
+  FILE: "file",
+  CONFIG: "config",
+  COMPONENT: "component",
+};
+
+// Utility function to get themed output
+export function withTheme(theme, callback) {
+  const renderer = createUIRenderer(theme);
+  return callback(renderer);
+}
+
+// Utility function for quick UI rendering
+export function quickRender(templateName, theme = "default", ...args) {
+  const renderer = createUIRenderer(theme);
+  return renderer.engine.render(templateName, ...args);
+}

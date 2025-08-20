@@ -1,6 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { PackageJsonBuilder } from "./PackageJsonBuilder.js";
+import { createFileTemplateEngine } from "../templates/index.js";
 
 /**
  * Main configuration builder that orchestrates all configuration file generation
@@ -9,6 +10,7 @@ export class ConfigurationBuilder {
   constructor(framework) {
     this.framework = framework;
     this.packageJsonBuilder = new PackageJsonBuilder(framework);
+    this.fileTemplateEngine = createFileTemplateEngine();
   }
 
   /**

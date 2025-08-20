@@ -5,6 +5,8 @@
  * to avoid duplication across generator implementations.
  */
 
+import { createFileTemplateEngine } from "../templates/index.js";
+
 /**
  * Creates a React component using styled-components
  *

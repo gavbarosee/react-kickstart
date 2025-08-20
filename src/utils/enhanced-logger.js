@@ -2,38 +2,17 @@ import chalk from "chalk";
 import figures from "figures";
 import fs from "fs-extra";
 import path from "path";
+import { createUIRenderer } from "../templates/index.js";
 
 export function stepSection(emoji, title, items = []) {
-  console.log(`  ${emoji} ${chalk.bold(title)}`);
-
-  if (items && items.length > 0) {
-    items.forEach((item) => {
-      const label = item.label.padEnd(20);
-      const description = item.description
-        ? chalk.dim(`✓ ${item.description}`)
-        : "";
-      console.log(`     ${label} ${description}`);
-    });
-  }
-
-  console.log();
+  const uiRenderer = createUIRenderer();
+  uiRenderer.stepSection(emoji, title, items);
 }
 
 export function progressBar(percentage, label = "", size = 30) {
-  const displayPercentage = Math.max(5, percentage);
-  const completed = Math.floor(size * (displayPercentage / 100));
-  const remaining = size - completed;
-
-  const bar =
-    chalk.cyan("█".repeat(completed)) + chalk.gray("░".repeat(remaining));
-
-  const percentText = `${Math.floor(percentage)}%`.padStart(4);
-
-  if (label) {
-    console.log(`  📊 ${label}: ${bar} ${percentText}`);
-  } else {
-    console.log(`  📊 Progress: ${bar} ${percentText}`);
-  }
+  const uiRenderer = createUIRenderer();
+  const output = uiRenderer.progressBar(percentage, label, { size });
+  console.log(`  📊 ${output}`);
 }
 
 export function fileGenerationInfo(projectPath) {
