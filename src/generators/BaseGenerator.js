@@ -1,4 +1,4 @@
-import { log } from "../utils/logger.js";
+import { UI_UTILS } from "../utils/index.js";
 import { createDirectoryStructure } from "../shared/file-generation.js";
 import { setupLinting } from "../shared/linting.js";
 import { setupTypeScript } from "../shared/typescript.js";
@@ -68,7 +68,7 @@ export class BaseGenerator {
    * Step 1: Log generation start
    */
   logGenerationStart(userChoices) {
-    log(`Creating a ${this.frameworkName} React project...`);
+    UI_UTILS.log(`Creating a ${this.frameworkName} React project...`);
   }
 
   /**

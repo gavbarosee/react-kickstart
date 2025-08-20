@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import { BaseStep } from "./BaseStep.js";
-import { formatPackageManagerChoices } from "../../utils/package-manager-detection.js";
+import { PROCESS_UTILS } from "../../utils/index.js";
 
 export class PackageManagerStep extends BaseStep {
   constructor(renderer, navigator, packageManagers, defaultPackageManager) {
@@ -17,7 +17,7 @@ export class PackageManagerStep extends BaseStep {
   }
 
   getChoices(answers) {
-    return formatPackageManagerChoices(this.packageManagers);
+    return PROCESS_UTILS.formatPackageManagerChoices(this.packageManagers);
   }
 
   getMessage() {

@@ -25,7 +25,7 @@ function getZustandInfo() {
   };
 }
 
-export function getFrameworkInfo(framework) {
+export function getFrameworkDocumentation(framework) {
   const info = {
     vite: {
       docs: "https://vitejs.dev/guide/",
@@ -128,7 +128,7 @@ function getCommandExamples(packageManager, framework) {
   const pmRun = packageManager === "yarn" ? "yarn" : "npm run";
   const devCommand = `${pmRun} dev`;
 
-  const frameworkInfo = getFrameworkInfo(framework);
+  const frameworkInfo = getFrameworkDocumentation(framework);
 
   return {
     dev: {
@@ -163,7 +163,7 @@ export function generateCompletionSummary(
   vulnerabilities,
   packageCount = null
 ) {
-  const frameworkInfo = getFrameworkInfo(userChoices.framework);
+  const frameworkInfo = getFrameworkDocumentation(userChoices.framework);
   const stylingInfo = getStylingInfo(userChoices.styling);
   const languageInfo = getLanguageInfo(userChoices.typescript);
   const commandExamples = getCommandExamples(

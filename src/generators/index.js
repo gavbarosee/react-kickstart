@@ -1,11 +1,5 @@
 import ora from "ora";
-import { frameworkLog, stylingLog } from "../utils/logger.js";
-import {
-  stepSection,
-  fileGenerationInfo,
-  getProjectStructure,
-  getConfigurationFiles,
-} from "../utils/enhanced-logger.js";
+import { CORE_UTILS, UI_UTILS } from "../utils/index.js";
 import { ViteGenerator } from "./ViteGenerator.js";
 import { NextjsGenerator } from "./NextjsGenerator.js";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
@@ -30,24 +24,24 @@ export default async function generateProject(
 
   return errorHandler.withErrorHandling(
     async () => {
-      frameworkLog(`Creating a ${userChoices.framework} project...`);
+      UI_UTILS.frameworkLog(`Creating a ${userChoices.framework} project...`);
 
       // project structure information
       spinner.stop();
       console.log();
 
       // directory structure information
-      stepSection(
+      UI_UTILS.stepSection(
         "📋",
         "Creating project structure:",
-        getProjectStructure(userChoices.framework)
+        CORE_UTILS.getProjectStructure(userChoices.framework)
       );
 
       // display configuration files information
-      stepSection(
+      UI_UTILS.stepSection(
         "🛠️",
         "Setting up configuration:",
-        getConfigurationFiles(
+        CORE_UTILS.getConfigurationFiles(
           userChoices.framework,
           userChoices.typescript,
           userChoices.styling,
@@ -74,11 +68,11 @@ export default async function generateProject(
 
       await generator.generate(projectPath, projectName, userChoices);
       if (userChoices.styling) {
-        stylingLog(`Configured with ${userChoices.styling} styling`);
+        UI_UTILS.stylingLog(`Configured with ${userChoices.styling} styling`);
       }
 
       spinner.stop();
-      fileGenerationInfo(projectPath);
+      CORE_UTILS.fileGenerationInfo(projectPath);
 
       console.log(
         `  ✅ Project files successfully generated [${userChoices.framework}]`

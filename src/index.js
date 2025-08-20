@@ -1,16 +1,10 @@
 import path from "path";
 import fs from "fs-extra";
-import validateProjectName from "validate-npm-package-name";
+// validateProjectName will be accessed via CORE_UTILS.validateProjectName
 import chalk from "chalk";
 import { promptUser, getDefaultChoices } from "./prompts.js";
 import generateProject from "./generators/index.js";
-import { initGit } from "./utils/git.js";
-import { openEditor } from "./utils/editor.js";
-import { installDependenciesWithRetry } from "./utils/package-manager.js";
-import { error, initSteps, nextStep, divider } from "./utils/logger.js";
-import { showSummaryPrompt } from "./utils/summary.js";
-import { generateCompletionSummary } from "./utils/completion.js";
-import { startProject } from "./utils/start-project.js";
+import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "./utils/index.js";
 import { createErrorHandler, ERROR_TYPES } from "./errors/index.js";
 
 // Legacy cleanup function - now replaced by CleanupManager in error handling system
@@ -106,7 +100,7 @@ export async function createApp(projectDirectory, options = {}) {
       });
 
       // Validate project name
-      const validationResult = validateProjectName(projectName);
+      const validationResult = CORE_UTILS.validateProjectName(projectName);
       if (!validationResult.validForNewPackages) {
         const validationErrors = [
           ...(validationResult.errors || []),
@@ -142,9 +136,9 @@ export async function createApp(projectDirectory, options = {}) {
 
       // Show summary and get confirmation
       if (!options.yes && options.summary !== false) {
-        divider();
+        UI_UTILS.divider();
 
-        const confirmed = await showSummaryPrompt(
+        const confirmed = await UI_UTILS.showSummaryPrompt(
           projectPath,
           projectName,
           userChoices
@@ -160,11 +154,11 @@ export async function createApp(projectDirectory, options = {}) {
       }
 
       // Start project generation
-      divider();
-      initSteps(3);
+      UI_UTILS.divider();
+      UI_UTILS.initSteps(3);
 
       // STEP 1: generate project files
-      nextStep("Generating project files");
+      UI_UTILS.nextStep("Generating project files");
       console.log();
 
       if (userChoices.styling) {
@@ -178,12 +172,12 @@ export async function createApp(projectDirectory, options = {}) {
       await generateProject(projectPath, projectName, userChoices);
 
       // STEP 2: install dependencies
-      nextStep("Installing dependencies");
+      UI_UTILS.nextStep("Installing dependencies");
       console.log();
 
       const installResult = await errorHandler.withErrorHandling(
         () =>
-          installDependenciesWithRetry(
+          PROCESS_UTILS.installDependencies(
             projectPath,
             userChoices.packageManager,
             userChoices.framework
@@ -206,19 +200,24 @@ export async function createApp(projectDirectory, options = {}) {
       }
 
       // STEP 3: additional setups
-      nextStep("Finalizing project setup");
+      UI_UTILS.nextStep("Finalizing project setup");
       console.log();
 
       if (userChoices.initGit) {
         await errorHandler.withErrorHandling(
-          () => initGit(projectPath, userChoices),
+          () => PROCESS_UTILS.initGit(projectPath, userChoices),
           { type: ERROR_TYPES.PROCESS }
         );
       }
 
       if (userChoices.openEditor) {
         await errorHandler.withErrorHandling(
-          () => openEditor(projectPath, userChoices.editor, userChoices),
+          () =>
+            PROCESS_UTILS.openEditor(
+              projectPath,
+              userChoices.editor,
+              userChoices
+            ),
           { type: ERROR_TYPES.PROCESS }
         );
       }
@@ -226,9 +225,9 @@ export async function createApp(projectDirectory, options = {}) {
       console.log(`  ✅ Project successfully set up`);
       console.log();
 
-      divider();
+      UI_UTILS.divider();
 
-      const completionSummary = generateCompletionSummary(
+      const completionSummary = UI_UTILS.generateCompletionSummary(
         projectPath,
         projectName,
         userChoices,
@@ -238,7 +237,7 @@ export async function createApp(projectDirectory, options = {}) {
       console.log(completionSummary);
 
       await errorHandler.withErrorHandling(
-        () => startProject(projectPath, userChoices),
+        () => PROCESS_UTILS.startProject(projectPath, userChoices),
         { type: ERROR_TYPES.PROCESS }
       );
     },

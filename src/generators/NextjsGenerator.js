@@ -1,6 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
-import { log } from "../utils/logger.js";
+import { UI_UTILS } from "../utils/index.js";
 import { BaseGenerator } from "./BaseGenerator.js";
 import { createConfigurationBuilder } from "../config/index.js";
 import { createAppRouterStructure } from "./nextjs/app-router.js";
@@ -20,7 +20,9 @@ export class NextjsGenerator extends BaseGenerator {
    */
   logGenerationStart(userChoices) {
     const routerType = userChoices.nextRouting || "app";
-    log(`Creating a Next.js React project with ${routerType} router...`);
+    UI_UTILS.log(
+      `Creating a Next.js React project with ${routerType} router...`
+    );
   }
 
   /**

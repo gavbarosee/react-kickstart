@@ -2,7 +2,7 @@ import execa from "execa";
 import fs from "fs-extra";
 import path from "path";
 import ora from "ora";
-import { log, warning } from "./logger.js";
+import { log, warning } from "./index.js";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
 export async function openEditor(projectPath, editor = "vscode", userChoices) {

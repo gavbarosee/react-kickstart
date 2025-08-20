@@ -3,7 +3,7 @@ import chalk from "chalk";
 import open from "open";
 import ora from "ora";
 import path from "path";
-import { getFrameworkInfo } from "./completion.js";
+import { getFrameworkDocumentation } from "./completion.js";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
 let devProcess = null;
@@ -158,7 +158,7 @@ export async function startProject(projectPath, userChoices) {
 
   return errorHandler.withErrorHandling(
     async () => {
-      const frameworkInfo = getFrameworkInfo(userChoices.framework);
+      const frameworkInfo = getFrameworkDocumentation(userChoices.framework);
       const devUrl = `http://localhost:${frameworkInfo.port}`;
 
       const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
