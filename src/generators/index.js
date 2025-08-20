@@ -6,8 +6,8 @@ import {
   getProjectStructure,
   getConfigurationFiles,
 } from "../utils/enhanced-logger.js";
-import generateViteProject from "./vite/index.js";
-import generateNextjsProject from "./nextjs/index.js";
+import { ViteGenerator } from "./ViteGenerator.js";
+import { NextjsGenerator } from "./NextjsGenerator.js";
 
 export default async function generateProject(
   projectPath,
@@ -50,16 +50,20 @@ export default async function generateProject(
     spinner.text = "Processing...";
     spinner.start();
 
+    // Create appropriate generator instance and run it
+    let generator;
     switch (userChoices.framework) {
       case "vite":
-        await generateViteProject(projectPath, projectName, userChoices);
+        generator = new ViteGenerator();
         break;
       case "nextjs":
-        await generateNextjsProject(projectPath, projectName, userChoices);
+        generator = new NextjsGenerator();
         break;
       default:
         throw new Error(`Unsupported framework: ${userChoices.framework}`);
     }
+
+    await generator.generate(projectPath, projectName, userChoices);
     if (userChoices.styling) {
       stylingLog(`Configured with ${userChoices.styling} styling`);
     }
