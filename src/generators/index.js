@@ -1,7 +1,7 @@
 import ora from "ora";
 import { CORE_UTILS, UI_UTILS } from "../utils/index.js";
-import { ViteGenerator } from "./ViteGenerator.js";
-import { NextjsGenerator } from "./NextjsGenerator.js";
+import { ViteGenerator } from "../frameworks/vite/vite-generator.js";
+import { NextjsGenerator } from "../frameworks/nextjs/nextjs-generator.js";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
 export default async function generateProject(

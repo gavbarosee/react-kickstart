@@ -1,4 +1,4 @@
-import { PromptFlow } from "./prompts/PromptFlow.js";
+import { PromptFlow } from "./prompts/prompt-flow.js";
 import { PROCESS_UTILS } from "./utils/index.js";
 
 export async function promptUser(options = {}) {
