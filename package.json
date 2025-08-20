@@ -21,7 +21,7 @@
   "author": "Gav Barosee",
   "license": "MIT",
   "dependencies": {
-    "boxen": "^5.0.1",
+    "boxen": "^5.1.2",
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
     "cross-spawn": "^7.0.3",
@@ -33,7 +33,7 @@
     "log-symbols": "^4.1.0",
     "open": "^10.1.0",
     "ora": "^5.4.1",
-    "validate-npm-package-name": "^5.0.0"
+    "validate-npm-package-name": "^5.0.1"
   },
   "engines": {
     "node": ">=16"

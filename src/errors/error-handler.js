@@ -131,8 +131,25 @@ export class ErrorHandler {
           return this.handleGeneralError(error, options);
       }
     } catch (handlerError) {
-      // Fallback if error handling itself fails
-      this.userReporter.reportCriticalError(handlerError);
+      // Fallback if error handling itself fails - use basic console logging to avoid infinite loops
+      try {
+        this.userReporter.reportCriticalError(handlerError);
+      } catch (reporterError) {
+        // If even error reporting fails, use direct console output
+        console.error(chalk.red("\n🚨 Critical Error Handler Failure:"));
+        console.error(chalk.red(`Original Error: ${error?.message || error}`));
+        console.error(
+          chalk.red(`Handler Error: ${handlerError?.message || handlerError}`)
+        );
+        console.error(
+          chalk.red(
+            `Reporter Error: ${reporterError?.message || reporterError}`
+          )
+        );
+        console.error(
+          chalk.red("\nPlease report this issue to the developers.")
+        );
+      }
       process.exit(1);
     }
   }

@@ -26,8 +26,8 @@ program
   .option("-y, --yes", "Skip all prompts and use default values")
   .option("--no-summary", "Skip the configuration summary")
   .option("--no-autostart", "Disable automatic project startup")
-  .action((projectDirectory, options) => {
-    createApp(projectDirectory, options);
+  .action(async (projectDirectory, options) => {
+    await createApp(projectDirectory, options);
   });
 
 program.parse(process.argv);

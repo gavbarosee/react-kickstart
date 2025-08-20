@@ -16,11 +16,18 @@ export async function createApp(projectDirectory, options = {}) {
 
   return errorHandler.withErrorHandling(
     async () => {
-      projectPath = projectDirectory
-        ? path.resolve(process.cwd(), projectDirectory)
+      // Validate project directory input for security
+      const dirValidation =
+        CORE_UTILS.validateProjectDirectory(projectDirectory);
+      if (!dirValidation.valid) {
+        throw new Error(`Invalid project directory: ${dirValidation.error}`);
+      }
+
+      projectPath = dirValidation.sanitized
+        ? path.resolve(process.cwd(), dirValidation.sanitized)
         : process.cwd();
 
-      const projectName = projectDirectory || path.basename(projectPath);
+      const projectName = dirValidation.sanitized || path.basename(projectPath);
 
       // Set error handler context
       errorHandler.setContext({
@@ -43,20 +50,29 @@ export async function createApp(projectDirectory, options = {}) {
         throw new Error(errorMessage);
       }
 
-      const directoryExists = fs.existsSync(projectPath);
+      // More atomic directory handling to prevent race conditions
+      try {
+        // Try to create directory first - this will fail if it exists and is not empty
+        await fs.ensureDir(projectPath);
 
-      if (directoryExists) {
-        const files = fs.readdirSync(projectPath);
+        // Check if directory was pre-existing and has files
+        const files = await fs.readdir(projectPath);
         if (files.length > 0) {
           throw new Error(`The directory ${projectPath} is not empty.`);
         }
-      } else {
-        // Mark for cleanup on error
-        fs.mkdirSync(projectPath, { recursive: true });
-        shouldCleanup = true;
 
-        // Update error handler context with cleanup flag
+        // Mark for cleanup since we created/ensured the directory
+        shouldCleanup = true;
         errorHandler.setContext({ shouldCleanup });
+      } catch (error) {
+        // If it's our "not empty" error, re-throw it
+        if (error.message.includes("is not empty")) {
+          throw error;
+        }
+        // For other errors (permission, etc), throw a more descriptive error
+        throw new Error(
+          `Cannot create or access directory ${projectPath}: ${error.message}`
+        );
       }
 
       // Get user choices

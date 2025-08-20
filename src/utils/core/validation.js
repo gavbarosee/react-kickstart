@@ -1,4 +1,5 @@
 import validateProjectName from "validate-npm-package-name";
+import path from "path";
 
 /**
  * Validation utilities - input validation and verification functions
@@ -45,6 +46,118 @@ export function validateDirectoryPath(dirPath) {
   }
 
   return { valid: true };
+}
+
+/**
+ * Validate and sanitize project directory name for security
+ * @param {string} projectDir - Project directory name to validate
+ * @returns {Object} - Validation result with sanitized name
+ */
+export function validateProjectDirectory(projectDir) {
+  if (!projectDir) {
+    return { valid: true, sanitized: null }; // Allow null/undefined for current directory
+  }
+
+  if (typeof projectDir !== "string") {
+    return { valid: false, error: "Project directory must be a string" };
+  }
+
+  // Normalize Unicode to prevent Unicode normalization attacks
+  const normalized = projectDir.normalize("NFC");
+
+  // Check for null bytes
+  if (normalized.includes("\0")) {
+    return {
+      valid: false,
+      error: "Project directory cannot contain null bytes",
+    };
+  }
+
+  // Check for path traversal attempts
+  if (
+    normalized.includes("..") ||
+    normalized.includes("./") ||
+    normalized.includes(".\\")
+  ) {
+    return {
+      valid: false,
+      error:
+        "Project directory cannot contain path traversal sequences (../, .\\)",
+    };
+  }
+
+  // Check for absolute paths
+  if (path.isAbsolute(normalized)) {
+    return { valid: false, error: "Project directory must be a relative path" };
+  }
+
+  // Check for dangerous characters
+  const dangerousChars = /[<>:"|?*\x00-\x1f]/;
+  if (dangerousChars.test(normalized)) {
+    return {
+      valid: false,
+      error: "Project directory contains invalid characters",
+    };
+  }
+
+  // Check for reserved names on Windows
+  const reservedNames = [
+    "CON",
+    "PRN",
+    "AUX",
+    "NUL",
+    "COM1",
+    "COM2",
+    "COM3",
+    "COM4",
+    "COM5",
+    "COM6",
+    "COM7",
+    "COM8",
+    "COM9",
+    "LPT1",
+    "LPT2",
+    "LPT3",
+    "LPT4",
+    "LPT5",
+    "LPT6",
+    "LPT7",
+    "LPT8",
+    "LPT9",
+  ];
+  const upperName = normalized.toUpperCase();
+  if (
+    reservedNames.includes(upperName) ||
+    reservedNames.some((name) => upperName.startsWith(name + "."))
+  ) {
+    return {
+      valid: false,
+      error: "Project directory cannot use reserved system names",
+    };
+  }
+
+  // Check length (reasonable limit)
+  if (normalized.length > 255) {
+    return {
+      valid: false,
+      error: "Project directory name is too long (max 255 characters)",
+    };
+  }
+
+  // Don't allow names starting/ending with spaces or dots
+  if (
+    normalized.startsWith(" ") ||
+    normalized.endsWith(" ") ||
+    normalized.startsWith(".") ||
+    normalized.endsWith(".")
+  ) {
+    return {
+      valid: false,
+      error: "Project directory cannot start or end with spaces or dots",
+    };
+  }
+
+  return { valid: true, sanitized: normalized };
 }
 
 /**
