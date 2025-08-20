@@ -4,6 +4,7 @@ import { setupLinting } from "../shared/linting.js";
 import { setupTypeScript } from "../shared/typescript.js";
 import { setupRedux } from "../shared/redux/index.js";
 import { setupZustand } from "../shared/zustand/index.js";
+import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
 /**
  * Abstract base class for all project generators
@@ -12,6 +13,7 @@ import { setupZustand } from "../shared/zustand/index.js";
 export class BaseGenerator {
   constructor(frameworkName) {
     this.frameworkName = frameworkName;
+    this.errorHandler = createErrorHandler();
   }
 
   /**
@@ -19,32 +21,47 @@ export class BaseGenerator {
    * This defines the skeleton of the generation algorithm
    */
   async generate(projectPath, projectName, userChoices) {
-    // Step 1: Log start
-    this.logGenerationStart(userChoices);
-
-    // Step 2: Create base structure
-    await this.createBaseStructure(projectPath);
-
-    // Step 3: Create package.json
-    await this.createPackageConfiguration(
+    this.errorHandler.setContext({
       projectPath,
       projectName,
-      userChoices
+      framework: this.frameworkName,
+      userChoices,
+    });
+
+    return this.errorHandler.withErrorHandling(
+      async () => {
+        // Step 1: Log start
+        this.logGenerationStart(userChoices);
+
+        // Step 2: Create base structure
+        await this.createBaseStructure(projectPath);
+
+        // Step 3: Create package.json
+        await this.createPackageConfiguration(
+          projectPath,
+          projectName,
+          userChoices
+        );
+
+        // Step 4: Create framework-specific config files
+        await this.createFrameworkConfiguration(projectPath, userChoices);
+
+        // Step 5: Create project files (source, routing, etc.)
+        await this.createProjectFiles(projectPath, projectName, userChoices);
+
+        // Step 6: Setup optional features
+        await this.setupOptionalFeatures(projectPath, userChoices);
+
+        // Step 7: Create framework-specific files
+        await this.createFrameworkSpecificFiles(projectPath, userChoices);
+
+        return true;
+      },
+      {
+        type: ERROR_TYPES.FILESYSTEM,
+        shouldCleanup: true,
+      }
     );
-
-    // Step 4: Create framework-specific config files
-    await this.createFrameworkConfiguration(projectPath, userChoices);
-
-    // Step 5: Create project files (source, routing, etc.)
-    await this.createProjectFiles(projectPath, projectName, userChoices);
-
-    // Step 6: Setup optional features
-    await this.setupOptionalFeatures(projectPath, userChoices);
-
-    // Step 7: Create framework-specific files
-    await this.createFrameworkSpecificFiles(projectPath, userChoices);
-
-    return true;
   }
 
   /**

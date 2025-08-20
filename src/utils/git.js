@@ -3,9 +3,17 @@ import fs from "fs-extra";
 import path from "path";
 import ora from "ora";
 import { log, error } from "./logger.js";
+import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
 export async function initGit(projectPath, userChoices) {
+  const errorHandler = createErrorHandler();
   const { framework, typescript, linting, styling } = userChoices || {};
+
+  errorHandler.setContext({
+    projectPath,
+    framework,
+    operation: "git_init",
+  });
 
   const spinner = ora({
     text: "Initializing git repository...",
@@ -13,29 +21,31 @@ export async function initGit(projectPath, userChoices) {
     spinner: "dots",
   }).start();
 
-  try {
-    try {
-      await execa("git", ["--version"]);
-    } catch (err) {
-      spinner.warn("Git is not installed. Skipping git initialization.");
-      return false;
-    }
+  return errorHandler.withErrorHandling(
+    async () => {
+      // Check if git is available
+      try {
+        await execa("git", ["--version"]);
+      } catch (err) {
+        spinner.warn("Git is not installed. Skipping git initialization.");
+        return false;
+      }
 
-    await execa("git", ["init"], { cwd: projectPath });
+      await execa("git", ["init"], { cwd: projectPath });
 
-    // framework-specific gitignore patterns
-    const frameworkIgnores = {
-      vite: ["# Vite build output", "/dist/", "*.local", ""],
-      nextjs: [
-        "# Next.js build output",
-        "/.next/",
-        "/out/",
-        "next-env.d.ts",
-        "",
-      ],
-    };
+      // framework-specific gitignore patterns
+      const frameworkIgnores = {
+        vite: ["# Vite build output", "/dist/", "*.local", ""],
+        nextjs: [
+          "# Next.js build output",
+          "/.next/",
+          "/out/",
+          "next-env.d.ts",
+          "",
+        ],
+      };
 
-    const gitignoreContent = `# dependencies
+      const gitignoreContent = `# dependencies
 /node_modules
 /.pnp
 .pnp.js
@@ -73,37 +83,41 @@ pnpm-debug.log*
 *.sw?
 `;
 
-    fs.writeFileSync(
-      path.join(projectPath, ".gitignore"),
-      gitignoreContent.trim()
-    );
+      fs.writeFileSync(
+        path.join(projectPath, ".gitignore"),
+        gitignoreContent.trim()
+      );
 
-    spinner.stop();
+      spinner.stop();
 
-    console.log("  🔄 Initializing Git repository");
-    console.log("    → Created .gitignore with framework-specific patterns");
+      console.log("  🔄 Initializing Git repository");
+      console.log("    → Created .gitignore with framework-specific patterns");
 
-    if (frameworkIgnores[framework]) {
-      const frameworkName =
-        {
-          vite: "Vite",
-          nextjs: "Next.js",
-        }[framework] || framework;
+      if (frameworkIgnores[framework]) {
+        const frameworkName =
+          {
+            vite: "Vite",
+            nextjs: "Next.js",
+          }[framework] || framework;
+
+        console.log(
+          `    → Added ${frameworkName}-specific build artifacts to .gitignore`
+        );
+      }
 
       console.log(
-        `    → Added ${frameworkName}-specific build artifacts to .gitignore`
+        "    → Added node_modules/ and environment files to .gitignore"
       );
+      console.log();
+
+      return true;
+    },
+    {
+      type: ERROR_TYPES.PROCESS,
+      onError: (error) => {
+        spinner.fail("Failed to initialize git repository");
+        return false; // Continue without git
+      },
     }
-
-    console.log(
-      "    → Added node_modules/ and environment files to .gitignore"
-    );
-    console.log();
-
-    return true;
-  } catch (err) {
-    spinner.fail("Failed to initialize git repository");
-    error(err.message || err);
-    return false;
-  }
+  );
 }

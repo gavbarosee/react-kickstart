@@ -4,6 +4,7 @@ import open from "open";
 import ora from "ora";
 import path from "path";
 import { getFrameworkInfo } from "./completion.js";
+import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
 let devProcess = null;
 let isShuttingDown = false;
@@ -53,34 +54,14 @@ function cleanupDevServer() {
 }
 
 /**
- * Register process termination handlers
+ * Legacy cleanup handlers - now replaced by centralized ErrorHandler
+ * @deprecated Use ErrorHandler.setupGlobalHandlers() instead
  */
 function registerCleanupHandlers() {
-  // clean up on terminal exit signals
-  process.on("SIGINT", () => {
-    cleanupDevServer();
-    setTimeout(() => process.exit(0), 100);
-  });
-
-  process.on("SIGTERM", () => {
-    cleanupDevServer();
-    setTimeout(() => process.exit(0), 100);
-  });
-
-  // handle abnormal terminations
+  // Only register dev server cleanup, global handlers are managed centrally
   process.on("exit", cleanupDevServer);
-
-  process.on("uncaughtException", (err) => {
-    console.error(chalk.red(`Uncaught exception: ${err.message}`));
-    cleanupDevServer();
-    setTimeout(() => process.exit(1), 100);
-  });
-
-  process.on("unhandledRejection", (reason) => {
-    console.error(chalk.red(`Unhandled rejection: ${reason}`));
-    cleanupDevServer();
-    setTimeout(() => process.exit(1), 100);
-  });
+  process.on("SIGINT", cleanupDevServer);
+  process.on("SIGTERM", cleanupDevServer);
 }
 
 async function checkServerAndOpenBrowser(devUrl) {
@@ -157,8 +138,17 @@ async function checkServerAndOpenBrowser(devUrl) {
 }
 
 export async function startProject(projectPath, userChoices) {
-  // register cleanup handlers only once
-  registerCleanupHandlers();
+  const errorHandler = createErrorHandler();
+  const userReporter = errorHandler.userReporter;
+
+  errorHandler.setContext({
+    projectPath,
+    framework: userChoices.framework,
+    packageManager: userChoices.packageManager,
+  });
+
+  // Use centralized error handlers instead of local ones
+  errorHandler.setupGlobalHandlers();
 
   const spinner = ora({
     text: `Starting development server...`,
@@ -166,78 +156,91 @@ export async function startProject(projectPath, userChoices) {
     spinner: "dots",
   }).start();
 
-  try {
-    const frameworkInfo = getFrameworkInfo(userChoices.framework);
-    const devUrl = `http://localhost:${frameworkInfo.port}`;
+  return errorHandler.withErrorHandling(
+    async () => {
+      const frameworkInfo = getFrameworkInfo(userChoices.framework);
+      const devUrl = `http://localhost:${frameworkInfo.port}`;
 
-    const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
-    const devCommand = false ? "npm start" : `${pmRun} dev`;
+      const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
+      const devCommand = false ? "npm start" : `${pmRun} dev`;
 
-    const [cmd, ...args] = devCommand.split(" ");
+      const [cmd, ...args] = devCommand.split(" ");
 
-    spinner.succeed(`Development server starting at ${chalk.cyan(devUrl)}`);
-    console.log(
-      `\n${chalk.cyan(">")} ${chalk.dim(`${cmd} ${args.join(" ")}`)}`
-    );
-    console.log(
-      chalk.yellow("\nPress Ctrl+C to stop the development server\n")
-    );
+      spinner.succeed(`Development server starting at ${chalk.cyan(devUrl)}`);
+      console.log(
+        `\n${chalk.cyan(">")} ${chalk.dim(`${cmd} ${args.join(" ")}`)}`
+      );
+      console.log(
+        chalk.yellow("\nPress Ctrl+C to stop the development server\n")
+      );
 
-    await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // start the process with improved tracking
-    devProcess = execa(cmd, args, {
-      cwd: projectPath,
-      stdio: ["inherit", "pipe", "pipe"],
-      killSignal: "SIGTERM",
-      cleanup: true,
-      // important: don't use detached mode to ensure process is killed with parent
-      detached: false,
-    });
+      // start the process with improved tracking
+      devProcess = execa(cmd, args, {
+        cwd: projectPath,
+        stdio: ["inherit", "pipe", "pipe"],
+        killSignal: "SIGTERM",
+        cleanup: true,
+        // important: don't use detached mode to ensure process is killed with parent
+        detached: false,
+      });
 
-    // handle subprocess events
-    devProcess.on("exit", (code, signal) => {
-      const exitMessage = signal
-        ? `Development server was terminated by signal: ${signal}`
-        : `Development server exited with code: ${code}`;
-      console.log(chalk.cyan(exitMessage));
+      // handle subprocess events with standardized error reporting
+      devProcess.on("exit", (code, signal) => {
+        const exitMessage = signal
+          ? `Development server was terminated by signal: ${signal}`
+          : `Development server exited with code: ${code}`;
+        console.log(chalk.cyan(exitMessage));
 
-      // clear the reference to allow garbage collection
-      devProcess = null;
-    });
+        // clear the reference to allow garbage collection
+        devProcess = null;
+      });
 
-    devProcess.on("error", (err) => {
-      console.error(chalk.red(`Development server error: ${err.message}`));
-      devProcess = null;
-    });
+      devProcess.on("error", (err) => {
+        userReporter.reportProcessError(err);
+        devProcess = null;
+      });
 
-    // log any stderr output from the subprocess that might indicate problems
-    devProcess.stderr.on("data", (data) => {
-      const errorOutput = data.toString().trim();
-      if (errorOutput && errorOutput.toLowerCase().includes("error")) {
-        console.error(chalk.red(`Server error: ${errorOutput}`));
-      }
-    });
+      // log any stderr output from the subprocess that might indicate problems
+      devProcess.stderr.on("data", (data) => {
+        const errorOutput = data.toString().trim();
+        if (errorOutput && errorOutput.toLowerCase().includes("error")) {
+          userReporter.formatError("Development Server Error", errorOutput, [
+            "Check if the port is available",
+            "Ensure all dependencies are installed",
+          ]);
+        }
+      });
 
-    checkServerAndOpenBrowser(devUrl);
+      checkServerAndOpenBrowser(devUrl);
 
-    return devProcess;
-  } catch (err) {
-    spinner.fail(`Failed to start development server`);
-    console.error(chalk.red(`Error: ${err.message || err}`));
-    console.log(
-      chalk.cyan(
-        `\nYou can start it manually by navigating to the project directory and running:`
-      )
-    );
+      return devProcess;
+    },
+    {
+      type: ERROR_TYPES.PROCESS,
+      showRecovery: true,
+      onError: async (error) => {
+        spinner.fail(`Failed to start development server`);
 
-    const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
-    const devCommand = false ? "npm start" : `${pmRun} dev`;
+        // Show manual start instructions
+        const pmRun =
+          userChoices.packageManager === "yarn" ? "yarn" : "npm run";
+        const devCommand = false ? "npm start" : `${pmRun} dev`;
 
-    console.log(chalk.bold(`  cd ${path.basename(projectPath || ".")}`));
-    console.log(chalk.bold(`  ${devCommand}`));
-    console.log();
+        userReporter.formatError(
+          "Development Server Failed",
+          error.message || error,
+          [
+            `cd ${path.basename(projectPath || ".")}`,
+            devCommand,
+            "Check that all dependencies are installed",
+            "Ensure the port is not already in use",
+          ]
+        );
 
-    return null;
-  }
+        return null;
+      },
+    }
+  );
 }

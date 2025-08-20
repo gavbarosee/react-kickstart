@@ -11,56 +11,21 @@ import { error, initSteps, nextStep, divider } from "./utils/logger.js";
 import { showSummaryPrompt } from "./utils/summary.js";
 import { generateCompletionSummary } from "./utils/completion.js";
 import { startProject } from "./utils/start-project.js";
+import { createErrorHandler, ERROR_TYPES } from "./errors/index.js";
 
+// Legacy cleanup function - now replaced by CleanupManager in error handling system
+// This function is kept for any remaining backward compatibility but should not be used
 function cleanupProjectDirectory(projectPath, shouldCleanup = true) {
-  if (!shouldCleanup) return;
-
-  try {
-    // don't delete if it's not the directory we just created or if it's a root-like path
-    if (!projectPath || projectPath === "/" || projectPath === process.cwd()) {
-      console.error(
-        chalk.yellow(`\nSkipping cleanup for safety: ${projectPath}`)
-      );
-      return;
-    }
-
-    // extra safety: ensure the directory isn't too old (might not be user's generated one)
-    const stats = fs.statSync(projectPath);
-    const creationTime = new Date(stats.birthtime).getTime();
-    const now = new Date().getTime();
-    const fiveMinutesAgo = now - 5 * 60 * 1000; // 5 minutes in milliseconds
-
-    if (creationTime < fiveMinutesAgo) {
-      console.error(
-        chalk.yellow(
-          `\nSkipping cleanup of directory older than 5 minutes: ${projectPath}`
-        )
-      );
-      return;
-    }
-
-    // Check if this directory contains files that would indicate it was created by our tool
-    const isSafeToDelete = isDirectoryCreatedByTool(projectPath);
-
-    if (!isSafeToDelete) {
-      console.error(
-        chalk.yellow(
-          `\nSkipping cleanup as directory doesn't appear to be created by react-kickstart: ${projectPath}`
-        )
-      );
-      return;
-    }
-
-    if (fs.existsSync(projectPath)) {
+  console.warn(
+    "cleanupProjectDirectory is deprecated. Use CleanupManager from error handling system instead."
+  );
+  // Fallback to basic cleanup for any edge cases
+  if (shouldCleanup && projectPath && fs.existsSync(projectPath)) {
+    try {
       fs.removeSync(projectPath);
-      console.log(
-        chalk.yellow(`\nCleaned up failed project at ${projectPath}`)
-      );
+    } catch (err) {
+      console.error(`Cleanup failed: ${err.message}`);
     }
-  } catch (cleanupErr) {
-    console.error(
-      chalk.red(`Failed to clean up directory: ${cleanupErr.message}`)
-    );
   }
 }
 
@@ -118,47 +83,64 @@ function isDirectoryCreatedByTool(dirPath) {
   }
 }
 export async function createApp(projectDirectory, options = {}) {
+  // Initialize error handler
+  const errorHandler = createErrorHandler();
+  errorHandler.setupGlobalHandlers();
+
   let projectPath = null;
   let shouldCleanup = false;
 
-  try {
-    projectPath = projectDirectory
-      ? path.resolve(process.cwd(), projectDirectory)
-      : process.cwd();
+  return errorHandler.withErrorHandling(
+    async () => {
+      projectPath = projectDirectory
+        ? path.resolve(process.cwd(), projectDirectory)
+        : process.cwd();
 
-    const projectName = projectDirectory || path.basename(projectPath);
+      const projectName = projectDirectory || path.basename(projectPath);
 
-    const validationResult = validateProjectName(projectName);
-    if (!validationResult.validForNewPackages) {
-      error(`Invalid project name: ${projectName}`);
-      [
-        ...(validationResult.errors || []),
-        ...(validationResult.warnings || []),
-      ].forEach((msg) => {
-        error(`  - ${msg}`);
+      // Set error handler context
+      errorHandler.setContext({
+        projectPath,
+        projectName,
+        options,
       });
-      process.exit(1);
-    }
 
-    const directoryExists = fs.existsSync(projectPath);
+      // Validate project name
+      const validationResult = validateProjectName(projectName);
+      if (!validationResult.validForNewPackages) {
+        const validationErrors = [
+          ...(validationResult.errors || []),
+          ...(validationResult.warnings || []),
+        ];
 
-    if (directoryExists) {
-      const files = fs.readdirSync(projectPath);
-      if (files.length > 0) {
-        error(`The directory ${chalk.green(projectPath)} is not empty.`);
-        process.exit(1);
+        const errorMessage = `Invalid project name: ${projectName}\n${validationErrors
+          .map((msg) => `  - ${msg}`)
+          .join("\n")}`;
+        throw new Error(errorMessage);
       }
-    } else {
-      // clean up project on error
-      fs.mkdirSync(projectPath, { recursive: true });
-      shouldCleanup = true;
-    }
 
-    try {
+      const directoryExists = fs.existsSync(projectPath);
+
+      if (directoryExists) {
+        const files = fs.readdirSync(projectPath);
+        if (files.length > 0) {
+          throw new Error(`The directory ${projectPath} is not empty.`);
+        }
+      } else {
+        // Mark for cleanup on error
+        fs.mkdirSync(projectPath, { recursive: true });
+        shouldCleanup = true;
+
+        // Update error handler context with cleanup flag
+        errorHandler.setContext({ shouldCleanup });
+      }
+
+      // Get user choices
       const userChoices = options.yes
         ? getDefaultChoices()
         : await promptUser({ verbose: options.verbose });
 
+      // Show summary and get confirmation
       if (!options.yes && options.summary !== false) {
         divider();
 
@@ -169,14 +151,15 @@ export async function createApp(projectDirectory, options = {}) {
         );
 
         if (!confirmed) {
-          console.log(chalk.yellow("Setup canceled. No changes were made."));
-          if (shouldCleanup) {
-            cleanupProjectDirectory(projectPath, shouldCleanup);
-          }
-          process.exit(0);
+          await errorHandler.handle(new Error("User cancelled setup"), {
+            type: ERROR_TYPES.USER_CANCELLED,
+            shouldCleanup,
+          });
+          return;
         }
       }
 
+      // Start project generation
       divider();
       initSteps(3);
 
@@ -194,14 +177,22 @@ export async function createApp(projectDirectory, options = {}) {
 
       await generateProject(projectPath, projectName, userChoices);
 
-      // STEP 2: install dependencies - pass framework info for better progress estimation
+      // STEP 2: install dependencies
       nextStep("Installing dependencies");
       console.log();
 
-      const installResult = await installDependenciesWithRetry(
-        projectPath,
-        userChoices.packageManager,
-        userChoices.framework
+      const installResult = await errorHandler.withErrorHandling(
+        () =>
+          installDependenciesWithRetry(
+            projectPath,
+            userChoices.packageManager,
+            userChoices.framework
+          ),
+        {
+          type: ERROR_TYPES.DEPENDENCY,
+          shouldCleanup,
+          showRecovery: true,
+        }
       );
 
       if (installResult.skipped) {
@@ -211,9 +202,7 @@ export async function createApp(projectDirectory, options = {}) {
           )
         );
       } else if (!installResult.success) {
-        error("Failed to install dependencies. Cleaning up...");
-        cleanupProjectDirectory(projectPath, shouldCleanup);
-        process.exit(1);
+        throw new Error("Failed to install dependencies");
       }
 
       // STEP 3: additional setups
@@ -221,11 +210,17 @@ export async function createApp(projectDirectory, options = {}) {
       console.log();
 
       if (userChoices.initGit) {
-        await initGit(projectPath, userChoices);
+        await errorHandler.withErrorHandling(
+          () => initGit(projectPath, userChoices),
+          { type: ERROR_TYPES.PROCESS }
+        );
       }
 
       if (userChoices.openEditor) {
-        await openEditor(projectPath, userChoices.editor, userChoices);
+        await errorHandler.withErrorHandling(
+          () => openEditor(projectPath, userChoices.editor, userChoices),
+          { type: ERROR_TYPES.PROCESS }
+        );
       }
 
       console.log(`  ✅ Project successfully set up`);
@@ -242,32 +237,15 @@ export async function createApp(projectDirectory, options = {}) {
       );
       console.log(completionSummary);
 
-      await startProject(projectPath, userChoices);
-    } catch (err) {
-      handleError(err, options.verbose, projectPath, shouldCleanup);
+      await errorHandler.withErrorHandling(
+        () => startProject(projectPath, userChoices),
+        { type: ERROR_TYPES.PROCESS }
+      );
+    },
+    {
+      type: ERROR_TYPES.GENERAL,
+      shouldCleanup: true,
+      verbose: options.verbose,
     }
-  } catch (err) {
-    handleError(err, options.verbose, projectPath, shouldCleanup);
-  }
-}
-
-function handleError(err, verbose, projectPath, shouldCleanup) {
-  error("An error occurred during project setup:");
-  error(err.message || err);
-
-  if (verbose) {
-    console.error(err);
-  }
-
-  // clean up the project directory
-  if (projectPath && shouldCleanup) {
-    cleanupProjectDirectory(projectPath, shouldCleanup);
-  }
-
-  console.log();
-  console.log(chalk.yellow("Need help? Open an issue:"));
-  console.log("  https://github.com/gavbarosee/react-kickstart/issues/new");
-  console.log();
-
-  process.exit(1);
+  );
 }

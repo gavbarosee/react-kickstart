@@ -1,6 +1,7 @@
 import chalk from "chalk";
 import symbols from "log-symbols";
 import figures from "figures";
+import { createUserErrorReporter } from "../errors/index.js";
 
 // to track steps during prompts selection
 let currentStep = 0;
@@ -34,7 +35,9 @@ export function warning(message) {
 }
 
 export function error(message) {
-  console.error(`${chalk.red(symbols.error)} ${message}`);
+  // Use standardized error reporting when possible
+  const userReporter = createUserErrorReporter();
+  userReporter.formatError("Error", message);
 }
 
 export function debug(message, isVerbose = false) {

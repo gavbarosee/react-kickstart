@@ -7,6 +7,7 @@ import {
   getBasicCssApp,
   createEntryPointContent,
 } from "./components.js";
+import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
 /**
  * Creates the source files for a React project

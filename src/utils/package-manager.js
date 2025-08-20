@@ -5,6 +5,11 @@ import ora from "ora";
 import chalk from "chalk";
 import inquirer from "inquirer";
 import { error } from "./logger.js";
+import {
+  createErrorHandler,
+  ERROR_TYPES,
+  classifyError,
+} from "../errors/index.js";
 
 export function countPackages(packageJsonPath) {
   try {
@@ -214,6 +219,15 @@ export async function installDependenciesWithRetry(
   framework = "vite",
   maxRetries = 3
 ) {
+  const errorHandler = createErrorHandler();
+  const userReporter = errorHandler.userReporter;
+
+  errorHandler.setContext({
+    projectPath,
+    packageManager,
+    framework,
+  });
+
   let attempts = 0;
   let result;
 
@@ -236,62 +250,21 @@ export async function installDependenciesWithRetry(
       );
       if (result.success) return result;
     } catch (err) {
-      const errorMsg = err.message || String(err);
-
       if (attempts >= maxRetries) {
         break; // no more retries, will prompt user below
       }
 
-      // contextual guidance based on error patterns
-      console.log(chalk.red(`\nDependency installation failed: ${errorMsg}`));
-
-      if (errorMsg.includes("ENOTFOUND") || errorMsg.includes("ETIMEDOUT")) {
-        console.log(
-          chalk.cyan(
-            "\nThis appears to be a network issue. Please check your internet connection."
-          )
-        );
-      } else if (
-        errorMsg.includes("ENOENT") &&
-        errorMsg.includes(packageManager)
-      ) {
-        console.log(
-          chalk.cyan(
-            `\nThe ${packageManager} command was not found. Make sure it's installed and in your PATH.`
-          )
-        );
-      } else if (
-        errorMsg.includes("EACCES") ||
-        errorMsg.includes("permission")
-      ) {
-        console.log(
-          chalk.cyan(
-            "\nThis appears to be a permissions issue. You might need to run as administrator."
-          )
-        );
-      }
+      // Use standardized error reporting
+      const errorType = classifyError(err);
+      userReporter.reportDependencyError(err);
     }
 
-    // provide recovery options
-    const { action } = await inquirer.prompt([
-      {
-        type: "list",
-        name: "action",
-        message: "How would you like to proceed?",
-        choices: [
-          { name: "Retry installation", value: "retry" },
-          {
-            name: `Switch to ${packageManager === "npm" ? "yarn" : "npm"}`,
-            value: "switch",
-          },
-          {
-            name: "Skip dependencies (project may not work properly)",
-            value: "skip",
-          },
-          { name: "Abort setup", value: "abort" },
-        ],
-      },
-    ]);
+    // Use standardized recovery options
+    const action = await userReporter.showDependencyRecovery({
+      packageManager,
+      attempts,
+      maxRetries,
+    });
 
     if (action === "retry") {
       continue;
@@ -313,27 +286,16 @@ export async function installDependenciesWithRetry(
 
   // final fallback after exhausting retries
   if (!result || !result.success) {
-    console.log(
-      chalk.red("\nFailed to install dependencies after multiple attempts.")
+    const finalError = new Error(
+      "Failed to install dependencies after multiple attempts"
     );
+    const handleResult = await errorHandler.handle(finalError, {
+      type: ERROR_TYPES.DEPENDENCY,
+      severity: "error",
+      showRecovery: true,
+    });
 
-    const { finalAction } = await inquirer.prompt([
-      {
-        type: "list",
-        name: "finalAction",
-        message:
-          "All installation attempts failed. How would you like to proceed?",
-        choices: [
-          {
-            name: "Continue without dependencies (project may not work)",
-            value: "continue",
-          },
-          { name: "Abort setup", value: "abort" },
-        ],
-      },
-    ]);
-
-    if (finalAction === "continue") {
+    if (handleResult.recovery === "continue") {
       return { success: true, skipped: true };
     } else {
       throw new Error("Dependency installation failed");

@@ -1,6 +1,7 @@
 import execa from "execa";
 import chalk from "chalk";
 import { debug } from "./logger.js";
+import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
 /**
  * Detects available package managers and their versions
