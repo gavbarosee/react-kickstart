@@ -8,6 +8,7 @@ import {
 } from "../shared/file-generation.js";
 import { setupStyling } from "../shared/styling.js";
 import { setupRouting } from "../shared/routing/index.js";
+import { CORE_UTILS } from "../utils/index.js";
 
 /**
  * Vite-specific project generator
@@ -68,8 +69,7 @@ export class ViteGenerator extends BaseGenerator {
    * Create Vite logo file
    */
   createViteLogo(projectPath) {
-    const publicDir = path.join(projectPath, "public");
-    fs.ensureDirSync(publicDir);
+    const publicDir = CORE_UTILS.createProjectDirectory(projectPath, "public");
 
     // Vite logo SVG
     const viteLogo = `<?xml version="1.0" encoding="UTF-8"?>

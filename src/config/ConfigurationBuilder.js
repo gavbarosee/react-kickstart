@@ -2,6 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 import { PackageJsonBuilder } from "./PackageJsonBuilder.js";
 import { createFileTemplateEngine } from "../templates/index.js";
+import { CORE_UTILS } from "../utils/index.js";
 
 /**
  * Main configuration builder that orchestrates all configuration file generation
@@ -76,7 +77,7 @@ export class ConfigurationBuilder {
    * Generate Vite configuration
    */
   generateViteConfig(projectPath, userChoices) {
-    const configExt = userChoices.typescript ? "ts" : "js";
+    const configExt = CORE_UTILS.getConfigExtension(userChoices);
 
     const viteConfig = `import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -358,7 +359,7 @@ export default {
 
     // Framework config
     if (this.framework === "vite") {
-      configs.push(`vite.config.${userChoices.typescript ? "ts" : "js"}`);
+      configs.push(`vite.config.${CORE_UTILS.getConfigExtension(userChoices)}`);
     } else if (this.framework === "nextjs") {
       configs.push("next.config.js");
     }

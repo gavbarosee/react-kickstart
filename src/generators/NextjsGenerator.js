@@ -1,6 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
-import { UI_UTILS } from "../utils/index.js";
+import { UI_UTILS, CORE_UTILS } from "../utils/index.js";
 import { BaseGenerator } from "./BaseGenerator.js";
 import { createConfigurationBuilder } from "../config/index.js";
 import { createAppRouterStructure } from "./nextjs/app-router.js";
@@ -75,8 +75,7 @@ export class NextjsGenerator extends BaseGenerator {
    * Create Next.js logo file
    */
   createNextjsLogo(projectPath) {
-    const publicDir = path.join(projectPath, "public");
-    fs.ensureDirSync(publicDir);
+    const publicDir = CORE_UTILS.createProjectDirectory(projectPath, "public");
 
     const nextjsLogo = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">

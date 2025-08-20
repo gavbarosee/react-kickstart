@@ -1,5 +1,4 @@
-import { setupZustandStore } from "./standard.js";
-import { setupNextjsZustandStore } from "./nextjs.js";
+import { createZustandSetup } from "../state-management/index.js";
 
 /**
  * Sets up Zustand based on the framework
@@ -9,11 +8,7 @@ import { setupNextjsZustandStore } from "./nextjs.js";
  * @returns {void}
  */
 export function setupZustand(projectPath, userChoices, framework) {
-  if (userChoices.stateManagement !== "zustand") return;
-
-  if (framework === "nextjs") {
-    setupNextjsZustandStore(projectPath, userChoices);
-  } else {
-    setupZustandStore(projectPath, userChoices);
-  }
+  const frameworkType = framework === "nextjs" ? "nextjs" : "standard";
+  const zustandSetup = createZustandSetup(frameworkType);
+  zustandSetup.setup(projectPath, userChoices);
 }

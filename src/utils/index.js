@@ -11,6 +11,8 @@ import * as filesystem from "./core/filesystem.js";
 import * as validation from "./core/validation.js";
 import * as projectAnalysis from "./core/project-analysis.js";
 import * as dataFormatting from "./core/data-formatting.js";
+import * as fileExtensions from "./core/file-extensions.js";
+import * as directoryManagement from "./core/directory-management.js";
 import * as packageManagers from "./process/package-managers.js";
 import * as uiLogging from "./ui/logging.js";
 import * as git from "./process/git.js";
@@ -34,6 +36,12 @@ export const CORE_UTILS = {
 
   // Data formatting utilities
   ...dataFormatting,
+
+  // File extension utilities
+  ...fileExtensions,
+
+  // Directory management utilities
+  ...directoryManagement,
 
   // Convenience aliases
   validateProjectName: validation.validateProjectNameInput,

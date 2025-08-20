@@ -2,7 +2,7 @@ import execa from "execa";
 import fs from "fs-extra";
 import path from "path";
 import ora from "ora";
-import { UI_UTILS } from "../index.js";
+import { UI_UTILS, CORE_UTILS } from "../index.js";
 import { createErrorHandler, ERROR_TYPES } from "../../errors/index.js";
 
 export async function openEditor(projectPath, editor = "vscode", userChoices) {
@@ -92,8 +92,7 @@ function createEditorConfig(projectPath, editor, userChoices) {
   const { typescript, styling, framework } = userChoices || {};
 
   // create .vscode directory (works for both VS Code and Cursor)
-  const vscodeDir = path.join(projectPath, ".vscode");
-  fs.ensureDirSync(vscodeDir);
+  const vscodeDir = CORE_UTILS.createProjectDirectory(projectPath, ".vscode");
 
   // extensions.json with recommended extensions
   const extensions = {

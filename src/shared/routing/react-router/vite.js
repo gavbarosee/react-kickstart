@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import { CORE_UTILS } from "../../../utils/index.js";
 
 /**
  * Sets up React Router for Vite projects
@@ -8,24 +9,24 @@ import path from "path";
  * @returns {void}
  */
 export function setupViteReactRouter(projectPath, userChoices) {
-  const srcDir = path.join(projectPath, "src");
-  const pagesDir = path.join(srcDir, "pages");
-  const componentsDir = path.join(srcDir, "components");
-  const ext = userChoices.typescript ? "tsx" : "jsx";
+  const ext = CORE_UTILS.getComponentExtension(userChoices);
 
-  // create directories
-  fs.ensureDirSync(pagesDir);
-  fs.ensureDirSync(componentsDir);
+  // Create directories
+  const directories = CORE_UTILS.createProjectDirectories(projectPath, {
+    src: "src",
+    pages: "src/pages",
+    components: "src/components",
+  });
 
   // create example pages
-  createHomePage(pagesDir, ext, userChoices);
-  createAboutPage(pagesDir, ext, userChoices);
-  createNotFoundPage(pagesDir, ext, userChoices);
+  createHomePage(directories.pages, ext, userChoices);
+  createAboutPage(directories.pages, ext, userChoices);
+  createNotFoundPage(directories.pages, ext, userChoices);
 
   // create the layout component with navigation
-  createLayout(componentsDir, ext, userChoices);
-  updateAppComponent(srcDir, ext, userChoices);
-  updateEntryPoint(srcDir, ext, userChoices);
+  createLayout(directories.components, ext, userChoices);
+  updateAppComponent(directories.src, ext, userChoices);
+  updateEntryPoint(directories.src, ext, userChoices);
 }
 
 /**

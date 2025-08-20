@@ -11,6 +11,82 @@ export class ErrorHandler {
     this.userReporter = new UserErrorReporter();
     this.errorHistory = [];
     this.context = {};
+    this.errorConfigs = this.initializeErrorConfigs();
+  }
+
+  /**
+   * Initialize error type configurations
+   */
+  initializeErrorConfigs() {
+    return {
+      validation: {
+        reportMethod: "reportValidationError",
+        recoveryMethod: "showValidationRecovery",
+        exitCode: 1,
+        allowRecovery: true,
+        requiresCleanup: false,
+        passContext: false,
+      },
+      network: {
+        reportMethod: "reportNetworkError",
+        recoveryMethod: "showNetworkRecovery",
+        exitCode: 1,
+        allowRecovery: true,
+        requiresCleanup: false,
+        passContext: false,
+      },
+      permission: {
+        reportMethod: "reportPermissionError",
+        recoveryMethod: "showPermissionRecovery",
+        exitCode: 1,
+        allowRecovery: true,
+        requiresCleanup: false,
+        passContext: false,
+      },
+      dependency: {
+        reportMethod: "reportDependencyError",
+        recoveryMethod: "showDependencyRecovery",
+        exitCode: 1,
+        allowRecovery: true,
+        requiresCleanup: false,
+        passContext: true,
+      },
+      process: {
+        reportMethod: "reportProcessError",
+        recoveryMethod: "showProcessRecovery",
+        exitCode: 1,
+        allowRecovery: true,
+        requiresCleanup: false,
+        passContext: true,
+      },
+      filesystem: {
+        reportMethod: "reportFilesystemError",
+        recoveryMethod: null,
+        exitCode: 1,
+        allowRecovery: false,
+        requiresCleanup: true,
+        passContext: false,
+      },
+      user_cancelled: {
+        reportMethod: "reportUserCancellation",
+        recoveryMethod: null,
+        exitCode: 0,
+        allowRecovery: false,
+        requiresCleanup: "conditional", // Based on options.shouldCleanup
+        passContext: false,
+        skipErrorParam: true, // reportUserCancellation doesn't take error param
+      },
+      general: {
+        reportMethod: "reportGeneralError",
+        recoveryMethod: null,
+        exitCode: 1,
+        allowRecovery: false,
+        requiresCleanup: "conditional",
+        passContext: false,
+        passVerbose: true,
+        showHelp: true,
+      },
+    };
   }
 
   /**
@@ -62,129 +138,158 @@ export class ErrorHandler {
   }
 
   /**
-   * Handle validation errors (bad input, invalid names, etc.)
+   * Consolidated error handling method that eliminates duplication
+   * This method handles the common patterns shared by all error types
    */
-  handleValidationError(error, options) {
-    this.userReporter.reportValidationError(error);
+  async handleTypedError(error, type, options) {
+    const config = this.errorConfigs[type] || this.errorConfigs.general;
 
-    if (options.showRecovery) {
-      this.userReporter.showValidationRecovery();
+    // Step 1: Report the error
+    await this.reportError(error, config, options);
+
+    // Step 2: Handle cleanup if required
+    await this.handleCleanupIfRequired(config, options);
+
+    // Step 3: Handle recovery if allowed and requested
+    if (config.allowRecovery && options.showRecovery && config.recoveryMethod) {
+      const recovery = await this.handleRecovery(config, options);
+      return { shouldExit: false, recovery };
     }
 
-    return { shouldExit: true, exitCode: 1 };
+    // Step 4: Show additional help if configured
+    if (config.showHelp) {
+      this.userReporter.showHelpInfo();
+    }
+
+    return { shouldExit: true, exitCode: config.exitCode };
+  }
+
+  /**
+   * Report error using the appropriate reporter method
+   */
+  async reportError(error, config, options) {
+    const reportMethod = this.userReporter[config.reportMethod];
+    if (!reportMethod) {
+      throw new Error(`Reporter method '${config.reportMethod}' not found`);
+    }
+
+    // Build arguments based on configuration
+    const args = [];
+    if (!config.skipErrorParam) {
+      args.push(error);
+    }
+    if (config.passVerbose) {
+      args.push(options.verbose);
+    }
+
+    // Handle both sync and async reporter methods
+    const result = reportMethod.call(this.userReporter, ...args);
+    if (result && typeof result.then === "function") {
+      await result;
+    }
+  }
+
+  /**
+   * Handle cleanup operations if required by error type
+   */
+  async handleCleanupIfRequired(config, options) {
+    const shouldCleanup =
+      config.requiresCleanup === true ||
+      (config.requiresCleanup === "conditional" && options.shouldCleanup);
+
+    if (shouldCleanup && this.context.projectPath) {
+      // Generate cleanup reason from report method name
+      let reason = config.reportMethod
+        .replace("report", "")
+        .replace("Error", "")
+        .replace("UserCancellation", "user_cancelled")
+        .replace("General", "general")
+        .toLowerCase();
+
+      // Handle edge cases
+      if (reason === "usercancellation") reason = "user_cancelled";
+      if (reason === "") reason = "general"; // fallback
+
+      await this.cleanupManager.cleanup(this.context.projectPath, {
+        reason: `${reason}_error`,
+        verbose: options.verbose,
+      });
+    }
+  }
+
+  /**
+   * Handle recovery operations
+   */
+  async handleRecovery(config, options) {
+    const recoveryMethod = this.userReporter[config.recoveryMethod];
+    if (!recoveryMethod) {
+      throw new Error(`Recovery method '${config.recoveryMethod}' not found`);
+    }
+
+    const args = config.passContext ? [this.context] : [];
+    const result = recoveryMethod.call(this.userReporter, ...args);
+
+    // Handle both sync and async recovery methods
+    if (result && typeof result.then === "function") {
+      return await result;
+    }
+    return result;
+  }
+
+  /**
+   * Handle validation errors (bad input, invalid names, etc.)
+   */
+  async handleValidationError(error, options) {
+    return this.handleTypedError(error, "validation", options);
   }
 
   /**
    * Handle network-related errors
    */
   async handleNetworkError(error, options) {
-    this.userReporter.reportNetworkError(error);
-
-    if (options.showRecovery) {
-      const recovery = await this.userReporter.showNetworkRecovery();
-      return { shouldExit: false, recovery };
-    }
-
-    return { shouldExit: true, exitCode: 1 };
+    return this.handleTypedError(error, "network", options);
   }
 
   /**
    * Handle permission errors
    */
   async handlePermissionError(error, options) {
-    this.userReporter.reportPermissionError(error);
-
-    if (options.showRecovery) {
-      const recovery = await this.userReporter.showPermissionRecovery();
-      return { shouldExit: false, recovery };
-    }
-
-    return { shouldExit: true, exitCode: 1 };
+    return this.handleTypedError(error, "permission", options);
   }
 
   /**
    * Handle dependency installation errors
    */
   async handleDependencyError(error, options) {
-    this.userReporter.reportDependencyError(error);
-
-    if (options.showRecovery) {
-      const recovery = await this.userReporter.showDependencyRecovery(
-        this.context
-      );
-      return { shouldExit: false, recovery };
-    }
-
-    return { shouldExit: true, exitCode: 1 };
+    return this.handleTypedError(error, "dependency", options);
   }
 
   /**
    * Handle filesystem errors
    */
   async handleFilesystemError(error, options) {
-    this.userReporter.reportFilesystemError(error);
-
-    // Always cleanup on filesystem errors
-    if (this.context.projectPath) {
-      await this.cleanupManager.cleanup(this.context.projectPath, {
-        reason: "filesystem_error",
-        verbose: options.verbose,
-      });
-    }
-
-    return { shouldExit: true, exitCode: 1 };
+    return this.handleTypedError(error, "filesystem", options);
   }
 
   /**
    * Handle process errors (subprocess failures, etc.)
    */
   async handleProcessError(error, options) {
-    this.userReporter.reportProcessError(error);
-
-    if (options.showRecovery) {
-      const recovery = await this.userReporter.showProcessRecovery(
-        this.context
-      );
-      return { shouldExit: false, recovery };
-    }
-
-    return { shouldExit: true, exitCode: 1 };
+    return this.handleTypedError(error, "process", options);
   }
 
   /**
    * Handle user cancellation gracefully
    */
   async handleUserCancellation(error, options) {
-    this.userReporter.reportUserCancellation();
-
-    // Cleanup if needed
-    if (options.shouldCleanup && this.context.projectPath) {
-      await this.cleanupManager.cleanup(this.context.projectPath, {
-        reason: "user_cancelled",
-        verbose: options.verbose,
-      });
-    }
-
-    return { shouldExit: true, exitCode: 0 }; // Exit code 0 for user cancellation
+    return this.handleTypedError(error, "user_cancelled", options);
   }
 
   /**
    * Handle general/unknown errors
    */
   async handleGeneralError(error, options) {
-    this.userReporter.reportGeneralError(error, options.verbose);
-
-    // Cleanup if requested
-    if (options.shouldCleanup && this.context.projectPath) {
-      await this.cleanupManager.cleanup(this.context.projectPath, {
-        reason: "general_error",
-        verbose: options.verbose,
-      });
-    }
-
-    this.userReporter.showHelpInfo();
-
-    return { shouldExit: true, exitCode: 1 };
+    return this.handleTypedError(error, "general", options);
   }
 
   /**

@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import { CORE_UTILS } from "../utils/index.js";
 
 /**
  * Sets up styling configuration for a React project
@@ -78,8 +79,10 @@ export function setupTailwind(projectPath, stylingInfo, userChoices) {
     return;
   }
 
-  const cssDir = path.join(projectPath, stylingInfo.cssDir);
-  fs.ensureDirSync(cssDir);
+  const cssDir = CORE_UTILS.createProjectDirectory(
+    projectPath,
+    stylingInfo.cssDir
+  );
 
   // create the main CSS file with Tailwind directives
   const cssContent = `@tailwind base;
@@ -99,8 +102,10 @@ export function setupTailwind(projectPath, stylingInfo, userChoices) {
  * Sets up basic CSS for a project
  */
 export function setupBasicCss(projectPath, stylingInfo) {
-  const cssDir = path.join(projectPath, stylingInfo.cssDir);
-  fs.ensureDirSync(cssDir);
+  const cssDir = CORE_UTILS.createProjectDirectory(
+    projectPath,
+    stylingInfo.cssDir
+  );
 
   const mainCssContent = `body {
   margin: 0;
@@ -219,7 +224,7 @@ function setupTailwindForNextjs(projectPath, routingType) {
       ? path.join(projectPath, "app")
       : path.join(projectPath, "styles");
 
-  fs.ensureDirSync(cssDir);
+  CORE_UTILS.ensureDirectory(cssDir);
 
   // create globals.css for Tailwind
   const cssContent = `@tailwind base;

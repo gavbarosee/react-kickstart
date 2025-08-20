@@ -1,35 +1,43 @@
 import fs from "fs-extra";
 import path from "path";
 
-import {
-  getStyledComponentsApp,
-  getTailwindApp,
-  getBasicCssApp,
-} from "../../shared/components.js";
+import { createContentGenerator } from "../../shared/content-generation/index.js";
 import { setupStyling } from "../../shared/styling.js";
+import { CORE_UTILS } from "../../utils/index.js";
 
 export function createAppRouterStructure(
   projectPath,
   projectName,
   userChoices
 ) {
-  const appDir = path.join(projectPath, "app");
-  fs.ensureDirSync(appDir);
+  const appDir = CORE_UTILS.createProjectDirectory(projectPath, "app");
 
-  const ext = userChoices.typescript ? "tsx" : "jsx";
+  const ext = CORE_UTILS.getComponentExtension(userChoices);
 
-  createLayoutFile(appDir, projectName, userChoices, ext);
+  // Create layout file using the strategy pattern
+  const generator = createContentGenerator("nextjs", "app");
+  const layoutContent = generator.generateLayout(
+    projectName,
+    userChoices.styling,
+    ext
+  );
+  fs.writeFileSync(path.join(appDir, `layout.${ext}`), layoutContent);
 
-  let pageContent;
-
+  // Create styled-components registry if needed
   if (userChoices.styling === "styled-components") {
-    pageContent = getStyledComponentsApp(ext, "nextjs", true);
-  } else if (userChoices.styling === "tailwind") {
-    pageContent = getTailwindApp(ext, "nextjs", true);
-  } else {
-    pageContent = getBasicCssApp(ext, "nextjs", true);
+    const registryContent = generator.generateStyledComponentsRegistry(ext);
+    fs.writeFileSync(
+      path.join(appDir, `styled-components-registry.${ext}`),
+      registryContent
+    );
   }
 
+  // Generate page content using strategy pattern
+  const pageContent = generator.generateAppComponent(
+    ext,
+    userChoices.styling,
+    userChoices
+  );
   fs.writeFileSync(path.join(appDir, `page.${ext}`), pageContent);
 
   // Ensure styling setup for all styling options (tailwind, styled-components, plain css)
@@ -38,137 +46,23 @@ export function createAppRouterStructure(
   createApiRoute(appDir, userChoices);
 }
 
-function createLayoutFile(appDir, projectName, userChoices, ext) {
-  let layoutContent = ``;
-
-  if (userChoices.styling === "tailwind" || userChoices.styling === "css") {
-    const typeImport =
-      ext === "tsx" ? `import type { ReactNode } from 'react';\n` : "";
-    const childrenType = ext === "tsx" ? `: { children: ReactNode }` : "";
-    layoutContent = `${typeImport}import './globals.css';
-
-export const metadata = {
-  title: '${projectName}',
-  description: 'Created with React Kickstart',
-}
-
-export default function RootLayout({ children }${childrenType}) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  )
-}
-`;
-  } else if (userChoices.styling === "styled-components") {
-    // Use Styled Components Registry for proper SSR in App Router
-    const typeImport =
-      ext === "tsx" ? `import type { ReactNode } from 'react';\n` : "";
-    const childrenType = ext === "tsx" ? `: { children: ReactNode }` : "";
-    layoutContent = `${typeImport}import StyledComponentsRegistry from './styled-components-registry.${ext}';
-
-export const metadata = {
-  title: '${projectName}',
-  description: 'Created with React Kickstart',
-}
-
-export default function RootLayout({ children }${childrenType}) {
-  return (
-    <html lang="en">
-      <body>
-        <StyledComponentsRegistry>
-          {children}
-        </StyledComponentsRegistry>
-      </body>
-    </html>
-  )
-}
-`;
-    // Create the Styled Components Registry file alongside layout
-    const registryContent =
-      ext === "tsx"
-        ? `"use client";
-import React, { useState, type ReactNode } from 'react';
-import { useServerInsertedHTML } from 'next/navigation';
-import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
-
-export default function StyledComponentsRegistry({ children }: { children: ReactNode }) {
-  const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet());
-
-  useServerInsertedHTML(() => {
-    const styles = styledComponentsStyleSheet.getStyleElement();
-    return <>{styles}</>;
-  });
-
-  if (typeof window !== 'undefined') return <>{children}</>;
-
-  return (
-    <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
-      {children}
-    </StyleSheetManager>
-  );
-}
-`
-        : `"use client";
-import React from 'react';
-import { useServerInsertedHTML } from 'next/navigation';
-import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
-
-export default function StyledComponentsRegistry({ children }) {
-  const [styledComponentsStyleSheet] = React.useState(() => new ServerStyleSheet());
-
-  useServerInsertedHTML(() => {
-    const styles = styledComponentsStyleSheet.getStyleElement();
-    return <>{styles}</>;
-  });
-
-  if (typeof window !== 'undefined') return <>{children}</>;
-
-  return (
-    <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
-      {children}
-    </StyleSheetManager>
-  );
-}
-`;
-    fs.writeFileSync(
-      path.join(appDir, `styled-components-registry.${ext}`),
-      registryContent
-    );
-  } else {
-    layoutContent = `export const metadata = {
-  title: '${projectName}',
-  description: 'Created with React Kickstart',
-}
-
-export default function RootLayout({ children }) {
-  return (
-    <html lang="en">
-      <body>{children}</body>
-    </html>
-  )
-}
-`;
-  }
-
-  fs.writeFileSync(path.join(appDir, `layout.${ext}`), layoutContent);
-}
-
 function createApiRoute(appDir, userChoices) {
-  const apiDir = path.join(appDir, "api");
-  const helloDir = path.join(apiDir, "hello");
-  fs.ensureDirSync(helloDir);
+  const directories = CORE_UTILS.createProjectDirectories(
+    path.dirname(appDir),
+    {
+      api: "app/api",
+      hello: "app/api/hello",
+    }
+  );
 
-  const routeHandler = `export async function GET(request) {
-  return Response.json({ 
-    message: 'Hello from Next.js!',
-    time: new Date().toISOString()
-  });
-}
-`;
+  const generator = createContentGenerator("nextjs", "app");
+  const routeHandler = generator.generateApiRoute();
 
   fs.writeFileSync(
-    path.join(helloDir, `route.${userChoices.typescript ? "ts" : "js"}`),
+    path.join(
+      directories.hello,
+      `route.${CORE_UTILS.getApiExtension(userChoices)}`
+    ),
     routeHandler
   );
 }

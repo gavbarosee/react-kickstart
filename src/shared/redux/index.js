@@ -1,5 +1,4 @@
-import { setupReduxToolkit } from "./standard.js";
-import { setupNextjsReduxToolkit } from "./nextjs.js";
+import { createReduxSetup } from "../state-management/index.js";
 
 /**
  * Sets up Redux Toolkit based on the framework
@@ -9,11 +8,7 @@ import { setupNextjsReduxToolkit } from "./nextjs.js";
  * @returns {void}
  */
 export function setupRedux(projectPath, userChoices, framework) {
-  if (userChoices.stateManagement !== "redux") return;
-
-  if (framework === "nextjs") {
-    setupNextjsReduxToolkit(projectPath, userChoices);
-  } else {
-    setupReduxToolkit(projectPath, userChoices);
-  }
+  const frameworkType = framework === "nextjs" ? "nextjs" : "standard";
+  const reduxSetup = createReduxSetup(frameworkType);
+  reduxSetup.setup(projectPath, userChoices);
 }

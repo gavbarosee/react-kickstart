@@ -1,14 +1,9 @@
 // src/shared/file-generation.js
 import fs from "fs-extra";
 import path from "path";
-import {
-  getStyledComponentsApp,
-  getTailwindApp,
-  getBasicCssApp,
-  createEntryPointContent,
-} from "./components.js";
-
+import { createContentGenerator } from "./content-generation/index.js";
 import { createFileTemplateEngine } from "../templates/index.js";
+import { CORE_UTILS } from "../utils/index.js";
 
 /**
  * Creates the source files for a React project
@@ -23,7 +18,7 @@ export function createSourceFiles(
   userChoices,
   framework = "vite"
 ) {
-  const fileExt = userChoices.typescript ? "tsx" : "jsx";
+  const fileExt = CORE_UTILS.getComponentExtension(userChoices);
 
   // Determine source directory based on framework
   const srcDir =
@@ -32,7 +27,7 @@ export function createSourceFiles(
       : path.join(projectPath, "src");
 
   // Ensure the directory exists
-  fs.ensureDirSync(srcDir);
+  CORE_UTILS.ensureDirectory(srcDir);
 
   // Create entry point file if not using Next.js (which has its own routing)
   if (framework !== "nextjs") {
@@ -57,8 +52,9 @@ function createEntryPointFile(srcDir, fileExt, userChoices, framework) {
   const filename =
     framework === "vite" ? `main.${fileExt}` : `index.${fileExt}`;
 
-  // Generate content for the entry point file
-  const content = createEntryPointContent(fileExt, userChoices, framework);
+  // Generate content using strategy pattern
+  const generator = createContentGenerator(framework);
+  const content = generator.generateEntryPoint(fileExt, userChoices);
 
   // Write the file
   fs.writeFileSync(path.join(srcDir, filename), content);
@@ -78,16 +74,16 @@ function createAppComponent(srcDir, fileExt, userChoices, framework) {
   const isNextAppRouter =
     framework === "nextjs" && userChoices.nextRouting === "app";
 
-  // Get the appropriate content based on styling choice
-  let content;
+  // Get routing type for content generator
+  const routingType = isNextAppRouter ? "app" : null;
 
-  if (userChoices.styling === "styled-components") {
-    content = getStyledComponentsApp(fileExt, framework, isNextAppRouter);
-  } else if (userChoices.styling === "tailwind") {
-    content = getTailwindApp(fileExt, framework, isNextAppRouter);
-  } else {
-    content = getBasicCssApp(fileExt, framework, isNextAppRouter);
-  }
+  // Generate content using strategy pattern
+  const generator = createContentGenerator(framework, routingType);
+  const content = generator.generateAppComponent(
+    fileExt,
+    userChoices.styling,
+    userChoices
+  );
 
   // Determine the filename based on the framework
   const filename = isNextAppRouter ? `page.${fileExt}` : `App.${fileExt}`;
@@ -134,19 +130,6 @@ export async function createHtmlFile(
  * @returns {void}
  */
 export function createDirectoryStructure(projectPath, framework = "vite") {
-  // Create src directory (all frameworks use this except Next.js app router)
-  const srcDir = path.join(projectPath, "src");
-  fs.ensureDirSync(srcDir);
-
-  // Create public directory for static assets (all frameworks use this)
-  const publicDir = path.join(projectPath, "public");
-  fs.ensureDirSync(publicDir);
-
-  // Additional directories for Next.js
-  if (framework === "nextjs") {
-    // Both app and pages router might be used depending on the user's choice
-    fs.ensureDirSync(path.join(projectPath, "app"));
-    fs.ensureDirSync(path.join(projectPath, "pages"));
-    fs.ensureDirSync(path.join(projectPath, "styles"));
-  }
+  const options = { framework };
+  return CORE_UTILS.createFrameworkDirectories(projectPath, framework, options);
 }

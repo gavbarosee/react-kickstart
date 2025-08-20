@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import { getConfigExtension } from "./file-extensions.js";
 
 /**
  * Project analysis utilities - analyze and categorize project components
@@ -181,7 +182,7 @@ export function getConfigurationFiles(
   // Framework configuration
   if (framework === "vite") {
     configs.push({
-      label: `vite.config.${typescript ? "ts" : "js"}`,
+      label: `vite.config.${getConfigExtension({ typescript })}`,
       description: "React plugin, aliases, build options",
     });
   } else if (framework === "nextjs") {
