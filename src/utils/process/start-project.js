@@ -1,4 +1,4 @@
-import execa from "execa";
+import { execa } from "execa";
 import chalk from "chalk";
 import open from "open";
 import ora from "ora";
