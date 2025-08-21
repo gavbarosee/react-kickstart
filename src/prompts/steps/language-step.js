@@ -6,16 +6,18 @@ export class LanguageStep extends BaseStep {
     super(renderer, navigator);
     this.configure({
       stepName: "typescript",
-      stepNumber: 4, // Will be adjusted based on framework
+      stepNumber: 4,
       totalSteps: 11,
       title: "Language Options",
       icon: "🔤",
     });
   }
 
-  // Adjust step number based on framework
+  // Adjust step number based on framework (routing step is skipped for Next.js)
   execute(answers) {
-    const stepNum = answers.framework === "nextjs" ? 4 : 4;
+    // Next.js: Package(1) -> Framework(2) -> NextjsOptions(3) -> Language(4)
+    // Vite: Package(1) -> Framework(2) -> Routing(3) -> Language(4)
+    const stepNum = 4; // Always step 4 since routing/nextjsOptions occupy step 3
     this.stepNumber = stepNum;
     return super.execute(answers);
   }

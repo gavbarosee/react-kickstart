@@ -6,16 +6,17 @@ export class StateManagementStep extends BaseStep {
     super(renderer, navigator);
     this.configure({
       stepName: "stateManagement",
-      stepNumber: 7, // Will be adjusted based on framework
+      stepNumber: 7,
       totalSteps: 11,
       title: "State Management",
       icon: "📦",
     });
   }
 
-  // Adjust step number based on framework
+  // Step number is always 7 regardless of framework
   execute(answers) {
-    const stepNum = answers.framework === "nextjs" ? 7 : 7;
+    // Both paths: Styling(6) -> StateManagement(7)
+    const stepNum = 7;
     this.stepNumber = stepNum;
     return super.execute(answers);
   }

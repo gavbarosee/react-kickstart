@@ -6,16 +6,17 @@ export class ApiStep extends BaseStep {
     super(renderer, navigator);
     this.configure({
       stepName: "api",
-      stepNumber: 8, // Between state management (7) and git (9)
-      totalSteps: 11, // Updated for testing step
+      stepNumber: 8,
+      totalSteps: 11,
       title: "API & Data Fetching",
       icon: "🌐",
     });
   }
 
-  // Adjust step number based on framework
+  // Step number is always 8 regardless of framework
   execute(answers) {
-    const stepNum = answers.framework === "nextjs" ? 8 : 8;
+    // Both paths: StateManagement(7) -> API(8)
+    const stepNum = 8;
     this.stepNumber = stepNum;
     return super.execute(answers);
   }

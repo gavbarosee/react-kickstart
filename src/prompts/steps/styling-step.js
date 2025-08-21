@@ -6,16 +6,17 @@ export class StylingStep extends BaseStep {
     super(renderer, navigator);
     this.configure({
       stepName: "styling",
-      stepNumber: 6, // Will be adjusted based on framework
+      stepNumber: 6,
       totalSteps: 11,
       title: "Styling Solution",
       icon: "🎨",
     });
   }
 
-  // Adjust step number based on framework
+  // Step number is always 6 regardless of framework
   execute(answers) {
-    const stepNum = answers.framework === "nextjs" ? 6 : 6;
+    // Both paths: CodeQuality(5) -> Styling(6)
+    const stepNum = 6;
     this.stepNumber = stepNum;
     return super.execute(answers);
   }

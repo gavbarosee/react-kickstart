@@ -6,16 +6,17 @@ export class CodeQualityStep extends BaseStep {
     super(renderer, navigator);
     this.configure({
       stepName: "linting",
-      stepNumber: 5, // Will be adjusted based on framework
+      stepNumber: 5,
       totalSteps: 11,
       title: "Code Quality",
       icon: "✨",
     });
   }
 
-  // Adjust step number based on framework
+  // Step number is always 5 regardless of framework
   execute(answers) {
-    const stepNum = answers.framework === "nextjs" ? 5 : 5;
+    // Both paths: Language(4) -> CodeQuality(5)
+    const stepNum = 5;
     this.stepNumber = stepNum;
     return super.execute(answers);
   }
