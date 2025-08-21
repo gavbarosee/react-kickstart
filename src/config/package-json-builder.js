@@ -36,10 +36,13 @@ export class PackageJsonBuilder {
   /**
    * Set npm scripts based on framework
    */
-  setScripts(customScripts = {}) {
+  setScripts(customScripts = {}, userChoices = {}) {
     const defaultScripts = this.getFrameworkScripts();
+    const testingScripts = this.getTestingScripts(userChoices.testing);
+
     this.packageData.scripts = {
       ...defaultScripts,
+      ...testingScripts,
       ...customScripts,
     };
 
@@ -211,6 +214,23 @@ export class PackageJsonBuilder {
   }
 
   /**
+   * Add testing dependencies if enabled
+   */
+  addTestingDependencies(userChoices) {
+    if (!userChoices.testing || userChoices.testing === "none") return this;
+
+    const testingDeps = this.dependencyResolver.getTestingDependencies(
+      userChoices.testing
+    );
+    this.packageData.devDependencies = {
+      ...this.packageData.devDependencies,
+      ...testingDeps,
+    };
+
+    return this;
+  }
+
+  /**
    * Build the complete package.json
    */
   build() {
@@ -256,6 +276,33 @@ export class PackageJsonBuilder {
           private: true,
           packageFields: {},
         };
+    }
+  }
+
+  /**
+   * Get testing scripts based on testing framework
+   */
+  getTestingScripts(testingFramework) {
+    if (!testingFramework || testingFramework === "none") {
+      return {};
+    }
+
+    switch (testingFramework) {
+      case "vitest":
+        return {
+          test: "vitest",
+          "test:ui": "vitest --ui",
+          "test:run": "vitest run",
+          "test:coverage": "vitest run --coverage",
+        };
+      case "jest":
+        return {
+          test: "jest",
+          "test:watch": "jest --watch",
+          "test:coverage": "jest --coverage",
+        };
+      default:
+        return {};
     }
   }
 

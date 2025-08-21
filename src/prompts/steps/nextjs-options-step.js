@@ -7,7 +7,7 @@ export class NextjsOptionsStep extends BaseStep {
     this.configure({
       stepName: "nextRouting",
       stepNumber: 3,
-      totalSteps: 10,
+      totalSteps: 11,
       title: "Next.js Options",
       icon: "▲ ",
     });

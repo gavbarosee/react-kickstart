@@ -180,3 +180,51 @@ export function getLintingDependencies(includeTypescript = false) {
 
   return deps;
 }
+
+// Testing frameworks - streamlined for Vite/Next.js
+export const testing = {
+  // Core testing tools
+  vitest: "^1.0.4",
+  vitestUi: "^1.0.4",
+  jest: "^29.7.0",
+
+  // React Testing Library ecosystem (mandatory)
+  testingLibraryReact: "^14.1.2",
+  testingLibraryJestDom: "^6.1.5",
+  testingLibraryUserEvent: "^14.5.1",
+
+  // Next.js Jest environment
+  jestEnvironmentJsdom: "^29.7.0",
+};
+
+export function getVitestDependencies() {
+  return {
+    vitest: testing.vitest,
+    "@vitest/ui": testing.vitestUi,
+    "@testing-library/react": testing.testingLibraryReact,
+    "@testing-library/jest-dom": testing.testingLibraryJestDom,
+    "@testing-library/user-event": testing.testingLibraryUserEvent,
+  };
+}
+
+export function getJestDependencies() {
+  return {
+    jest: testing.jest,
+    "jest-environment-jsdom": testing.jestEnvironmentJsdom,
+    "@testing-library/react": testing.testingLibraryReact,
+    "@testing-library/jest-dom": testing.testingLibraryJestDom,
+    "@testing-library/user-event": testing.testingLibraryUserEvent,
+  };
+}
+
+export function getTestingDependencies(testingFramework) {
+  switch (testingFramework) {
+    case "vitest":
+      return getVitestDependencies();
+    case "jest":
+      return getJestDependencies();
+    case "none":
+    default:
+      return {};
+  }
+}

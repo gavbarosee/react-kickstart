@@ -6,8 +6,8 @@ export class GitStep extends BaseStep {
     super(renderer, navigator);
     this.configure({
       stepName: "initGit",
-      stepNumber: 9, // Will be adjusted based on framework
-      totalSteps: 10,
+      stepNumber: 10, // Will be adjusted based on framework
+      totalSteps: 11,
       title: "Git Options",
       icon: "🔄",
     });
@@ -40,7 +40,7 @@ export class GitStep extends BaseStep {
   }
 
   getNextStep(selection, answers) {
-    if (selection === "BACK") return "api";
+    if (selection === "BACK") return "testing";
     return "editor";
   }
 }

@@ -7,7 +7,7 @@ export class FrameworkStep extends BaseStep {
     this.configure({
       stepName: "framework",
       stepNumber: 2,
-      totalSteps: 10,
+      totalSteps: 11,
       title: "Framework Selection",
       icon: "🚀",
     });

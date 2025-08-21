@@ -34,7 +34,20 @@ export class ViteGenerator extends BaseGenerator {
    * Create Vite-specific configuration files
    */
   async createFrameworkConfiguration(projectPath, userChoices) {
-    return this.configBuilder.generateViteConfig(projectPath, userChoices);
+    // Generate Vite config
+    const viteConfig = this.configBuilder.generateViteConfig(
+      projectPath,
+      userChoices
+    );
+
+    // Generate additional configs (TypeScript, Tailwind, Testing, etc.)
+    const additionalConfigs =
+      await this.configBuilder.generateAdditionalConfigs(
+        projectPath,
+        userChoices
+      );
+
+    return { viteConfig, ...additionalConfigs };
   }
 
   /**

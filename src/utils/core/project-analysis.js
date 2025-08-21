@@ -175,7 +175,8 @@ export function getConfigurationFiles(
   typescript,
   styling,
   linting,
-  stateManagement
+  stateManagement,
+  testing
 ) {
   const configs = [];
 
@@ -236,6 +237,25 @@ export function getConfigurationFiles(
     configs.push({
       label: "src/stores/",
       description: "Zustand store files",
+    });
+  }
+
+  // Testing configuration
+  if (testing && testing !== "none") {
+    if (testing === "vitest") {
+      configs.push({
+        label: `vitest.config.${getConfigExtension({ typescript })}`,
+        description: "Vitest testing configuration",
+      });
+    } else if (testing === "jest") {
+      configs.push({
+        label: "jest.config.js",
+        description: "Jest testing configuration",
+      });
+    }
+    configs.push({
+      label: `src/test/setup.${typescript ? "ts" : "js"}`,
+      description: "Testing environment setup",
     });
   }
 

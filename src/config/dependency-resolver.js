@@ -11,6 +11,7 @@ import {
   getReactQueryDependencies,
   getAxiosReactQueryDependencies,
   getFetchReactQueryDependencies,
+  getTestingDependencies,
   frameworks,
   styling,
 } from "./dependencies.js";
@@ -135,6 +136,13 @@ export class DependencyResolver {
   }
 
   /**
+   * Get testing dependencies based on user choice
+   */
+  getTestingDependencies(testingChoice) {
+    return getTestingDependencies(testingChoice);
+  }
+
+  /**
    * Get all dependencies for a complete feature set
    */
   getAllDependencies(userChoices) {
@@ -208,6 +216,12 @@ export class DependencyResolver {
     if (userChoices.api && userChoices.api !== "none") {
       const apiDeps = this.getApiDependencies(userChoices.api);
       allDeps.dependencies = { ...allDeps.dependencies, ...apiDeps };
+    }
+
+    // Testing dependencies
+    if (userChoices.testing && userChoices.testing !== "none") {
+      const testingDeps = this.getTestingDependencies(userChoices.testing);
+      allDeps.devDependencies = { ...allDeps.devDependencies, ...testingDeps };
     }
 
     return allDeps;

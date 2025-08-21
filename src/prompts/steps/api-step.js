@@ -7,7 +7,7 @@ export class ApiStep extends BaseStep {
     this.configure({
       stepName: "api",
       stepNumber: 8, // Between state management (7) and git (9)
-      totalSteps: 10, // Increment total steps
+      totalSteps: 11, // Updated for testing step
       title: "API & Data Fetching",
       icon: "🌐",
     });
@@ -66,6 +66,6 @@ export class ApiStep extends BaseStep {
 
   getNextStep(selection, answers) {
     if (selection === "BACK") return "stateManagement";
-    return "git";
+    return "testing";
   }
 }

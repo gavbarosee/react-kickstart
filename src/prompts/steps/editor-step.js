@@ -7,8 +7,8 @@ export class EditorStep extends BaseStep {
     super(renderer, navigator);
     this.configure({
       stepName: "openEditor",
-      stepNumber: 10, // Will be adjusted based on framework
-      totalSteps: 10,
+      stepNumber: 11, // Will be adjusted based on framework
+      totalSteps: 11,
       title: "Editor Options",
       icon: "📝",
     });

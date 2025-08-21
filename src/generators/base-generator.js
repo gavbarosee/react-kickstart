@@ -5,6 +5,7 @@ import { setupTypeScript } from "../lib/typescript.js";
 import { setupRedux } from "../features/redux/index.js";
 import { setupZustand } from "../features/zustand/index.js";
 import { setupApi } from "../features/api/index.js";
+import { TestingSetup } from "../lib/testing/index.js";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
 /**
@@ -123,6 +124,9 @@ export class BaseGenerator {
 
     // API setup
     await this.setupApi(projectPath, userChoices);
+
+    // Testing setup
+    await this.setupTesting(projectPath, userChoices);
   }
 
   /**
@@ -142,6 +146,16 @@ export class BaseGenerator {
   async setupApi(projectPath, userChoices) {
     if (userChoices.api && userChoices.api !== "none") {
       setupApi(projectPath, userChoices, this.frameworkName);
+    }
+  }
+
+  /**
+   * Setup testing configuration (common logic)
+   */
+  async setupTesting(projectPath, userChoices) {
+    if (userChoices.testing && userChoices.testing !== "none") {
+      const testingSetup = new TestingSetup(projectPath, userChoices);
+      await testingSetup.generateExampleTests();
     }
   }
 

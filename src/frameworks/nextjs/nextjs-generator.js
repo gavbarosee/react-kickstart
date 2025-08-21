@@ -40,7 +40,20 @@ export class NextjsGenerator extends BaseGenerator {
    * Create Next.js-specific configuration files
    */
   async createFrameworkConfiguration(projectPath, userChoices) {
-    return this.configBuilder.generateNextjsConfig(projectPath, userChoices);
+    // Generate Next.js config
+    const nextjsConfig = this.configBuilder.generateNextjsConfig(
+      projectPath,
+      userChoices
+    );
+
+    // Generate additional configs (TypeScript, Tailwind, Testing, etc.)
+    const additionalConfigs =
+      await this.configBuilder.generateAdditionalConfigs(
+        projectPath,
+        userChoices
+      );
+
+    return { nextjsConfig, ...additionalConfigs };
   }
 
   /**

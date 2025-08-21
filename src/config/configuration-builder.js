@@ -48,7 +48,7 @@ export class ConfigurationBuilder {
   generatePackageJson(projectPath, projectName, userChoices) {
     return this.packageJsonBuilder
       .setBasicInfo(projectName)
-      .setScripts()
+      .setScripts({}, userChoices)
       .addCoreDependencies()
       .addFrameworkDependencies()
       .addTypeScriptDependencies(userChoices)
@@ -57,6 +57,7 @@ export class ConfigurationBuilder {
       .addRoutingDependencies(userChoices)
       .addStateManagementDependencies(userChoices)
       .addApiDependencies(userChoices)
+      .addTestingDependencies(userChoices)
       .buildAndWrite(projectPath);
   }
 
@@ -155,6 +156,11 @@ module.exports = nextConfig;
     if (userChoices.styling === "tailwind") {
       configs.tailwind = this.generateTailwindConfig(projectPath);
       configs.postcss = this.generatePostCssConfig(projectPath);
+    }
+
+    // Testing config
+    if (userChoices.testing && userChoices.testing !== "none") {
+      configs.testing = this.generateTestingConfig(projectPath, userChoices);
     }
 
     return configs;
@@ -353,6 +359,148 @@ export default {
   }
 
   /**
+   * Generate testing configuration files
+   */
+  generateTestingConfig(projectPath, userChoices) {
+    const configs = {};
+
+    if (userChoices.testing === "vitest") {
+      configs.vitest = this.generateVitestConfig(projectPath, userChoices);
+      configs.testSetup = this.generateTestSetupFile(projectPath, userChoices);
+    } else if (userChoices.testing === "jest") {
+      configs.jest = this.generateJestConfig(projectPath, userChoices);
+      configs.testSetup = this.generateTestSetupFile(projectPath, userChoices);
+    }
+
+    return configs;
+  }
+
+  /**
+   * Generate Vitest configuration
+   */
+  generateVitestConfig(projectPath, userChoices) {
+    const configExt = CORE_UTILS.getConfigExtension(userChoices);
+    const setupFile = `./src/test/setup.${
+      userChoices.typescript ? "ts" : "js"
+    }`;
+
+    const vitestConfig = `import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['${setupFile}'],
+    globals: true,
+  },
+});
+`;
+
+    const configPath = path.join(projectPath, `vitest.config.${configExt}`);
+    fs.writeFileSync(configPath, vitestConfig);
+
+    return {
+      file: `vitest.config.${configExt}`,
+      content: vitestConfig,
+    };
+  }
+
+  /**
+   * Generate Jest configuration
+   */
+  generateJestConfig(projectPath, userChoices) {
+    const setupFile = `<rootDir>/src/test/setup.${
+      userChoices.typescript ? "ts" : "js"
+    }`;
+    const isNextJs = this.framework === "nextjs";
+
+    let jestConfig;
+
+    if (isNextJs) {
+      // Next.js optimized Jest config
+      jestConfig = `const nextJest = require('next/jest');
+
+const createJestConfig = nextJest({
+  dir: './',
+});
+
+const customJestConfig = {
+  setupFilesAfterEnv: ['${setupFile}'],
+  testEnvironment: 'jsdom',
+  testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+  ],
+};
+
+module.exports = createJestConfig(customJestConfig);
+`;
+    } else {
+      // Standard Jest config for Vite projects
+      const moduleFileExtensions = userChoices.typescript
+        ? ["js", "jsx", "ts", "tsx", "json"]
+        : ["js", "jsx", "json"];
+
+      jestConfig = `module.exports = {
+  testEnvironment: 'jsdom',
+  setupFilesAfterEnv: ['${setupFile}'],
+  moduleFileExtensions: ${JSON.stringify(moduleFileExtensions)},
+  transform: {
+    '^.+\\\\.(js|jsx|ts|tsx)$': 'babel-jest',
+  },
+  moduleNameMapping: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  testMatch: [
+    '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/src/**/*.{test,spec}.{js,jsx,ts,tsx}',
+  ],
+  collectCoverageFrom: [
+    'src/**/*.{js,jsx,ts,tsx}',
+    '!src/**/*.d.ts',
+  ],
+};
+`;
+    }
+
+    const configPath = path.join(projectPath, "jest.config.js");
+    fs.writeFileSync(configPath, jestConfig);
+
+    return {
+      file: "jest.config.js",
+      content: jestConfig,
+    };
+  }
+
+  /**
+   * Generate test setup file
+   */
+  generateTestSetupFile(projectPath, userChoices) {
+    const isTypeScript = userChoices.typescript;
+    const fileExt = isTypeScript ? "ts" : "js";
+
+    const setupContent = `import '@testing-library/jest-dom';
+
+// Global test setup
+// Add any global test configuration here
+`;
+
+    // Ensure test directory exists
+    const testDir = path.join(projectPath, "src", "test");
+    fs.ensureDirSync(testDir);
+
+    const setupPath = path.join(testDir, `setup.${fileExt}`);
+    fs.writeFileSync(setupPath, setupContent);
+
+    return {
+      file: `src/test/setup.${fileExt}`,
+      content: setupContent,
+    };
+  }
+
+  /**
    * Get a summary of all configurations that will be generated
    */
   getConfigurationSummary(userChoices) {
@@ -375,6 +523,18 @@ export default {
     // Tailwind
     if (userChoices.styling === "tailwind") {
       configs.push("tailwind.config.js", "postcss.config.js");
+    }
+
+    // Testing
+    if (userChoices.testing && userChoices.testing !== "none") {
+      if (userChoices.testing === "vitest") {
+        configs.push(
+          `vitest.config.${CORE_UTILS.getConfigExtension(userChoices)}`
+        );
+      } else if (userChoices.testing === "jest") {
+        configs.push("jest.config.js");
+      }
+      configs.push(`src/test/setup.${userChoices.typescript ? "ts" : "js"}`);
     }
 
     return configs;

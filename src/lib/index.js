@@ -17,3 +17,6 @@ export * from "./styling/index.js";
 
 // Routing
 export * from "./routing/index.js";
+
+// Testing
+export * from "./testing/index.js";
