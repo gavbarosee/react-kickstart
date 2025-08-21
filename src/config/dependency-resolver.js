@@ -260,6 +260,29 @@ export class DependencyResolver {
       }
     }
 
+    // Validate TypeScript configuration compatibility
+    if (userChoices.typescript) {
+      const tsDeps = this.getTypeScriptDependencies();
+      const requiredTsPackages = [
+        "typescript",
+        "@types/react",
+        "@types/react-dom",
+      ];
+
+      for (const pkg of requiredTsPackages) {
+        if (!tsDeps[pkg]) {
+          issues.push(`Missing required TypeScript dependency: ${pkg}`);
+        }
+      }
+
+      // Check for potential conflicts with harmonized config
+      if (userChoices.framework === "vite" && userChoices.testing === "jest") {
+        issues.push(
+          "Jest with Vite and TypeScript may require additional Babel configuration. Consider using Vitest for better TypeScript integration."
+        );
+      }
+    }
+
     return issues;
   }
 }

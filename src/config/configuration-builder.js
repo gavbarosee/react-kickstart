@@ -185,37 +185,52 @@ module.exports = nextConfig;
   /**
    * Generate TypeScript configuration
    *
-   * Framework-specific configurations are necessary because:
-   * - Next.js has built-in TypeScript compilation and requires specific settings
-   * - Vite uses esbuild for TypeScript and has different optimization requirements
-   * - Each framework has different JSX handling and module resolution needs
+   * Harmonized TypeScript configuration approach:
+   * - Uses modern ES2020 target (both frameworks handle transpilation)
+   * - Framework-specific JSX and module resolution where required
+   * - Standardized strict checking options for better code quality
+   * - Maintains framework-specific optimizations for build integration
    */
   generateTypeScriptConfig(projectPath, userChoices) {
+    // Harmonized base configuration that works optimally with both frameworks
+    const baseCompilerOptions = {
+      // Modern ES2020 target - optimal balance:
+      // - Next.js: Handles transpilation for older browsers automatically
+      // - Vite: Provides modern syntax support with legacy browser polyfills
+      target: "ES2020",
+      lib: ["ES2020", "DOM", "DOM.Iterable"],
+
+      // Common module settings that work across frameworks
+      module: "ESNext",
+      allowJs: true, // Support mixed JS/TS projects
+      skipLibCheck: true, // Performance optimization
+      strict: true, // Enable all strict checking
+      forceConsistentCasingInFileNames: true, // Cross-platform compatibility
+      noEmit: true, // Let frameworks handle compilation
+      esModuleInterop: true, // CommonJS interoperability
+      resolveJsonModule: true, // JSON import support
+      isolatedModules: true, // Required for modern bundlers
+      incremental: true, // Performance optimization
+
+      // Enhanced type checking for better code quality (both frameworks)
+      noUnusedLocals: true, // Catch unused variables
+      noUnusedParameters: true, // Catch unused parameters
+      noFallthroughCasesInSwitch: true, // Prevent switch fallthrough bugs
+      exactOptionalPropertyTypes: true, // Stricter optional property handling
+      noImplicitReturns: true, // Ensure all code paths return
+      noUncheckedIndexedAccess: true, // Safer array/object access
+    };
+
     let tsConfig;
 
     if (this.framework === "nextjs") {
-      // Next.js TypeScript Configuration
-      // - Uses "jsx": "preserve" because Next.js handles JSX transformation
-      // - Uses "moduleResolution": "node" for compatibility with Next.js bundler
-      // - Includes Next.js plugin for enhanced type checking
-      // - Uses "noEmit": true because Next.js handles compilation
-      // - Targets ES5 for broader browser compatibility in production
+      // Next.js specific adaptations
       tsConfig = {
         compilerOptions: {
-          target: "es5", // Next.js handles modern browser targeting in production
-          lib: ["dom", "dom.iterable", "es6"],
-          allowJs: true, // Allow importing .js files in TypeScript project
-          skipLibCheck: true, // Skip type checking of declaration files for faster builds
-          strict: true, // Enable all strict type checking options
-          forceConsistentCasingInFileNames: true, // Prevent case-insensitive imports
-          noEmit: true, // Next.js handles compilation, TypeScript only for type checking
-          esModuleInterop: true, // Enable ES module interoperability
-          module: "esnext", // Use latest module syntax
-          moduleResolution: "node", // Use Node.js module resolution for Next.js compatibility
-          resolveJsonModule: true, // Allow importing JSON files
-          isolatedModules: true, // Each file must be importable on its own
-          jsx: "preserve", // Next.js handles JSX transformation internally
-          incremental: true, // Enable incremental compilation for faster rebuilds
+          ...baseCompilerOptions,
+          // Framework-specific settings that Next.js requires
+          jsx: "preserve", // Next.js handles JSX transformation
+          moduleResolution: "node", // Required for Next.js module resolution
           plugins: [
             {
               name: "next", // Next.js TypeScript plugin for enhanced type checking
@@ -224,6 +239,8 @@ module.exports = nextConfig;
           paths: {
             "@/*": ["./*"], // Enable absolute imports with @ alias
           },
+          // Next.js specific lib additions
+          lib: [...baseCompilerOptions.lib, "es6"],
         },
         include: [
           "next-env.d.ts",
@@ -234,29 +251,18 @@ module.exports = nextConfig;
         exclude: ["node_modules"],
       };
     } else {
-      // Vite TypeScript Configuration
-      // - Uses "jsx": "react-jsx" for automatic JSX runtime (no need to import React)
-      // - Uses "moduleResolution": "bundler" optimized for Vite's esbuild bundler
-      // - Targets ES2020 for modern browsers (Vite handles legacy browser support via plugins)
-      // - Enables stricter checks for better development experience
-      // - Uses "allowImportingTsExtensions" for explicit .ts/.tsx imports
+      // Vite specific adaptations
       tsConfig = {
         compilerOptions: {
-          target: "ES2020", // Modern target since Vite handles transpilation for older browsers
-          useDefineForClassFields: true, // Use standard class field behavior
-          lib: ["ES2020", "DOM", "DOM.Iterable"], // Include modern JavaScript and DOM APIs
-          module: "ESNext", // Use latest module syntax
-          skipLibCheck: true, // Skip type checking of declaration files for faster builds
+          ...baseCompilerOptions,
+          // Framework-specific settings optimized for Vite
+          jsx: "react-jsx", // Automatic JSX runtime (no React import needed)
           moduleResolution: "bundler", // Optimized for Vite's esbuild bundler
-          allowImportingTsExtensions: true, // Allow explicit .ts/.tsx imports
-          resolveJsonModule: true, // Allow importing JSON files
-          isolatedModules: true, // Each file must be importable on its own
-          noEmit: true, // Vite handles compilation, TypeScript only for type checking
-          jsx: "react-jsx", // Use automatic JSX runtime (no React import needed)
-          strict: true, // Enable all strict type checking options
-          noUnusedLocals: true, // Error on unused local variables
-          noUnusedParameters: true, // Error on unused function parameters
-          noFallthroughCasesInSwitch: true, // Error on fallthrough switch cases
+          allowImportingTsExtensions: true, // Vite-specific feature
+          useDefineForClassFields: true, // Modern class field behavior
+          paths: {
+            "@/*": ["./src/*"], // Vite-style absolute imports
+          },
         },
         include: ["src"],
         references: [{ path: "./tsconfig.node.json" }],
@@ -266,9 +272,45 @@ module.exports = nextConfig;
     const configPath = path.join(projectPath, "tsconfig.json");
     fs.writeFileSync(configPath, JSON.stringify(tsConfig, null, 2));
 
+    // Generate tsconfig.node.json for Vite projects
+    let nodeConfig = null;
+    if (this.framework === "vite") {
+      nodeConfig = this.generateViteNodeConfig(projectPath);
+    }
+
     return {
       file: "tsconfig.json",
       content: tsConfig,
+      nodeConfig,
+    };
+  }
+
+  /**
+   * Generate tsconfig.node.json for Vite projects
+   * This handles TypeScript configuration for build tools and config files
+   */
+  generateViteNodeConfig(projectPath) {
+    const nodeConfig = {
+      compilerOptions: {
+        composite: true,
+        skipLibCheck: true,
+        module: "ESNext",
+        moduleResolution: "bundler",
+        allowSyntheticDefaultImports: true,
+        strict: true,
+        noEmit: true,
+        isolatedModules: true,
+        verbatimModuleSyntax: true,
+      },
+      include: ["vite.config.ts", "vitest.config.ts"],
+    };
+
+    const configPath = path.join(projectPath, "tsconfig.node.json");
+    fs.writeFileSync(configPath, JSON.stringify(nodeConfig, null, 2));
+
+    return {
+      file: "tsconfig.node.json",
+      content: nodeConfig,
     };
   }
 
@@ -598,6 +640,32 @@ module.exports = createJestConfig(customJestConfig);
       // No validation issues expected with the standardized format
     }
 
+    // Validate TypeScript configuration
+    if (userChoices.typescript) {
+      // Check for potential JSX-related issues
+      if (
+        this.framework === "nextjs" &&
+        userChoices.api &&
+        userChoices.api.includes("react-query")
+      ) {
+        // Next.js with React Query works well with the harmonized config
+      }
+
+      if (this.framework === "vite" && userChoices.testing === "jest") {
+        issues.push(
+          "Consider using Vitest with TypeScript in Vite projects for better integration. Jest may require additional configuration."
+        );
+      }
+
+      // Validate path mapping compatibility
+      if (
+        userChoices.framework === "vite" &&
+        userChoices.stateManagement === "redux"
+      ) {
+        // Redux Toolkit works well with the new automatic JSX runtime
+      }
+    }
+
     return {
       valid: issues.length === 0,
       issues,
@@ -617,9 +685,12 @@ module.exports = createJestConfig(customJestConfig);
       configs.push("next.config.js");
     }
 
-    // TypeScript
+    // TypeScript (harmonized configuration with framework-specific optimizations)
     if (userChoices.typescript) {
       configs.push("tsconfig.json");
+      if (this.framework === "vite") {
+        configs.push("tsconfig.node.json");
+      }
     } else if (this.framework === "nextjs") {
       configs.push("jsconfig.json");
     }
