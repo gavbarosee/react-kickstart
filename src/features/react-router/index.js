@@ -12,7 +12,7 @@ import { setupViteReactRouter } from "./vite.js";
 export function setupReactRouter(projectPath, userChoices, framework) {
   if (userChoices.routing !== "react-router") return;
 
-  if (framework === "nextjs") return;
+  // Note: Next.js projects never reach this function due to shouldShow() logic in routing step
 
   switch (framework) {
     case "vite":

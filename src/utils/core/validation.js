@@ -204,12 +204,9 @@ export function validateUserChoices(userChoices) {
     );
   }
 
-  // Validate routing
+  // Validate routing (only applies to frameworks that show the routing step)
   const validRouting = ["none", "react-router"];
-  if (
-    userChoices.framework === "vite" &&
-    !validRouting.includes(userChoices.routing)
-  ) {
+  if (userChoices.routing && !validRouting.includes(userChoices.routing)) {
     errors.push(
       `Invalid routing option: ${
         userChoices.routing
@@ -227,12 +224,8 @@ export function validateUserChoices(userChoices) {
     );
   }
 
-  // Check for conflicting options
-  if (userChoices.framework === "nextjs" && userChoices.routing !== "none") {
-    warnings.push(
-      "Next.js has built-in routing. External routing library will be ignored."
-    );
-  }
+  // Note: No need to check for Next.js + routing conflicts since the routing step
+  // uses shouldShow() to prevent Next.js users from selecting routing options
 
   // Add comprehensive conflict validation
   const conflictWarnings = validateChoiceCombinations(userChoices);
