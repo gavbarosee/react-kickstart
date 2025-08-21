@@ -1,3 +1,5 @@
+import fs from "fs-extra";
+import path from "path";
 import { UI_UTILS } from "../utils/index.js";
 import { createDirectoryStructure } from "../lib/file-generation/index.js";
 import { setupLinting } from "../lib/linting.js";
@@ -127,6 +129,9 @@ export class BaseGenerator {
 
     // Testing setup
     await this.setupTesting(projectPath, userChoices);
+
+    // Deployment setup
+    await this.setupDeployment(projectPath, userChoices);
   }
 
   /**
@@ -157,6 +162,136 @@ export class BaseGenerator {
       const testingSetup = new TestingSetup(projectPath, userChoices);
       await testingSetup.generateExampleTests();
     }
+  }
+
+  /**
+   * Setup deployment configuration (common logic)
+   */
+  async setupDeployment(projectPath, userChoices) {
+    if (userChoices.deployment && userChoices.deployment !== "none") {
+      await this.createDeploymentConfiguration(projectPath, userChoices);
+    }
+  }
+
+  /**
+   * Create deployment configuration files
+   */
+  async createDeploymentConfiguration(projectPath, userChoices) {
+    const { deployment, framework } = userChoices;
+
+    try {
+      if (deployment === "vercel") {
+        await this.createVercelConfiguration(projectPath, framework);
+      } else if (deployment === "netlify") {
+        await this.createNetlifyConfiguration(
+          projectPath,
+          framework,
+          userChoices
+        );
+      }
+    } catch (error) {
+      UI_UTILS.error(
+        `Failed to create deployment configuration: ${error.message}`
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Create Vercel configuration
+   */
+  async createVercelConfiguration(projectPath, framework) {
+    const vercelConfig = {
+      version: 2,
+      builds: [
+        {
+          src: "package.json",
+          use: framework === "nextjs" ? "@vercel/next" : "@vercel/static-build",
+        },
+      ],
+    };
+
+    // Add framework-specific settings
+    if (framework === "vite") {
+      vercelConfig.buildCommand = "npm run build";
+      vercelConfig.outputDirectory = "dist";
+    }
+
+    // Add default region for better performance
+    if (framework === "nextjs") {
+      vercelConfig.regions = ["iad1"]; // US East - good default
+    }
+
+    const configPath = path.join(projectPath, "vercel.json");
+    await fs.writeFile(configPath, JSON.stringify(vercelConfig, null, 2));
+
+    UI_UTILS.success("Created vercel.json configuration");
+  }
+
+  /**
+   * Create Netlify configuration
+   */
+  async createNetlifyConfiguration(projectPath, framework, userChoices) {
+    let netlifyConfig = `# Netlify configuration
+[build]
+  publish = "${framework === "nextjs" ? "out" : "dist"}"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+`;
+
+    // Add framework-specific settings
+    if (framework === "nextjs") {
+      netlifyConfig += `
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+`;
+
+      // Create next.config.js for static export
+      await this.createNextjsStaticConfig(projectPath, userChoices);
+    }
+
+    const configPath = path.join(projectPath, "netlify.toml");
+    await fs.writeFile(configPath, netlifyConfig);
+
+    UI_UTILS.success("Created netlify.toml configuration");
+  }
+
+  /**
+   * Create Next.js static export configuration for Netlify
+   */
+  async createNextjsStaticConfig(projectPath, userChoices) {
+    const config = {
+      output: "export",
+      trailingSlash: true,
+      images: {
+        unoptimized: true,
+      },
+    };
+
+    // Add TypeScript config if enabled
+    if (userChoices.typescript) {
+      config.typescript = {
+        ignoreBuildErrors: false,
+      };
+    }
+
+    const nextConfig = `/** @type {import('next').NextConfig} */
+const nextConfig = ${JSON.stringify(config, null, 2)};
+
+module.exports = nextConfig;
+`;
+
+    const configPath = path.join(projectPath, "next.config.js");
+    await fs.writeFile(configPath, nextConfig);
+
+    UI_UTILS.success("Created next.config.js for static export");
   }
 
   /**

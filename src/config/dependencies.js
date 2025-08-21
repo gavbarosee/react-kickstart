@@ -154,6 +154,31 @@ export function getTailwindDependencies(isDevDependency = true) {
   return deps;
 }
 
+// Deployment platform CLI tools
+export const deployment = {
+  vercel: "^33.0.0",
+  netlify: "^17.0.0",
+};
+
+export function getDeploymentDependencies(deploymentPlatform) {
+  if (!deploymentPlatform || deploymentPlatform === "none") {
+    return {};
+  }
+
+  switch (deploymentPlatform) {
+    case "vercel":
+      return {
+        vercel: deployment.vercel,
+      };
+    case "netlify":
+      return {
+        "netlify-cli": deployment.netlify,
+      };
+    default:
+      return {};
+  }
+}
+
 export function getStyledComponentsDependencies() {
   return {
     "styled-components": styling.styledComponents,

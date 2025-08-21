@@ -58,6 +58,7 @@ export class ConfigurationBuilder {
       .addStateManagementDependencies(userChoices)
       .addApiDependencies(userChoices)
       .addTestingDependencies(userChoices)
+      .addDeploymentDependencies(userChoices)
       .buildAndWrite(projectPath);
   }
 

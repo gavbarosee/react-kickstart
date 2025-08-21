@@ -7,17 +7,17 @@ export class EditorStep extends BaseStep {
     super(renderer, navigator);
     this.configure({
       stepName: "openEditor",
-      stepNumber: 11,
-      totalSteps: 11,
+      stepNumber: 12,
+      totalSteps: 12,
       title: "Editor Options",
       icon: "📝",
     });
   }
 
-  // Step number is always 11 regardless of framework
+  // Step number is always 12 regardless of framework
   execute(answers) {
-    // Both paths: Git(10) -> Editor(11)
-    const stepNum = 11;
+    // Both paths: Git(10) -> Deployment(11) -> Editor(12)
+    const stepNum = 12;
     this.stepNumber = stepNum;
     return super.execute(answers);
   }
@@ -42,7 +42,7 @@ export class EditorStep extends BaseStep {
   }
 
   getNextStep(selection, answers) {
-    if (selection === "BACK") return "git";
+    if (selection === "BACK") return "deployment";
     return "complete";
   }
 

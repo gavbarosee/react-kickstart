@@ -7,7 +7,7 @@ export class StateManagementStep extends BaseStep {
     this.configure({
       stepName: "stateManagement",
       stepNumber: 7,
-      totalSteps: 11,
+      totalSteps: 12,
       title: "State Management",
       icon: "📦",
     });

@@ -17,5 +17,7 @@ export { CodeQualityStep } from "./steps/code-quality-step.js";
 export { StylingStep } from "./steps/styling-step.js";
 export { StateManagementStep } from "./steps/state-management-step.js";
 export { ApiStep } from "./steps/api-step.js";
+export { TestingStep } from "./steps/testing-step.js";
 export { GitStep } from "./steps/git-step.js";
+export { DeploymentStep } from "./steps/deployment-step.js";
 export { EditorStep } from "./steps/editor-step.js";

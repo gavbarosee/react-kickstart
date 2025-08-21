@@ -13,6 +13,7 @@ import { StateManagementStep } from "./steps/state-management-step.js";
 import { ApiStep } from "./steps/api-step.js";
 import { TestingStep } from "./steps/testing-step.js";
 import { GitStep } from "./steps/git-step.js";
+import { DeploymentStep } from "./steps/deployment-step.js";
 import { EditorStep } from "./steps/editor-step.js";
 
 /**
@@ -42,6 +43,7 @@ export class PromptFlow {
       api: new ApiStep(this.renderer, this.navigator),
       testing: new TestingStep(this.renderer, this.navigator),
       git: new GitStep(this.renderer, this.navigator),
+      deployment: new DeploymentStep(this.renderer, this.navigator),
       editor: new EditorStep(this.renderer, this.navigator),
     };
 

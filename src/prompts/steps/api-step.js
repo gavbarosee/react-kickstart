@@ -8,7 +8,7 @@ export class ApiStep extends BaseStep {
     this.configure({
       stepName: "api",
       stepNumber: 8,
-      totalSteps: 11,
+      totalSteps: 12,
       title: "API & Data Fetching",
       icon: "🌐",
     });

@@ -7,7 +7,7 @@ export class GitStep extends BaseStep {
     this.configure({
       stepName: "initGit",
       stepNumber: 10,
-      totalSteps: 11,
+      totalSteps: 12,
       title: "Git Options",
       icon: "🔄",
     });
@@ -42,6 +42,6 @@ export class GitStep extends BaseStep {
 
   getNextStep(selection, answers) {
     if (selection === "BACK") return "testing";
-    return "editor";
+    return "deployment";
   }
 }

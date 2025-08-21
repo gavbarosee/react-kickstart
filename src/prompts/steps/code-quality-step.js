@@ -7,7 +7,7 @@ export class CodeQualityStep extends BaseStep {
     this.configure({
       stepName: "linting",
       stepNumber: 5,
-      totalSteps: 11,
+      totalSteps: 12,
       title: "Code Quality",
       icon: "✨",
     });

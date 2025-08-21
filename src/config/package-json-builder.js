@@ -39,10 +39,15 @@ export class PackageJsonBuilder {
   setScripts(customScripts = {}, userChoices = {}) {
     const defaultScripts = this.getFrameworkScripts();
     const testingScripts = this.getTestingScripts(userChoices.testing);
+    const deploymentScripts = this.getDeploymentScripts(
+      userChoices.deployment,
+      userChoices.packageManager
+    );
 
     this.packageData.scripts = {
       ...defaultScripts,
       ...testingScripts,
+      ...deploymentScripts,
       ...customScripts,
     };
 
@@ -231,6 +236,24 @@ export class PackageJsonBuilder {
   }
 
   /**
+   * Add deployment CLI dependencies if enabled
+   */
+  addDeploymentDependencies(userChoices) {
+    if (!userChoices.deployment || userChoices.deployment === "none")
+      return this;
+
+    const deploymentDeps = this.dependencyResolver.getDeploymentDependencies(
+      userChoices.deployment
+    );
+    this.packageData.devDependencies = {
+      ...this.packageData.devDependencies,
+      ...deploymentDeps,
+    };
+
+    return this;
+  }
+
+  /**
    * Build the complete package.json
    */
   build() {
@@ -303,6 +326,65 @@ export class PackageJsonBuilder {
         };
       default:
         return {};
+    }
+  }
+
+  /**
+   * Get deployment scripts based on deployment platform
+   */
+  getDeploymentScripts(deploymentPlatform, packageManager = "npm") {
+    if (!deploymentPlatform || deploymentPlatform === "none") {
+      return {};
+    }
+
+    // Get the correct build command for the package manager
+    const buildCommand = this.getBuildCommand(packageManager);
+
+    // Get the correct build output directory for the framework
+    const buildDir = this.getBuildDirectory();
+
+    switch (deploymentPlatform) {
+      case "vercel":
+        return {
+          "vercel:preview": `${buildCommand} && vercel`,
+          "vercel:deploy": `${buildCommand} && vercel --prod`,
+        };
+      case "netlify":
+        return {
+          "netlify:preview": `${buildCommand} && netlify deploy --dir=${buildDir}`,
+          "netlify:deploy": `${buildCommand} && netlify deploy --dir=${buildDir} --prod`,
+        };
+      default:
+        return {};
+    }
+  }
+
+  /**
+   * Get the correct build command for different package managers
+   */
+  getBuildCommand(packageManager) {
+    switch (packageManager) {
+      case "yarn":
+        return "yarn build";
+      case "pnpm":
+        return "pnpm build";
+      case "npm":
+      default:
+        return "npm run build";
+    }
+  }
+
+  /**
+   * Get the correct build output directory for the framework
+   */
+  getBuildDirectory() {
+    switch (this.framework) {
+      case "vite":
+        return "dist";
+      case "nextjs":
+        return "out"; // For static export (Netlify)
+      default:
+        return "dist";
     }
   }
 

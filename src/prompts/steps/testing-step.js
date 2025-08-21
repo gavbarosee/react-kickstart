@@ -8,7 +8,7 @@ export class TestingStep extends BaseStep {
     this.configure({
       stepName: "testing",
       stepNumber: 9,
-      totalSteps: 11,
+      totalSteps: 12,
       title: "Testing Framework",
       icon: "🧪",
     });

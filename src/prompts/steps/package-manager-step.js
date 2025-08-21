@@ -10,7 +10,7 @@ export class PackageManagerStep extends BaseStep {
     this.configure({
       stepName: "packageManager",
       stepNumber: 1,
-      totalSteps: 11,
+      totalSteps: 12,
       title: "Package Manager",
       icon: "📦",
     });

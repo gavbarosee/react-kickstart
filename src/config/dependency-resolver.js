@@ -12,6 +12,7 @@ import {
   getAxiosReactQueryDependencies,
   getFetchReactQueryDependencies,
   getTestingDependencies,
+  getDeploymentDependencies,
   frameworks,
   styling,
 } from "./dependencies.js";
@@ -140,6 +141,13 @@ export class DependencyResolver {
    */
   getTestingDependencies(testingChoice) {
     return getTestingDependencies(testingChoice);
+  }
+
+  /**
+   * Get deployment dependencies based on user choice
+   */
+  getDeploymentDependencies(deploymentChoice) {
+    return getDeploymentDependencies(deploymentChoice);
   }
 
   /**

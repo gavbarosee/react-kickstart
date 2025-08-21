@@ -7,7 +7,7 @@ export class LanguageStep extends BaseStep {
     this.configure({
       stepName: "typescript",
       stepNumber: 4,
-      totalSteps: 11,
+      totalSteps: 12,
       title: "Language Options",
       icon: "🔤",
     });

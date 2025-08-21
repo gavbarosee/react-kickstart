@@ -7,7 +7,7 @@ export class RoutingStep extends BaseStep {
     this.configure({
       stepName: "routing",
       stepNumber: 3,
-      totalSteps: 11,
+      totalSteps: 12,
       title: "Routing Options",
       icon: "🛣️",
     });
