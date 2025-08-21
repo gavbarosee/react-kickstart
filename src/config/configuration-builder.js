@@ -296,38 +296,19 @@ module.exports = nextConfig;
   /**
    * Generate Tailwind CSS configuration
    *
-   * Framework-specific differences:
-   * - Module system: Next.js uses CommonJS, Vite uses ES modules
-   * - Content paths: Different file structures require different glob patterns
-   * - Integration: Next.js has built-in PostCSS support, Vite requires explicit config
+   * Uses CommonJS module.exports format for compatibility:
+   * - Next.js: Native support and ecosystem standard
+   * - Vite: Supports CommonJS config files (both formats work)
+   * - Tooling: Most Tailwind tooling expects CommonJS format
+   * - Content paths: Framework-specific file structure patterns
    */
   generateTailwindConfig(projectPath) {
     const contentPaths = this.getTailwindContentPaths();
 
-    let tailwindConfig;
-    if (this.framework === "nextjs") {
-      // Next.js Tailwind Configuration
-      // - Uses CommonJS module.exports (Next.js ecosystem standard)
-      // - Content paths include pages/, components/, and app/ directories
-      // - Supports .mdx files for Next.js MDX integration
-      tailwindConfig = `/** @type {import('tailwindcss').Config} */
+    // Use CommonJS format for universal compatibility
+    // Both Next.js and Vite support module.exports for config files
+    const tailwindConfig = `/** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    ${contentPaths.map((path) => `'${path}'`).join(",\n    ")}
-  ],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-}
-`;
-    } else {
-      // Vite Tailwind Configuration
-      // - Uses ES modules export default (Vite ecosystem standard)
-      // - Content paths include src/ directory and index.html
-      // - Focuses on single-page application structure
-      tailwindConfig = `/** @type {import('tailwindcss').Config} */
-export default {
   content: [
     ${contentPaths.map((path) => `"${path}"`).join(",\n    ")}
   ],
@@ -337,7 +318,6 @@ export default {
   plugins: [],
 }
 `;
-    }
 
     const configPath = path.join(projectPath, "tailwind.config.js");
     fs.writeFileSync(configPath, tailwindConfig);
@@ -351,39 +331,22 @@ export default {
   /**
    * Generate PostCSS configuration for Tailwind
    *
-   * Framework-specific differences:
-   * - Module system: Next.js requires CommonJS, Vite uses ES modules
-   * - Integration: Next.js has built-in PostCSS, Vite requires explicit config
-   * - Plugin loading: Different module resolution strategies
+   * Uses CommonJS module.exports format for compatibility:
+   * - Next.js: Required by Next.js PostCSS integration
+   * - Vite: Supports CommonJS config files (both formats work)
+   * - PostCSS: Standard format expected by PostCSS tooling
+   * - Plugin loading: Consistent module resolution across frameworks
    */
   generatePostCssConfig(projectPath) {
-    let postcssConfig;
-
-    if (this.framework === "nextjs") {
-      // Next.js PostCSS Configuration
-      // - Uses CommonJS module.exports (required by Next.js PostCSS integration)
-      // - Next.js automatically processes CSS through PostCSS
-      // - Integrates seamlessly with Next.js build pipeline
-      postcssConfig = `module.exports = {
+    // Use CommonJS format for universal compatibility
+    // Next.js requires this format, and Vite supports it
+    const postcssConfig = `module.exports = {
   plugins: {
     tailwindcss: {},
     autoprefixer: {},
   },
 }
 `;
-    } else {
-      // Vite PostCSS Configuration
-      // - Uses ES modules export default (Vite's preferred format)
-      // - Vite processes CSS through PostCSS via explicit configuration
-      // - Integrates with Vite's fast development server
-      postcssConfig = `export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  }
-}
-`;
-    }
 
     const configPath = path.join(projectPath, "postcss.config.js");
     fs.writeFileSync(configPath, postcssConfig);
@@ -594,6 +557,54 @@ module.exports = createJestConfig(customJestConfig);
   }
 
   /**
+   * Validate configuration compatibility
+   * Ensures that generated configs work with both frameworks
+   */
+  validateConfigurationCompatibility(userChoices) {
+    const issues = [];
+
+    // Validate Tailwind configuration
+    if (userChoices.styling === "tailwind") {
+      const contentPaths = this.getTailwindContentPaths();
+      if (contentPaths.length === 0) {
+        issues.push(
+          "Tailwind content paths are empty - no classes will be detected"
+        );
+      }
+
+      // Ensure content paths are framework-appropriate
+      if (
+        this.framework === "nextjs" &&
+        !contentPaths.some(
+          (path) => path.includes("./pages") || path.includes("./app")
+        )
+      ) {
+        issues.push(
+          "Next.js Tailwind config missing pages/app directory paths"
+        );
+      }
+
+      if (
+        this.framework === "vite" &&
+        !contentPaths.some((path) => path.includes("./src"))
+      ) {
+        issues.push("Vite Tailwind config missing src directory path");
+      }
+    }
+
+    // Validate PostCSS configuration when using Tailwind
+    if (userChoices.styling === "tailwind") {
+      // Both frameworks now use CommonJS format, which is compatible
+      // No validation issues expected with the standardized format
+    }
+
+    return {
+      valid: issues.length === 0,
+      issues,
+    };
+  }
+
+  /**
    * Get a summary of all configurations that will be generated
    */
   getConfigurationSummary(userChoices) {
@@ -613,7 +624,7 @@ module.exports = createJestConfig(customJestConfig);
       configs.push("jsconfig.json");
     }
 
-    // Tailwind
+    // Tailwind (standardized CommonJS format for both frameworks)
     if (userChoices.styling === "tailwind") {
       configs.push("tailwind.config.js", "postcss.config.js");
     }

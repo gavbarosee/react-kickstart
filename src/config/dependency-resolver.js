@@ -248,6 +248,18 @@ export class DependencyResolver {
       );
     }
 
+    // Validate Tailwind + PostCSS compatibility
+    if (userChoices.styling === "tailwind") {
+      const tailwindDeps = this.getStylingDependencies("tailwind");
+      const requiredPackages = ["tailwindcss", "postcss", "autoprefixer"];
+
+      for (const pkg of requiredPackages) {
+        if (!tailwindDeps[pkg]) {
+          issues.push(`Missing required dependency for Tailwind CSS: ${pkg}`);
+        }
+      }
+    }
+
     return issues;
   }
 }
