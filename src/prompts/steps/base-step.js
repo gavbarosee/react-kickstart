@@ -7,7 +7,7 @@ export class BaseStep {
     this.navigator = navigator;
     this.stepName = "";
     this.stepNumber = 0;
-    this.totalSteps = 9;
+    this.totalSteps = 10;
     this.title = "";
     this.icon = "•";
   }

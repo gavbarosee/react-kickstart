@@ -6,8 +6,8 @@ export class GitStep extends BaseStep {
     super(renderer, navigator);
     this.configure({
       stepName: "initGit",
-      stepNumber: 8, // Will be adjusted based on framework
-      totalSteps: 9,
+      stepNumber: 9, // Will be adjusted based on framework
+      totalSteps: 10,
       title: "Git Options",
       icon: "🔄",
     });
@@ -15,7 +15,7 @@ export class GitStep extends BaseStep {
 
   // Adjust step number based on framework
   execute(answers) {
-    const stepNum = answers.framework === "nextjs" ? 8 : 8;
+    const stepNum = answers.framework === "nextjs" ? 9 : 9;
     this.stepNumber = stepNum;
     return super.execute(answers);
   }
@@ -40,7 +40,7 @@ export class GitStep extends BaseStep {
   }
 
   getNextStep(selection, answers) {
-    if (selection === "BACK") return "stateManagement";
+    if (selection === "BACK") return "api";
     return "editor";
   }
 }

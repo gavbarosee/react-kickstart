@@ -4,6 +4,7 @@ import { setupLinting } from "../lib/linting.js";
 import { setupTypeScript } from "../lib/typescript.js";
 import { setupRedux } from "../features/redux/index.js";
 import { setupZustand } from "../features/zustand/index.js";
+import { setupApi } from "../features/api/index.js";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
 /**
@@ -119,6 +120,9 @@ export class BaseGenerator {
 
     // State management setup
     await this.setupStateManagement(projectPath, userChoices);
+
+    // API setup
+    await this.setupApi(projectPath, userChoices);
   }
 
   /**
@@ -129,6 +133,15 @@ export class BaseGenerator {
       setupRedux(projectPath, userChoices, this.frameworkName);
     } else if (userChoices.stateManagement === "zustand") {
       setupZustand(projectPath, userChoices, this.frameworkName);
+    }
+  }
+
+  /**
+   * Setup API configuration (common logic)
+   */
+  async setupApi(projectPath, userChoices) {
+    if (userChoices.api && userChoices.api !== "none") {
+      setupApi(projectPath, userChoices, this.frameworkName);
     }
   }
 

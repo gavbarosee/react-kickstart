@@ -88,6 +88,38 @@ export function getZustandDependencies() {
   };
 }
 
+export const api = {
+  axios: "^1.6.2",
+  tanstackQuery: "^5.8.4",
+  tanstackQueryDevtools: "^5.8.4",
+};
+
+export function getAxiosDependencies() {
+  return {
+    axios: api.axios,
+  };
+}
+
+export function getReactQueryDependencies() {
+  return {
+    "@tanstack/react-query": api.tanstackQuery,
+    "@tanstack/react-query-devtools": api.tanstackQueryDevtools,
+  };
+}
+
+export function getAxiosReactQueryDependencies() {
+  return {
+    ...getAxiosDependencies(),
+    ...getReactQueryDependencies(),
+  };
+}
+
+export function getFetchReactQueryDependencies() {
+  return {
+    ...getReactQueryDependencies(),
+  };
+}
+
 export function getCoreDependencies() {
   return {
     react: core.react,

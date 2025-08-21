@@ -7,7 +7,7 @@ export class StylingStep extends BaseStep {
     this.configure({
       stepName: "styling",
       stepNumber: 6, // Will be adjusted based on framework
-      totalSteps: 9,
+      totalSteps: 10,
       title: "Styling Solution",
       icon: "🎨",
     });

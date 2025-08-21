@@ -10,6 +10,7 @@ import { LanguageStep } from "./steps/language-step.js";
 import { CodeQualityStep } from "./steps/code-quality-step.js";
 import { StylingStep } from "./steps/styling-step.js";
 import { StateManagementStep } from "./steps/state-management-step.js";
+import { ApiStep } from "./steps/api-step.js";
 import { GitStep } from "./steps/git-step.js";
 import { EditorStep } from "./steps/editor-step.js";
 
@@ -37,6 +38,7 @@ export class PromptFlow {
       codeQuality: new CodeQualityStep(this.renderer, this.navigator),
       styling: new StylingStep(this.renderer, this.navigator),
       stateManagement: new StateManagementStep(this.renderer, this.navigator),
+      api: new ApiStep(this.renderer, this.navigator),
       git: new GitStep(this.renderer, this.navigator),
       editor: new EditorStep(this.renderer, this.navigator),
     };

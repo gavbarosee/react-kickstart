@@ -56,6 +56,7 @@ export class ConfigurationBuilder {
       .addStylingDependencies(userChoices)
       .addRoutingDependencies(userChoices)
       .addStateManagementDependencies(userChoices)
+      .addApiDependencies(userChoices)
       .buildAndWrite(projectPath);
   }
 

@@ -196,6 +196,21 @@ export class PackageJsonBuilder {
   }
 
   /**
+   * Add API dependencies if enabled
+   */
+  addApiDependencies(userChoices) {
+    if (!userChoices.api || userChoices.api === "none") return this;
+
+    const apiDeps = this.dependencyResolver.getApiDependencies(userChoices.api);
+    this.packageData.dependencies = {
+      ...this.packageData.dependencies,
+      ...apiDeps,
+    };
+
+    return this;
+  }
+
+  /**
    * Build the complete package.json
    */
   build() {

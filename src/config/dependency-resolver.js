@@ -7,6 +7,10 @@ import {
   getRoutingDependencies,
   getReduxDependencies,
   getZustandDependencies,
+  getAxiosDependencies,
+  getReactQueryDependencies,
+  getAxiosReactQueryDependencies,
+  getFetchReactQueryDependencies,
   frameworks,
   styling,
 } from "./dependencies.js";
@@ -113,6 +117,24 @@ export class DependencyResolver {
   }
 
   /**
+   * Get API dependencies based on user choice
+   */
+  getApiDependencies(apiChoice) {
+    switch (apiChoice) {
+      case "axios-react-query":
+        return getAxiosReactQueryDependencies();
+      case "axios-only":
+        return getAxiosDependencies();
+      case "fetch-react-query":
+        return getFetchReactQueryDependencies();
+      case "fetch-only":
+        return {}; // No dependencies needed for native fetch
+      default:
+        return {};
+    }
+  }
+
+  /**
    * Get all dependencies for a complete feature set
    */
   getAllDependencies(userChoices) {
@@ -180,6 +202,12 @@ export class DependencyResolver {
         userChoices.stateManagement
       );
       allDeps.dependencies = { ...allDeps.dependencies, ...stateDeps };
+    }
+
+    // API dependencies
+    if (userChoices.api && userChoices.api !== "none") {
+      const apiDeps = this.getApiDependencies(userChoices.api);
+      allDeps.dependencies = { ...allDeps.dependencies, ...apiDeps };
     }
 
     return allDeps;

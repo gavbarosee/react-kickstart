@@ -7,7 +7,7 @@ export class StateManagementStep extends BaseStep {
     this.configure({
       stepName: "stateManagement",
       stepNumber: 7, // Will be adjusted based on framework
-      totalSteps: 9,
+      totalSteps: 10,
       title: "State Management",
       icon: "📦",
     });
@@ -55,6 +55,6 @@ export class StateManagementStep extends BaseStep {
 
   getNextStep(selection, answers) {
     if (selection === "BACK") return "styling";
-    return "git";
+    return "api";
   }
 }
