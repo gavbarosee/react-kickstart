@@ -32,3 +32,28 @@ export function getDefaultChoices() {
     autoStart: true,
   };
 }
+
+/**
+ * Get framework-specific default choices
+ * @param {string} framework - The framework to use (vite, nextjs)
+ * @returns {Object} Default choices configured for the specified framework
+ */
+export function getFrameworkDefaults(framework) {
+  const baseDefaults = getDefaultChoices();
+
+  switch (framework) {
+    case "nextjs":
+      return {
+        ...baseDefaults,
+        framework: "nextjs",
+        nextRouting: "app", // Default to App Router for Next.js
+        routing: "nextjs", // Enable Next.js routing
+      };
+    case "vite":
+    default:
+      return {
+        ...baseDefaults,
+        framework: "vite",
+      };
+  }
+}

@@ -154,11 +154,11 @@ export class BaseContentGenerator {
 
   getEditInstructions(fileExt) {
     if (this.framework === "vite") {
-      return `Edit <code>src/App.${fileExt}</code> and save to test HMR`;
+      return `Edit src/App.${fileExt} and save to test HMR`;
     } else if (this.routingType === "app") {
-      return `Edit <code>app/page.${fileExt}</code> to get started`;
+      return `Edit app/page.${fileExt} to get started`;
     } else {
-      return `Get started by editing <code>pages/index.${fileExt}</code>`;
+      return `Get started by editing pages/index.${fileExt}`;
     }
   }
 }

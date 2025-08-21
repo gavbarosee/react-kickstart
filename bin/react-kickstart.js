@@ -24,6 +24,11 @@ program
   .version(packageJson.version)
   .argument("[project-directory]", "Project directory name")
   .option("-y, --yes", "Skip all prompts and use default values")
+  .option(
+    "-f, --framework <framework>",
+    "Framework to use (vite, nextjs)",
+    "vite"
+  )
   .option("--no-summary", "Skip the configuration summary")
   .option("--no-autostart", "Disable automatic project startup")
   .action(async (projectDirectory, options) => {

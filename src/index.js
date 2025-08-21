@@ -1,7 +1,11 @@
 import path from "path";
 import fs from "fs-extra";
 import chalk from "chalk";
-import { promptUser, getDefaultChoices } from "./prompts.js";
+import {
+  promptUser,
+  getDefaultChoices,
+  getFrameworkDefaults,
+} from "./prompts.js";
 import generateProject from "./generators/index.js";
 import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "./utils/index.js";
 import { createErrorHandler, ERROR_TYPES } from "./errors/index.js";
@@ -77,7 +81,7 @@ export async function createApp(projectDirectory, options = {}) {
 
       // Get user choices
       const userChoices = options.yes
-        ? getDefaultChoices()
+        ? getFrameworkDefaults(options.framework || "vite")
         : await promptUser({ verbose: options.verbose });
 
       // Show summary and get confirmation
@@ -182,10 +186,13 @@ export async function createApp(projectDirectory, options = {}) {
       );
       console.log(completionSummary);
 
-      await errorHandler.withErrorHandling(
-        () => PROCESS_UTILS.startProject(projectPath, userChoices),
-        { type: ERROR_TYPES.PROCESS }
-      );
+      // Only start the project if autostart is enabled
+      if (options.autostart !== false && userChoices.autoStart !== false) {
+        await errorHandler.withErrorHandling(
+          () => PROCESS_UTILS.startProject(projectPath, userChoices),
+          { type: ERROR_TYPES.PROCESS }
+        );
+      }
     },
     {
       type: ERROR_TYPES.GENERAL,
