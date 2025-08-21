@@ -24,33 +24,46 @@ export function setupStyling(projectPath, userChoices, framework = "vite") {
 
 /**
  * Returns styling-related info for the specific framework
- * This centralizes all framework-specific CSS paths and conventions
+ *
+ * Framework-specific CSS organization differences:
+ * - File structure: Each framework has different conventions for CSS placement
+ * - Naming: Different CSS file naming patterns (index.css vs globals.css)
+ * - Import strategy: How CSS files are imported into the application
+ * - Build integration: How the build system processes CSS files
  */
 function getStylingInfo(framework, userChoices) {
-  // default CSS location and filenames
+  // Default CSS configuration (Vite-like structure)
   const info = {
-    cssDir: "src", //  where CSS files should be placed
-    mainCssFilename: "index.css", // main CSS file used for imports/global styles
-    componentCssFilename: "App.css", // component-specific CSS file (if needed)
-    usesComponentCss: false, //     // whether this framework uses a separate component CSS file
-    tailwindContentPaths: ["./src/**/*.{js,ts,jsx,tsx}"], // path patterns for Tailwind content configuration
-    createPostcssConfig: true, // whether to create PostCSS config as a separate file
-    skipCssSetup: false, // whether the framework handles CSS setup internally
+    cssDir: "src", // Where CSS files should be placed
+    mainCssFilename: "index.css", // Main CSS file used for imports/global styles
+    componentCssFilename: "App.css", // Component-specific CSS file (if needed)
+    usesComponentCss: false, // Whether this framework uses a separate component CSS file
+    tailwindContentPaths: ["./src/**/*.{js,ts,jsx,tsx}"], // Path patterns for Tailwind content configuration
+    createPostcssConfig: true, // Whether to create PostCSS config as a separate file
+    skipCssSetup: false, // Whether the framework handles CSS setup internally
   };
 
-  // override defaults with framework-specific settings
+  // Override defaults with framework-specific settings
   switch (framework) {
     case "vite":
+      // Vite CSS Structure
+      // - src/index.css: Main stylesheet imported in main.tsx/jsx
+      // - src/App.css: Component-specific styles for App component
+      // - Uses ES module imports for CSS files
       info.usesComponentCss = true;
       info.tailwindContentPaths = [
-        "./index.html",
+        "./index.html", // Vite projects have a root HTML file
         "./src/**/*.{js,ts,jsx,tsx}",
       ];
       break;
 
     case "nextjs":
-      info.skipCssSetup = true; // next.js has its own CSS setup
-      info.mainCssFilename = "globals.css";
+      // Next.js CSS Structure
+      // - styles/globals.css or app/globals.css: Global stylesheet
+      // - Different locations based on router type (pages vs app)
+      // - CSS Modules and styled-jsx support built-in
+      info.skipCssSetup = true; // Next.js has its own CSS setup
+      info.mainCssFilename = "globals.css"; // Next.js convention
 
       if (userChoices.nextRouting === "app") {
         info.cssDir = "app";

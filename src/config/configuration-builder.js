@@ -77,6 +77,12 @@ export class ConfigurationBuilder {
 
   /**
    * Generate Vite configuration
+   *
+   * Vite configuration characteristics:
+   * - Fast development server with HMR (Hot Module Replacement)
+   * - esbuild-based bundling for speed
+   * - Plugin-based architecture for extensibility
+   * - ES modules native support
    */
   generateViteConfig(projectPath, userChoices) {
     const configExt = CORE_UTILS.getConfigExtension(userChoices);
@@ -84,11 +90,14 @@ export class ConfigurationBuilder {
     const viteConfig = `import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
+// Vite Configuration
+// - plugins: [react()] enables JSX transformation and Fast Refresh
+// - server.open: Automatically opens browser during development
+// - Uses esbuild for fast TypeScript/JSX compilation
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react()], // Enable React JSX transformation and Fast Refresh
   server: {
-    open: true, // Auto-open browser on dev start
+    open: true, // Auto-open browser on dev start for better DX
   }
 });
 `;
@@ -104,17 +113,24 @@ export default defineConfig({
 
   /**
    * Generate Next.js configuration
+   *
+   * Next.js configuration characteristics:
+   * - Full-stack React framework with SSR/SSG capabilities
+   * - Built-in routing, API routes, and optimization
+   * - Compiler optimizations for production
+   * - Framework-specific feature toggles
    */
   generateNextjsConfig(projectPath, userChoices) {
     let nextConfig = `/** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: true, // Enable React Strict Mode for better development warnings
 `;
 
     // Add styled-components config if needed
+    // Next.js compiler can optimize styled-components at build time
     if (userChoices.styling === "styled-components") {
       nextConfig += `  compiler: {
-    styledComponents: true,
+    styledComponents: true, // Enable styled-components SWC transform for better performance
   },
 `;
     }
@@ -168,34 +184,45 @@ module.exports = nextConfig;
 
   /**
    * Generate TypeScript configuration
+   *
+   * Framework-specific configurations are necessary because:
+   * - Next.js has built-in TypeScript compilation and requires specific settings
+   * - Vite uses esbuild for TypeScript and has different optimization requirements
+   * - Each framework has different JSX handling and module resolution needs
    */
   generateTypeScriptConfig(projectPath, userChoices) {
     let tsConfig;
 
     if (this.framework === "nextjs") {
+      // Next.js TypeScript Configuration
+      // - Uses "jsx": "preserve" because Next.js handles JSX transformation
+      // - Uses "moduleResolution": "node" for compatibility with Next.js bundler
+      // - Includes Next.js plugin for enhanced type checking
+      // - Uses "noEmit": true because Next.js handles compilation
+      // - Targets ES5 for broader browser compatibility in production
       tsConfig = {
         compilerOptions: {
-          target: "es5",
+          target: "es5", // Next.js handles modern browser targeting in production
           lib: ["dom", "dom.iterable", "es6"],
-          allowJs: true,
-          skipLibCheck: true,
-          strict: true,
-          forceConsistentCasingInFileNames: true,
-          noEmit: true,
-          esModuleInterop: true,
-          module: "esnext",
-          moduleResolution: "node",
-          resolveJsonModule: true,
-          isolatedModules: true,
-          jsx: "preserve",
-          incremental: true,
+          allowJs: true, // Allow importing .js files in TypeScript project
+          skipLibCheck: true, // Skip type checking of declaration files for faster builds
+          strict: true, // Enable all strict type checking options
+          forceConsistentCasingInFileNames: true, // Prevent case-insensitive imports
+          noEmit: true, // Next.js handles compilation, TypeScript only for type checking
+          esModuleInterop: true, // Enable ES module interoperability
+          module: "esnext", // Use latest module syntax
+          moduleResolution: "node", // Use Node.js module resolution for Next.js compatibility
+          resolveJsonModule: true, // Allow importing JSON files
+          isolatedModules: true, // Each file must be importable on its own
+          jsx: "preserve", // Next.js handles JSX transformation internally
+          incremental: true, // Enable incremental compilation for faster rebuilds
           plugins: [
             {
-              name: "next",
+              name: "next", // Next.js TypeScript plugin for enhanced type checking
             },
           ],
           paths: {
-            "@/*": ["./*"],
+            "@/*": ["./*"], // Enable absolute imports with @ alias
           },
         },
         include: [
@@ -207,24 +234,29 @@ module.exports = nextConfig;
         exclude: ["node_modules"],
       };
     } else {
-      // Vite TypeScript config
+      // Vite TypeScript Configuration
+      // - Uses "jsx": "react-jsx" for automatic JSX runtime (no need to import React)
+      // - Uses "moduleResolution": "bundler" optimized for Vite's esbuild bundler
+      // - Targets ES2020 for modern browsers (Vite handles legacy browser support via plugins)
+      // - Enables stricter checks for better development experience
+      // - Uses "allowImportingTsExtensions" for explicit .ts/.tsx imports
       tsConfig = {
         compilerOptions: {
-          target: "ES2020",
-          useDefineForClassFields: true,
-          lib: ["ES2020", "DOM", "DOM.Iterable"],
-          module: "ESNext",
-          skipLibCheck: true,
-          moduleResolution: "bundler",
-          allowImportingTsExtensions: true,
-          resolveJsonModule: true,
-          isolatedModules: true,
-          noEmit: true,
-          jsx: "react-jsx",
-          strict: true,
-          noUnusedLocals: true,
-          noUnusedParameters: true,
-          noFallthroughCasesInSwitch: true,
+          target: "ES2020", // Modern target since Vite handles transpilation for older browsers
+          useDefineForClassFields: true, // Use standard class field behavior
+          lib: ["ES2020", "DOM", "DOM.Iterable"], // Include modern JavaScript and DOM APIs
+          module: "ESNext", // Use latest module syntax
+          skipLibCheck: true, // Skip type checking of declaration files for faster builds
+          moduleResolution: "bundler", // Optimized for Vite's esbuild bundler
+          allowImportingTsExtensions: true, // Allow explicit .ts/.tsx imports
+          resolveJsonModule: true, // Allow importing JSON files
+          isolatedModules: true, // Each file must be importable on its own
+          noEmit: true, // Vite handles compilation, TypeScript only for type checking
+          jsx: "react-jsx", // Use automatic JSX runtime (no React import needed)
+          strict: true, // Enable all strict type checking options
+          noUnusedLocals: true, // Error on unused local variables
+          noUnusedParameters: true, // Error on unused function parameters
+          noFallthroughCasesInSwitch: true, // Error on fallthrough switch cases
         },
         include: ["src"],
         references: [{ path: "./tsconfig.node.json" }],
@@ -263,13 +295,21 @@ module.exports = nextConfig;
 
   /**
    * Generate Tailwind CSS configuration
+   *
+   * Framework-specific differences:
+   * - Module system: Next.js uses CommonJS, Vite uses ES modules
+   * - Content paths: Different file structures require different glob patterns
+   * - Integration: Next.js has built-in PostCSS support, Vite requires explicit config
    */
   generateTailwindConfig(projectPath) {
     const contentPaths = this.getTailwindContentPaths();
 
     let tailwindConfig;
     if (this.framework === "nextjs") {
-      // Next.js uses CommonJS
+      // Next.js Tailwind Configuration
+      // - Uses CommonJS module.exports (Next.js ecosystem standard)
+      // - Content paths include pages/, components/, and app/ directories
+      // - Supports .mdx files for Next.js MDX integration
       tailwindConfig = `/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -282,7 +322,10 @@ module.exports = {
 }
 `;
     } else {
-      // Vite uses ES modules
+      // Vite Tailwind Configuration
+      // - Uses ES modules export default (Vite ecosystem standard)
+      // - Content paths include src/ directory and index.html
+      // - Focuses on single-page application structure
       tailwindConfig = `/** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -307,12 +350,20 @@ export default {
 
   /**
    * Generate PostCSS configuration for Tailwind
+   *
+   * Framework-specific differences:
+   * - Module system: Next.js requires CommonJS, Vite uses ES modules
+   * - Integration: Next.js has built-in PostCSS, Vite requires explicit config
+   * - Plugin loading: Different module resolution strategies
    */
   generatePostCssConfig(projectPath) {
     let postcssConfig;
 
     if (this.framework === "nextjs") {
-      // Next.js uses CommonJS
+      // Next.js PostCSS Configuration
+      // - Uses CommonJS module.exports (required by Next.js PostCSS integration)
+      // - Next.js automatically processes CSS through PostCSS
+      // - Integrates seamlessly with Next.js build pipeline
       postcssConfig = `module.exports = {
   plugins: {
     tailwindcss: {},
@@ -321,7 +372,10 @@ export default {
 }
 `;
     } else {
-      // Vite uses ES modules
+      // Vite PostCSS Configuration
+      // - Uses ES modules export default (Vite's preferred format)
+      // - Vite processes CSS through PostCSS via explicit configuration
+      // - Integrates with Vite's fast development server
       postcssConfig = `export default {
   plugins: {
     tailwindcss: {},
@@ -342,24 +396,44 @@ export default {
 
   /**
    * Get Tailwind content paths based on framework
+   *
+   * Framework-specific content paths are needed because:
+   * - File structure: Each framework organizes files differently
+   * - Build integration: Different frameworks scan different directories
+   * - Performance: Tailwind needs to know exactly where to look for class usage
    */
   getTailwindContentPaths() {
     switch (this.framework) {
       case "vite":
+        // Vite Content Paths
+        // - "./index.html": Vite projects have a root HTML file that may contain classes
+        // - "./src/**/*": Standard single-page application structure
+        // - Includes all JS/TS/JSX/TSX files for comprehensive class detection
         return ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"];
       case "nextjs":
+        // Next.js Content Paths
+        // - "./pages/**/*": Pages router structure (traditional Next.js)
+        // - "./components/**/*": Common component directory structure
+        // - "./app/**/*": App router structure (Next.js 13+)
+        // - Includes .mdx files for Next.js MDX integration
         return [
           "./pages/**/*.{js,ts,jsx,tsx,mdx}",
           "./components/**/*.{js,ts,jsx,tsx,mdx}",
           "./app/**/*.{js,ts,jsx,tsx,mdx}",
         ];
       default:
+        // Fallback for other frameworks
         return ["./src/**/*.{js,ts,jsx,tsx}"];
     }
   }
 
   /**
    * Generate testing configuration files
+   *
+   * Framework-specific testing differences:
+   * - Vitest: Optimized for Vite, uses esbuild, faster execution
+   * - Jest: Better Next.js integration, more mature ecosystem
+   * - Configuration: Different setup files and module resolution
    */
   generateTestingConfig(projectPath, userChoices) {
     const configs = {};
@@ -377,6 +451,12 @@ export default {
 
   /**
    * Generate Vitest configuration
+   *
+   * Vitest is preferred for Vite projects because:
+   * - Native ESM support and esbuild integration
+   * - Shares Vite's configuration and plugins
+   * - Faster test execution due to optimized bundling
+   * - Better development experience with Vite
    */
   generateVitestConfig(projectPath, userChoices) {
     const configExt = CORE_UTILS.getConfigExtension(userChoices);
@@ -408,6 +488,11 @@ export default defineConfig({
 
   /**
    * Generate Jest configuration
+   *
+   * Jest configuration differs by framework because:
+   * - Next.js: Has built-in Jest integration with optimized settings
+   * - Vite: Requires manual Babel configuration for JSX/TypeScript
+   * - Module resolution: Different path mapping and import strategies
    */
   generateJestConfig(projectPath, userChoices) {
     const setupFile = `<rootDir>/src/test/setup.${
@@ -418,7 +503,11 @@ export default defineConfig({
     let jestConfig;
 
     if (isNextJs) {
-      // Next.js optimized Jest config
+      // Next.js Optimized Jest Configuration
+      // - Uses next/jest for automatic configuration
+      // - Handles Next.js-specific features (Image, Link, etc.)
+      // - Optimized for server components and app router
+      // - Automatic TypeScript and CSS module support
       jestConfig = `const nextJest = require('next/jest');
 
 const createJestConfig = nextJest({
@@ -438,7 +527,11 @@ const customJestConfig = {
 module.exports = createJestConfig(customJestConfig);
 `;
     } else {
-      // Standard Jest config for Vite projects
+      // Vite Jest Configuration
+      // - Requires manual Babel configuration for JSX/TypeScript transformation
+      // - Uses explicit module resolution mapping for @ alias
+      // - Requires babel-jest for transforming modern JavaScript/TypeScript
+      // - Manual test pattern matching for src/ directory structure
       const moduleFileExtensions = userChoices.typescript
         ? ["js", "jsx", "ts", "tsx", "json"]
         : ["js", "jsx", "json"];

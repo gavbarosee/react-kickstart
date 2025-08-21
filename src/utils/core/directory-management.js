@@ -79,26 +79,38 @@ export function createNestedDirectories(projectPath, structure) {
 /**
  * Common project directory structures for different frameworks
  */
+/**
+ * Framework-specific directory structures
+ *
+ * Different structures are needed because:
+ * - Vite: Single-page application structure with src/ directory
+ * - Next.js: Multiple routing strategies (app/ vs pages/) with different conventions
+ * - Build integration: Each framework expects files in specific locations
+ * - Development workflow: Different hot-reload and build patterns
+ */
 export const DIRECTORY_STRUCTURES = {
   vite: {
-    base: ["src", "public"],
-    withRouting: ["src", "src/pages", "src/components", "public"],
-    withState: ["src", "src/store", "src/components", "public"],
-    complete: ["src", "src/pages", "src/components", "src/store", "public"],
+    // Vite uses src/ directory structure (SPA convention)
+    base: ["src", "public"], // Basic Vite project
+    withRouting: ["src", "src/pages", "src/components", "public"], // + React Router
+    withState: ["src", "src/store", "src/components", "public"], // + State management
+    complete: ["src", "src/pages", "src/components", "src/store", "public"], // All features
   },
 
   nextjs: {
-    base: ["public"],
-    app: ["app", "public"],
-    pages: ["pages", "pages/api", "styles", "public"],
-    appWithState: ["app", "lib", "lib/features", "components", "public"],
-    pagesWithState: ["pages", "pages/api", "styles", "components", "public"],
+    // Next.js has different structures based on router type
+    base: ["public"], // Minimal Next.js (framework handles most structure)
+    app: ["app", "public"], // App Router (Next.js 13+) - new paradigm
+    pages: ["pages", "pages/api", "styles", "public"], // Pages Router - traditional
+    appWithState: ["app", "lib", "lib/features", "components", "public"], // App Router + state
+    pagesWithState: ["pages", "pages/api", "styles", "components", "public"], // Pages Router + state
   },
 
   common: {
-    basic: ["src", "public"],
-    development: [".vscode"],
-    testing: ["__tests__", "src/__tests__"],
+    // Shared structures for any framework
+    basic: ["src", "public"], // Fallback structure
+    development: [".vscode"], // Development tools
+    testing: ["__tests__", "src/__tests__"], // Testing directories
   },
 };
 
