@@ -46,6 +46,8 @@ export const CORE_UTILS = {
   // Convenience aliases
   validateProjectName: validation.validateProjectNameInput,
   validateProjectDirectory: validation.validateProjectDirectory,
+  validateUserChoices: validation.validateUserChoices,
+  validateChoiceCombinations: validation.validateChoiceCombinations,
   isDirectoryCreatedByTool: filesystem.isProjectCreatedByTool,
   fileGenerationInfo: filesystem.getProjectFileInfo,
   formatItem: dataFormatting.formatSummaryItem,

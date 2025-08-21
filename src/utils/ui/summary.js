@@ -2,6 +2,7 @@ import chalk from "chalk";
 import boxen from "boxen";
 import inquirer from "inquirer";
 import { createUIRenderer } from "../../templates/index.js";
+import { validateUserChoices } from "../core/validation.js";
 
 function getFrameworkDescriptor(framework) {
   const descriptors = {
@@ -30,6 +31,9 @@ function getRoutingDescriptor(routing) {
 export function generateSummary(projectPath, projectName, userChoices) {
   const getStatusSymbol = (value) =>
     value ? chalk.green("✓") : chalk.red("✗");
+
+  // Validate user choices to get warnings
+  const validation = validateUserChoices(userChoices);
 
   // format each item in the summary with proper alignment
   const formatItem = (icon, label, value, description = "") => {
@@ -100,6 +104,14 @@ export function generateSummary(projectPath, projectName, userChoices) {
           "Open in Editor",
           getStatusSymbol(userChoices.openEditor)
         ),
+
+    // Add warnings section if there are any
+    validation.warnings && validation.warnings.length > 0
+      ? formatSectionHeader("Configuration Recommendations")
+      : "",
+    ...(validation.warnings || []).map((warning) =>
+      chalk.yellow(`  ${warning}`)
+    ),
 
     // action hint at the bottom
     "",

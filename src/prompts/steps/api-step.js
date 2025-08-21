@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import { BaseStep } from "./base-step.js";
+import { UI_UTILS } from "../../utils/index.js";
 
 export class ApiStep extends BaseStep {
   constructor(renderer, navigator) {
@@ -68,5 +69,38 @@ export class ApiStep extends BaseStep {
   getNextStep(selection, answers) {
     if (selection === "BACK") return "stateManagement";
     return "testing";
+  }
+
+  /**
+   * Override execute to add inline warnings
+   */
+  async execute(answers) {
+    const result = await super.execute(answers);
+
+    // Show inline warnings for potentially redundant combinations
+    if (result.selection && result.selection !== "BACK") {
+      this.showInlineWarnings(result.selection, answers);
+    }
+
+    return result;
+  }
+
+  /**
+   * Show inline warnings for API + State Management combinations
+   */
+  showInlineWarnings(apiSelection, answers) {
+    if (apiSelection && apiSelection.includes("react-query")) {
+      if (answers.stateManagement === "redux") {
+        console.log();
+        UI_UTILS.warning(
+          "React Query + Redux detected. React Query handles server state very well - consider using Redux only for client-side state."
+        );
+      } else if (answers.stateManagement === "zustand") {
+        console.log();
+        UI_UTILS.warning(
+          "React Query + Zustand detected. Consider using Zustand primarily for client-side application state."
+        );
+      }
+    }
   }
 }

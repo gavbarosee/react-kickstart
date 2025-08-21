@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import { BaseStep } from "./base-step.js";
+import { UI_UTILS } from "../../utils/index.js";
 
 export class TestingStep extends BaseStep {
   constructor(renderer, navigator) {
@@ -72,5 +73,39 @@ export class TestingStep extends BaseStep {
   getNextStep(selection, answers) {
     if (selection === "BACK") return "api";
     return "git";
+  }
+
+  /**
+   * Override execute to add inline warnings
+   */
+  async execute(answers) {
+    const result = await super.execute(answers);
+
+    // Show inline warnings for suboptimal testing framework combinations
+    if (result.selection && result.selection !== "BACK") {
+      this.showInlineWarnings(result.selection, answers);
+    }
+
+    return result;
+  }
+
+  /**
+   * Show inline warnings for testing framework + build framework combinations
+   */
+  showInlineWarnings(testingSelection, answers) {
+    if (testingSelection === "jest" && answers.framework === "vite") {
+      console.log();
+      UI_UTILS.warning(
+        "Using Jest with Vite. Consider Vitest for better Vite integration and faster execution."
+      );
+    } else if (
+      testingSelection === "vitest" &&
+      answers.framework === "nextjs"
+    ) {
+      console.log();
+      UI_UTILS.warning(
+        "Using Vitest with Next.js. Jest has better Next.js integration and built-in optimizations."
+      );
+    }
   }
 }
