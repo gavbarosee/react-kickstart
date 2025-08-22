@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage --silent",
     "qa:critical": "node qa-automation/test-runner.js --config qa-automation/test-configs/critical-tests.json",
-    "qa:standard": "node qa-automation/test-runner.js --config qa-automation/test-configs/standard-tests.json"
+    "qa:standard": "node qa-automation/test-runner.js --config qa-automation/test-configs/standard-tests.json",
+    "prepare": "husky"
   },
   "keywords": [
     "react",
@@ -40,7 +41,8 @@
   },
   "devDependencies": {
     "vitest": "^1.6.0",
-    "@vitest/coverage-v8": "^1.6.0"
+    "@vitest/coverage-v8": "^1.6.0",
+    "husky": "^9.0.11"
   },
   "engines": {
     "node": ">=16"

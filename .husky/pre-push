@@ -1,0 +1,11 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+if [ "$SKIP_PREPUSH" = "1" ]; then
+  echo "Skipping pre-push checks due to SKIP_PREPUSH=1"
+  exit 0
+fi
+
+echo "Running pre-push checks..."
+npm run test:coverage --silent || exit 1
+npm run qa:critical || exit 1

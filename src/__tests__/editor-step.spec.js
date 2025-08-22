@@ -1,5 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
 vi.mock("execa", () => ({ execa: vi.fn(async () => ({ stdout: "1.0.0" })) }));
+vi.mock("inquirer", () => ({
+  default: {
+    prompt: vi.fn(async () => ({ editor: "cursor" })),
+    Separator: function Separator() {},
+  },
+}));
 import { EditorStep } from "../prompts/steps/editor-step.js";
 
 function createRendererStub() {
@@ -35,18 +41,10 @@ describe("EditorStep", () => {
     // First prompt: Yes
     renderer.promptChoice.mockResolvedValueOnce(true);
 
-    // Mock inquirer prompt inside EditorStep
-    const inquirer = await import("inquirer");
-    const promptSpy = vi
-      .spyOn(inquirer, "prompt")
-      .mockResolvedValue({ editor: "cursor" });
-
     const answers = {};
     const result = await step.execute(answers);
     expect(answers.openEditor).toBe(true);
     expect(answers.editor).toBe("cursor");
     expect(result.nextStep).toBe("complete");
-
-    promptSpy.mockRestore();
   });
 });
