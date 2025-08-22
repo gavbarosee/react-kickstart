@@ -9,7 +9,10 @@
   },
   "scripts": {
     "start": "node bin/react-kickstart.js",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage --silent",
+    "qa:critical": "node qa-automation/test-runner.js --config qa-automation/test-configs/critical-tests.json",
+    "qa:standard": "node qa-automation/test-runner.js --config qa-automation/test-configs/standard-tests.json"
   },
   "keywords": [
     "react",
@@ -36,7 +39,8 @@
     "validate-npm-package-name": "^6.0.2"
   },
   "devDependencies": {
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.0"
   },
   "engines": {
     "node": ">=16"

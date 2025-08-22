@@ -12,3 +12,4 @@ test-output/
 /debug-*
 /quick-test/
 /feature-test-*/
+/coverage/
