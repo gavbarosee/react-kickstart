@@ -7,7 +7,8 @@
 
 import { execSync, spawn } from "child_process";
 import { readFileSync, existsSync, rmSync, mkdirSync, writeFileSync } from "fs";
-import { join, resolve } from "path";
+import { join, resolve, dirname } from "path";
+import { fileURLToPath } from "url";
 import { performance } from "perf_hooks";
 
 class TestRunner {
@@ -18,6 +19,8 @@ class TestRunner {
     this.timeoutMs = options.timeoutMs || 120000; // 2 minutes per test
     this.results = [];
     this.startTime = Date.now();
+    this.skipInstall =
+      options.skipInstall !== undefined ? options.skipInstall : true;
   }
 
   /**
@@ -67,8 +70,10 @@ class TestRunner {
 
       // Build comprehensive CLI command with all feature flags
       const config = testConfig.config;
-      // Get absolute path to CLI from current working directory (qa-automation)
-      const cliPath = resolve(process.cwd(), "../bin/react-kickstart.js");
+      // Resolve CLI path relative to this file's directory to avoid cwd issues
+      const __dirname = dirname(fileURLToPath(import.meta.url));
+      const repoRoot = resolve(__dirname, "..");
+      const cliPath = resolve(repoRoot, "bin/react-kickstart.js");
       const cliArgs = [
         cliPath,
         testName,
@@ -98,8 +103,8 @@ class TestRunner {
         cliArgs.push(`--next-routing ${config.nextRouting}`);
       }
 
-      // Add skip-install to speed up QA validation and avoid network flakiness
-      cliArgs.push(`--skip-install`);
+      // Add skip-install to speed up QA validation and avoid network flakiness when enabled
+      if (this.skipInstall) cliArgs.push(`--skip-install`);
       const comprehensiveCommand = `node ${cliArgs.join(" ")}`;
 
       // Run the CLI command with timeout from the test directory
@@ -117,18 +122,17 @@ class TestRunner {
       // Validate the generated project
       const validationResult = await this.validateProject(
         projectPath,
-        testConfig.config
+        testConfig.config,
+        { skipInstall: this.skipInstall }
       );
 
       const endTime = performance.now();
       const duration = Math.round(endTime - startTime);
 
       // Determine if test actually succeeded based on validation
-      const actualSuccess =
-        validationResult.projectExists &&
-        validationResult.packageJsonExists &&
-        validationResult.buildWorks &&
-        validationResult.issues.length === 0;
+      const actualSuccess = this.computeSuccess(validationResult, {
+        skipInstall: this.skipInstall,
+      });
 
       const testResult = {
         testName,
@@ -239,7 +243,7 @@ class TestRunner {
   /**
    * Validate generated project structure and functionality
    */
-  async validateProject(projectPath, config) {
+  async validateProject(projectPath, config, options = {}) {
     const validation = {
       projectExists: false,
       packageJsonExists: false,
@@ -311,12 +315,12 @@ class TestRunner {
       validation.dependenciesInstalled = existsSync(
         join(projectPath, "node_modules")
       );
-      if (!validation.dependenciesInstalled) {
+      if (!validation.dependenciesInstalled && !options.skipInstall) {
         validation.issues.push("node_modules directory not found");
       }
 
       // Test scripts (if dependencies are installed)
-      if (validation.dependenciesInstalled) {
+      if (validation.dependenciesInstalled && !options.skipInstall) {
         await this.validateScripts(projectPath, config, validation);
       }
     } catch (error) {
@@ -555,6 +559,31 @@ class TestRunner {
   }
 
   /**
+   * Determine success criteria based on options
+   */
+  computeSuccess(validationResult, { skipInstall } = { skipInstall: false }) {
+    if (skipInstall) {
+      // Structural validation only
+      return (
+        validationResult.projectExists &&
+        validationResult.packageJsonExists &&
+        validationResult.sourceDirectoryExists &&
+        validationResult.packageJsonValid &&
+        // No blocking issues besides missing node_modules allowed
+        validationResult.issues.filter(
+          (i) => i !== "node_modules directory not found"
+        ).length === 0
+      );
+    }
+    return (
+      validationResult.projectExists &&
+      validationResult.packageJsonExists &&
+      validationResult.buildWorks &&
+      validationResult.issues.length === 0
+    );
+  }
+
+  /**
    * Clean up test projects
    */
   cleanup() {
@@ -583,11 +612,13 @@ async function main() {
   const maxTests = args[1] ? parseInt(args[1]) : null;
   const verbose = args.includes("--verbose");
   const noCleanup = args.includes("--no-cleanup");
+  const full = args.includes("--full");
 
   const runner = new TestRunner({
     verbose: true, // Always show output for now
     parallel: 1, // Sequential to avoid conflicts
     timeoutMs: 180000, // 3 minutes per test
+    skipInstall: !full,
   });
 
   try {

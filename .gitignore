@@ -6,6 +6,7 @@ qa-automation/reports/
 qa-test-projects/
 test-deployment-project*
 test-output/
+reports/
 
 # Temporary test projects created during development/testing
 /test-*
@@ -13,3 +14,4 @@ test-output/
 /quick-test/
 /feature-test-*/
 /coverage/
+/reports/
