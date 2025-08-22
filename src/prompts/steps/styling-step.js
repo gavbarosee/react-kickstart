@@ -9,7 +9,7 @@ export class StylingStep extends BaseStep {
       stepNumber: 6,
       totalSteps: 12,
       title: "Styling Solution",
-      icon: "🎨",
+      icon: "",
     });
   }
 
@@ -24,15 +24,15 @@ export class StylingStep extends BaseStep {
   getChoices(answers) {
     return [
       {
-        name: chalk.cyan("🎨 Tailwind CSS") + " - Utility-first CSS framework",
+        name: chalk.cyan("Tailwind CSS") + " - Utility-first CSS framework",
         value: "tailwind",
       },
       {
-        name: chalk.magenta("💅 styled-components") + " - CSS-in-JS library",
+        name: chalk.magenta("styled-components") + " - CSS-in-JS library",
         value: "styled-components",
       },
       {
-        name: chalk.blue("📝 Plain CSS") + " - No additional dependencies",
+        name: chalk.blue("Plain CSS") + " - No additional dependencies",
         value: "css",
       },
     ];

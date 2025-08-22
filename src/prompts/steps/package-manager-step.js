@@ -12,7 +12,7 @@ export class PackageManagerStep extends BaseStep {
       stepNumber: 1,
       totalSteps: 12,
       title: "Package Manager",
-      icon: "📦",
+      icon: "",
     });
   }
 

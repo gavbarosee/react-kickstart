@@ -9,7 +9,7 @@ export class RoutingStep extends BaseStep {
       stepNumber: 3,
       totalSteps: 12,
       title: "Routing Options",
-      icon: "🛣️",
+      icon: "",
     });
   }
 

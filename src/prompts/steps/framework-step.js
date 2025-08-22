@@ -9,18 +9,18 @@ export class FrameworkStep extends BaseStep {
       stepNumber: 2,
       totalSteps: 12,
       title: "Framework Selection",
-      icon: "🚀",
+      icon: "",
     });
   }
 
   getChoices(answers) {
     return [
       {
-        name: chalk.yellow("⚡ Vite") + " - Fast dev server, optimized builds",
+        name: chalk.yellow("Vite") + " - Fast dev server, optimized builds",
         value: "vite",
       },
       {
-        name: chalk.blue("▲  Next.js") + " - SSR, full-stack framework",
+        name: chalk.blue("Next.js") + " - SSR, full-stack framework",
         value: "nextjs",
       },
     ];

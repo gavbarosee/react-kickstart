@@ -10,7 +10,7 @@ export class ApiStep extends BaseStep {
       stepNumber: 8,
       totalSteps: 12,
       title: "API & Data Fetching",
-      icon: "🌐",
+      icon: "",
     });
   }
 
@@ -26,25 +26,24 @@ export class ApiStep extends BaseStep {
     return [
       {
         name:
-          chalk.cyan("🚀 Axios + React Query") +
+          chalk.cyan("Axios + React Query") +
           " - Complete API setup with smart caching",
         value: "axios-react-query",
       },
       {
         name:
-          chalk.blue("⚡ Axios") +
+          chalk.blue("Axios") +
           " - HTTP client with interceptors and error handling",
         value: "axios-only",
       },
       {
         name:
-          chalk.green("🔗 Fetch + React Query") +
+          chalk.green("Fetch + React Query") +
           " - Native fetch with caching layer",
         value: "fetch-react-query",
       },
       {
-        name:
-          chalk.magenta("🌐 Fetch") + " - Native fetch API with custom hooks",
+        name: chalk.magenta("Fetch") + " - Native fetch API with custom hooks",
         value: "fetch-only",
       },
       {

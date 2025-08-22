@@ -9,7 +9,7 @@ export class CodeQualityStep extends BaseStep {
       stepNumber: 5,
       totalSteps: 12,
       title: "Code Quality",
-      icon: "✨",
+      icon: "",
     });
   }
 

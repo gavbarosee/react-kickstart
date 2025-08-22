@@ -9,7 +9,7 @@ export class StateManagementStep extends BaseStep {
       stepNumber: 7,
       totalSteps: 12,
       title: "State Management",
-      icon: "📦",
+      icon: "",
     });
   }
 
@@ -25,14 +25,12 @@ export class StateManagementStep extends BaseStep {
     return [
       {
         name:
-          chalk.blue("📦 Redux Toolkit") +
-          " - Powerful state management library",
+          chalk.blue("Redux Toolkit") + " - Powerful state management library",
         value: "redux",
       },
       {
         name:
-          chalk.green("🐻 Zustand") +
-          " - Lightweight state management solution",
+          chalk.green("Zustand") + " - Lightweight state management solution",
         value: "zustand",
       },
       {

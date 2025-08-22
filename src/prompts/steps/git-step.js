@@ -9,7 +9,7 @@ export class GitStep extends BaseStep {
       stepNumber: 10,
       totalSteps: 12,
       title: "Git Options",
-      icon: "🔄",
+      icon: "",
     });
   }
 

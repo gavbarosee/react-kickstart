@@ -9,7 +9,7 @@ export class LanguageStep extends BaseStep {
       stepNumber: 4,
       totalSteps: 12,
       title: "Language Options",
-      icon: "🔤",
+      icon: "",
     });
   }
 

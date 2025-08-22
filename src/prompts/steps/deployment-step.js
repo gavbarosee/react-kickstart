@@ -10,7 +10,7 @@ export class DeploymentStep extends BaseStep {
       stepNumber: 11,
       totalSteps: 12,
       title: "Deployment Platform",
-      icon: "🚀",
+      icon: "",
     });
   }
 
@@ -20,7 +20,7 @@ export class DeploymentStep extends BaseStep {
     // Vercel - excellent for Next.js, good for Vite
     choices.push({
       name:
-        chalk.blue("▲ Vercel") +
+        chalk.blue("Vercel") +
         (answers.framework === "nextjs" ? chalk.dim(" (Recommended)") : ""),
       value: "vercel",
       description: "Zero-config deployments with excellent Next.js integration",
@@ -29,7 +29,7 @@ export class DeploymentStep extends BaseStep {
     // Netlify - great for both frameworks
     choices.push({
       name:
-        chalk.green("◈ Netlify") +
+        chalk.green("Netlify") +
         (answers.framework === "vite" ? chalk.dim(" (Recommended)") : ""),
       value: "netlify",
       description: "Powerful platform with great build optimization",
@@ -37,7 +37,7 @@ export class DeploymentStep extends BaseStep {
 
     // Skip option
     choices.push({
-      name: chalk.gray("❌ Skip deployment setup"),
+      name: chalk.gray("Skip deployment setup"),
       value: "none",
       description: "Configure deployment manually later",
     });

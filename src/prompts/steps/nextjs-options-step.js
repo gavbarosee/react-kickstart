@@ -9,7 +9,7 @@ export class NextjsOptionsStep extends BaseStep {
       stepNumber: 3,
       totalSteps: 12,
       title: "Next.js Options",
-      icon: "▲ ",
+      icon: "",
     });
   }
 

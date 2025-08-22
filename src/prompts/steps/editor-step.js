@@ -10,7 +10,7 @@ export class EditorStep extends BaseStep {
       stepNumber: 12,
       totalSteps: 12,
       title: "Editor Options",
-      icon: "📝",
+      icon: "",
     });
   }
 
