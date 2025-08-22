@@ -157,8 +157,29 @@ export class PackageJsonBuilder {
           ...stylingDeps,
         };
       }
+    } else if (userChoices.styling === "styled-components") {
+      // styled-components library goes to dependencies
+      this.packageData.dependencies = {
+        ...this.packageData.dependencies,
+        "styled-components": stylingDeps["styled-components"],
+      };
+
+      // babel plugin goes to devDependencies for Vite, dependencies for Next.js
+      if (this.framework === "vite") {
+        this.packageData.devDependencies = {
+          ...this.packageData.devDependencies,
+          "babel-plugin-styled-components":
+            stylingDeps["babel-plugin-styled-components"],
+        };
+      } else {
+        this.packageData.dependencies = {
+          ...this.packageData.dependencies,
+          "babel-plugin-styled-components":
+            stylingDeps["babel-plugin-styled-components"],
+        };
+      }
     } else {
-      // styled-components always go to dependencies
+      // Other styling options go to dependencies
       this.packageData.dependencies = {
         ...this.packageData.dependencies,
         ...stylingDeps,

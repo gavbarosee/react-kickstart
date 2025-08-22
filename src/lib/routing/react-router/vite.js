@@ -33,9 +33,79 @@ export function setupViteReactRouter(projectPath, userChoices) {
  * Creates a Home page component
  */
 function createHomePage(pagesDir, ext, userChoices) {
-  const content = `${
-    userChoices.typescript ? "import React from 'react';\n\n" : ""
+  let content;
+
+  if (userChoices.styling === "styled-components") {
+    content = `${
+      userChoices.typescript ? "import React from 'react';\n" : ""
+    }import { useState } from 'react';
+import styled from 'styled-components';
+
+const PageContainer = styled.div\`
+  padding: 3rem 0;
+  max-width: 800px;
+  margin: 0 auto;
+\`;
+
+const Title = styled.h1\`
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+  line-height: 1.2;
+\`;
+
+const Description = styled.p\`
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+\`;
+
+const InteractiveButton = styled.button\`
+  border-radius: 8px;
+  border: 2px solid transparent;
+  padding: 0.75em 1.5em;
+  font-size: 1.1rem;
+  font-weight: 600;
+  background-color: #646cff;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(100, 108, 255, 0.2);
+
+  &:hover {
+    background-color: #5145e6;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(100, 108, 255, 0.3);
   }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(100, 108, 255, 0.2);
+  }
+\`;
+
+export default function HomePage() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <PageContainer>
+      <Title>Home</Title>
+      <Description>
+        Welcome to your new React project with React Router!
+      </Description>
+      <div>
+        <InteractiveButton onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </InteractiveButton>
+      </div>
+    </PageContainer>
+  );
+}
+`;
+  } else {
+    content = `${userChoices.typescript ? "import React from 'react';\n\n" : ""}
 export default function HomePage() {
   return (
     <div${userChoices.styling === "tailwind" ? ' className="py-8"' : ""}>
@@ -53,6 +123,7 @@ export default function HomePage() {
   );
 }
 `;
+  }
 
   fs.writeFileSync(path.join(pagesDir, `HomePage.${ext}`), content);
 }
@@ -61,9 +132,50 @@ export default function HomePage() {
  * Creates an About page component
  */
 function createAboutPage(pagesDir, ext, userChoices) {
-  const content = `${
-    userChoices.typescript ? "import React from 'react';\n\n" : ""
-  }
+  let content;
+
+  if (userChoices.styling === "styled-components") {
+    content = `${
+      userChoices.typescript ? "import React from 'react';\n" : ""
+    }import styled from 'styled-components';
+
+const PageContainer = styled.div\`
+  padding: 3rem 0;
+  max-width: 800px;
+  margin: 0 auto;
+\`;
+
+const Title = styled.h1\`
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+  line-height: 1.2;
+\`;
+
+const Paragraph = styled.p\`
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+\`;
+
+export default function AboutPage() {
+  return (
+    <PageContainer>
+      <Title>About</Title>
+      <Paragraph>
+        This is a simple React application created with React Kickstart CLI.
+      </Paragraph>
+      <Paragraph>
+        It includes React Router for navigation between pages and styled-components for styling.
+      </Paragraph>
+    </PageContainer>
+  );
+}
+`;
+  } else {
+    content = `${userChoices.typescript ? "import React from 'react';\n\n" : ""}
 export default function AboutPage() {
   return (
     <div${userChoices.styling === "tailwind" ? ' className="py-8"' : ""}>
@@ -88,6 +200,7 @@ export default function AboutPage() {
   );
 }
 `;
+  }
 
   fs.writeFileSync(path.join(pagesDir, `AboutPage.${ext}`), content);
 }
@@ -96,9 +209,47 @@ export default function AboutPage() {
  * Creates a 404 Not Found page component
  */
 function createNotFoundPage(pagesDir, ext, userChoices) {
-  const content = `${
-    userChoices.typescript ? "import React from 'react';\n\n" : ""
-  }
+  let content;
+
+  if (userChoices.styling === "styled-components") {
+    content = `${
+      userChoices.typescript ? "import React from 'react';\n" : ""
+    }import styled from 'styled-components';
+
+const PageContainer = styled.div\`
+  padding: 3rem 0;
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+\`;
+
+const ErrorTitle = styled.h1\`
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #dc2626;
+  line-height: 1.2;
+\`;
+
+const ErrorMessage = styled.p\`
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.6;
+\`;
+
+export default function NotFoundPage() {
+  return (
+    <PageContainer>
+      <ErrorTitle>404 - Page Not Found</ErrorTitle>
+      <ErrorMessage>
+        The page you are looking for does not exist.
+      </ErrorMessage>
+    </PageContainer>
+  );
+}
+`;
+  } else {
+    content = `${userChoices.typescript ? "import React from 'react';\n\n" : ""}
 export default function NotFoundPage() {
   return (
     <div${
@@ -118,6 +269,7 @@ export default function NotFoundPage() {
   );
 }
 `;
+  }
 
   fs.writeFileSync(path.join(pagesDir, `NotFoundPage.${ext}`), content);
 }
@@ -137,19 +289,20 @@ import styled from 'styled-components';
 const LayoutContainer = styled.div\`
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1rem;
+  padding: 0 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
 \`;
 
 const NavBar = styled.nav\`
   display: flex;
-  padding: 1rem 0;
-  border-bottom: 1px solid #eaeaea;
+  padding: 1.5rem 0;
+  border-bottom: 2px solid #f0f0f0;
   margin-bottom: 2rem;
 \`;
 
 const NavList = styled.ul\`
   display: flex;
-  gap: 2rem;
+  gap: 2.5rem;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -157,11 +310,31 @@ const NavList = styled.ul\`
 
 const NavLink = styled(Link)\`
   text-decoration: none;
-  color: #0070f3;
-  font-weight: 500;
+  color: #646cff;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+  position: relative;
   
   &:hover {
-    text-decoration: underline;
+    color: #5145e6;
+    transform: translateY(-1px);
+  }
+  
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #646cff;
+    transition: width 0.3s ease;
+  }
+  
+  &:hover:after {
+    width: 100%;
   }
 \`;
 
@@ -300,8 +473,6 @@ import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import NotFoundPage from './pages/NotFoundPage';
-
-${userChoices.styling === "css" ? "import './App.css';" : ""}
 
 const router = createBrowserRouter(
   createRoutesFromElements(

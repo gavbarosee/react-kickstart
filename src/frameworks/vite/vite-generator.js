@@ -65,10 +65,8 @@ export class ViteGenerator extends BaseGenerator {
       setupRouting(projectPath, userChoices, this.frameworkName);
     }
 
-    // Setup styling (Vite handles certain styling differently)
-    if (userChoices.styling === "tailwind" || userChoices.styling === "css") {
-      setupStyling(projectPath, userChoices, this.frameworkName);
-    }
+    // Setup styling
+    setupStyling(projectPath, userChoices, this.frameworkName);
   }
 
   /**

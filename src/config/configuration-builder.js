@@ -88,15 +88,44 @@ export class ConfigurationBuilder {
   generateViteConfig(projectPath, userChoices) {
     const configExt = CORE_UTILS.getConfigExtension(userChoices);
 
+    // Configure React plugin based on styling choice
+    let reactPluginConfig = "react()";
+
+    if (userChoices.styling === "styled-components") {
+      // Enable styled-components babel plugin for proper hot reloading and displayName
+      reactPluginConfig = `react({
+    babel: {
+      plugins: [
+        [
+          'babel-plugin-styled-components',
+          {
+            displayName: true,
+            fileName: true,
+            ssr: false,
+          },
+        ],
+      ],
+    },
+  })`;
+    }
+
     const viteConfig = `import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 // Vite Configuration
 // - plugins: [react()] enables JSX transformation and Fast Refresh
 // - server.open: Automatically opens browser during development
-// - Uses esbuild for fast TypeScript/JSX compilation
+// - Uses esbuild for fast TypeScript/JSX compilation${
+      userChoices.styling === "styled-components"
+        ? "\n// - babel.plugins: styled-components plugin for proper HMR and displayName"
+        : ""
+    }
 export default defineConfig({
-  plugins: [react()], // Enable React JSX transformation and Fast Refresh
+  plugins: [${reactPluginConfig}], // Enable React JSX transformation and Fast Refresh${
+      userChoices.styling === "styled-components"
+        ? " with styled-components support"
+        : ""
+    }
   server: {
     open: true, // Auto-open browser on dev start for better DX
   }

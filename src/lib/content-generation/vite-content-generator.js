@@ -110,7 +110,9 @@ export default App;
 
   generateEntryImports(fileExt, userChoices) {
     const hasCss =
-      userChoices.styling === "tailwind" || userChoices.styling === "css";
+      userChoices.styling === "tailwind" ||
+      userChoices.styling === "css" ||
+      userChoices.styling === "styled-components";
 
     return `import React from 'react';
 import ReactDOM from 'react-dom/client';

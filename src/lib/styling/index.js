@@ -180,16 +180,59 @@ button:hover {
  * Sets up styled-components for a project
  */
 export function setupStyledComponents(projectPath, stylingInfo) {
-  // styled-components is CSS-in-JS, so no additional CSS files needed
-  // The dependencies are handled by the generator configs
-  // This function mainly serves as a placeholder for consistency
+  // For styled-components, we still need a basic CSS reset and font setup
   if (stylingInfo.skipCssSetup) {
     // Framework handles CSS setup internally (like Next.js)
     return;
   }
 
-  // For frameworks like Vite, no additional setup is required
-  // since styled-components works out of the box after installing dependencies
+  // Create a basic CSS reset file for styled-components projects
+  const cssDir = CORE_UTILS.createProjectDirectory(
+    projectPath,
+    stylingInfo.cssDir
+  );
+
+  // Create a minimal CSS reset with modern font stack
+  const resetCssContent = `/* CSS Reset and Global Styles for styled-components */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background-color: #ffffff;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Improve text rendering */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+p {
+  line-height: 1.6;
+}
+
+button {
+  font-family: inherit;
+}
+`;
+
+  fs.writeFileSync(
+    path.join(cssDir, stylingInfo.mainCssFilename),
+    resetCssContent
+  );
 }
 
 /**
