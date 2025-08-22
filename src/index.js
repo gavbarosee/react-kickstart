@@ -229,6 +229,7 @@ export async function createApp(projectDirectory, options = {}) {
       type: ERROR_TYPES.GENERAL,
       shouldCleanup: true,
       verbose: options.verbose,
+      showRecovery: false,
     }
   );
 }

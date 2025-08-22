@@ -58,10 +58,8 @@ function cleanupDevServer() {
  * @deprecated Use ErrorHandler.setupGlobalHandlers() instead
  */
 function registerCleanupHandlers() {
-  // Only register dev server cleanup, global handlers are managed centrally
+  // Only register dev server cleanup on process exit; signals handled globally
   process.on("exit", cleanupDevServer);
-  process.on("SIGINT", cleanupDevServer);
-  process.on("SIGTERM", cleanupDevServer);
 }
 
 async function checkServerAndOpenBrowser(devUrl) {
@@ -147,8 +145,7 @@ export async function startProject(projectPath, userChoices) {
     packageManager: userChoices.packageManager,
   });
 
-  // Use centralized error handlers instead of local ones
-  errorHandler.setupGlobalHandlers();
+  // Global handlers are already set at app entry; do not re-register here
 
   const spinner = ora({
     text: `Starting development server...`,

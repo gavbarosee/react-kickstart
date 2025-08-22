@@ -93,7 +93,21 @@ export class PromptFlow {
         // Move to next step
         this.currentStepName = result.nextStep;
       } catch (error) {
-        console.error("Error in prompt step:", error);
+        // Gracefully handle prompt cancellations from inquirer (SIGINT)
+        const message = error?.message || String(error);
+        if (
+          error?.name === "ExitPromptError" ||
+          message.includes("force closed the prompt") ||
+          message.toLowerCase().includes("sigint")
+        ) {
+          // Re-throw a normalized cancellation signal for the global handler
+          const cancelError = new Error("User cancelled during prompts");
+          cancelError.code = "USER_CANCELLED";
+          throw cancelError;
+        }
+
+        // Other errors: log minimally and rethrow
+        console.error("Error in prompt step:", message);
         throw error;
       }
     }

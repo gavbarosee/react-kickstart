@@ -11,6 +11,7 @@ export class ErrorHandler {
     this.userReporter = new UserErrorReporter();
     this.errorHistory = [];
     this.context = {};
+    this._handlingSignal = false;
     this.errorConfigs = this.initializeErrorConfigs();
   }
 
@@ -70,7 +71,7 @@ export class ErrorHandler {
       user_cancelled: {
         reportMethod: "reportUserCancellation",
         recoveryMethod: null,
-        exitCode: 0,
+        exitCode: 130,
         allowRecovery: false,
         requiresCleanup: "conditional", // Based on options.shouldCleanup
         passContext: false,
@@ -216,6 +217,7 @@ export class ErrorHandler {
 
     if (shouldCleanup && this.context.projectPath) {
       // Generate cleanup reason from report method name
+      const isUserCancelled = config.reportMethod === "reportUserCancellation";
       let reason = config.reportMethod
         .replace("report", "")
         .replace("Error", "")
@@ -228,8 +230,10 @@ export class ErrorHandler {
       if (reason === "") reason = "general"; // fallback
 
       await this.cleanupManager.cleanup(this.context.projectPath, {
-        reason: `${reason}_error`,
+        reason: isUserCancelled ? "user_cancelled" : `${reason}_error`,
         verbose: options.verbose,
+        // On user cancellation, force cleanup for newly created empty dirs
+        force: isUserCancelled === true,
       });
     }
   }
@@ -391,19 +395,26 @@ export class ErrorHandler {
       process.exit(1);
     });
 
-    // Handle termination signals gracefully
-    process.on("SIGINT", async () => {
+    // Handle termination signals gracefully (only once)
+    process.once("SIGINT", async () => {
+      if (this._handlingSignal) return;
+      this._handlingSignal = true;
       await this.handle(new Error("Process interrupted by user"), {
         type: "user_cancelled",
         shouldCleanup: true,
       });
+      process.exit(130);
     });
 
-    process.on("SIGTERM", async () => {
+    process.once("SIGTERM", async () => {
+      if (this._handlingSignal) return;
+      this._handlingSignal = true;
       await this.handle(new Error("Process terminated"), {
         type: "user_cancelled",
         shouldCleanup: true,
       });
+      // 143 = 128 + 15 (SIGTERM)
+      process.exit(143);
     });
   }
 }

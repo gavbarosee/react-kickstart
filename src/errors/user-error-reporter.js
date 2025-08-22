@@ -241,8 +241,11 @@ export class UserErrorReporter {
    */
   reportUserCancellation() {
     console.log();
-    console.log(chalk.yellow(`${figures.warning} Setup cancelled by user`));
-    console.log(chalk.cyan("No changes were made."));
+    console.log(
+      chalk.yellow(
+        `${figures.warning} Cancelled by user (CTRL-C). Cleaning up…`
+      )
+    );
     console.log();
   }
 
