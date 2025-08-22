@@ -67,8 +67,10 @@ class TestRunner {
 
       // Build comprehensive CLI command with all feature flags
       const config = testConfig.config;
+      // Get absolute path to CLI from current working directory (qa-automation)
+      const cliPath = resolve(process.cwd(), "../bin/react-kickstart.js");
       const cliArgs = [
-        `../bin/react-kickstart.js`,
+        cliPath,
         testName,
         `--yes`,
         `--framework ${config.framework}`,
@@ -137,7 +139,9 @@ class TestRunner {
       this.log(
         `   ${actualSuccess ? "✅" : "❌"} Test ${
           actualSuccess ? "completed" : "failed"
-        } in ${duration}ms`
+        } in ${duration}ms${
+          !actualSuccess ? `: ${validationResult.issues.join(", ")}` : ""
+        }`
       );
       return testResult;
     } catch (error) {
@@ -159,6 +163,14 @@ class TestRunner {
       };
 
       this.log(`   ❌ Test failed in ${duration}ms: ${error.message}`);
+
+      if (error.stderr && error.stderr.trim()) {
+        this.log(`   CLI Error: ${error.stderr.trim()}`);
+      }
+      if (error.stdout && error.stdout.trim()) {
+        this.log(`   CLI Output: ${error.stdout.trim()}`);
+      }
+
       return testResult;
     }
   }
@@ -503,7 +515,14 @@ class TestRunner {
 
     // Save detailed report
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const reportPath = `qa-automation/reports/test-report-${timestamp}.json`;
+
+    // Create reports directory if it doesn't exist
+    const reportsDir = "reports";
+    if (!existsSync(reportsDir)) {
+      mkdirSync(reportsDir, { recursive: true });
+    }
+
+    const reportPath = `reports/test-report-${timestamp}.json`;
     writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
     // Print summary
