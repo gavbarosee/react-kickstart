@@ -366,8 +366,6 @@ export class PackageJsonBuilder {
     switch (packageManager) {
       case "yarn":
         return "yarn build";
-      case "pnpm":
-        return "pnpm build";
       case "npm":
       default:
         return "npm run build";

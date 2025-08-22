@@ -185,7 +185,7 @@ export function validateUserChoices(userChoices) {
   }
 
   // Validate package manager
-  const validPackageManagers = ["npm", "yarn", "pnpm"];
+  const validPackageManagers = ["npm", "yarn"];
   if (!validPackageManagers.includes(userChoices.packageManager)) {
     errors.push(
       `Invalid package manager: ${
@@ -349,7 +349,7 @@ export function isValidFramework(framework) {
  * @returns {boolean} - Whether package manager is supported
  */
 export function isValidPackageManager(packageManager) {
-  const validPackageManagers = ["npm", "yarn", "pnpm"];
+  const validPackageManagers = ["npm", "yarn"];
   return validPackageManagers.includes(packageManager);
 }
 

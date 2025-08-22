@@ -34,7 +34,7 @@ export async function detectPackageManagers(options = {}) {
       recommended: false,
       error: null,
     },
-    // TODO: add pnpm, bun, etc. in the future
+    // Only npm and yarn are supported
   };
 
   if (verbose) {

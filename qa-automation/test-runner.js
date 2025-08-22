@@ -39,21 +39,7 @@ class TestRunner {
       );
     }
 
-    const configs = JSON.parse(readFileSync(configFile, "utf8"));
-
-    // Filter out pnpm configurations for now due to interactive dependency installation issues
-    // TODO: Remove this filter once CLI properly handles --yes flag for dependency failures
-    const filteredConfigs = configs.filter((config) => {
-      if (config.config && config.config.packageManager === "pnpm") {
-        console.log(
-          `⚠️  Skipping pnpm test configuration (interactive dependency installation issue)`
-        );
-        return false;
-      }
-      return true;
-    });
-
-    return filteredConfigs;
+    return JSON.parse(readFileSync(configFile, "utf8"));
   }
 
   /**

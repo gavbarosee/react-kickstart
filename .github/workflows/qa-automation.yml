@@ -27,19 +27,11 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Enable Corepack and setup package managers
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
-        env:
-          COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
-
       - name: Install dependencies
         run: npm ci
 
       - name: Run quick validation tests
-        env:
-          COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+
         run: |
           cd qa-automation
           npm install
@@ -73,13 +65,6 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Enable Corepack and setup package managers
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
-        env:
-          COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
-
       - name: Install dependencies
         run: npm ci
 
@@ -90,8 +75,7 @@ jobs:
           node test-matrix-generator.js
 
       - name: Run critical configuration tests
-        env:
-          COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+
         run: |
           cd qa-automation
           npm install
@@ -190,13 +174,6 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Enable Corepack and setup package managers
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
-        env:
-          COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
-
       - name: Install dependencies
         run: npm ci
 
@@ -207,8 +184,7 @@ jobs:
           node test-matrix-generator.js
 
       - name: Run comprehensive tests
-        env:
-          COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+
         run: |
           cd qa-automation
           npm install
@@ -318,19 +294,11 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Enable Corepack and setup package managers
-        run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
-        env:
-          COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
-
       - name: Install dependencies
         run: npm ci
 
       - name: Benchmark CLI performance
-        env:
-          COREPACK_ENABLE_DOWNLOAD_PROMPT: 0
+
         run: |
           cd qa-automation
           echo "🚀 Benchmarking CLI performance..."

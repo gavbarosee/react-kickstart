@@ -35,7 +35,7 @@ The most important feature combinations that cover:
 
 Broader coverage including:
 
-- Different package managers (npm, yarn, pnpm)
+- Different package managers (npm, yarn)
 - Various routing configurations
 - Mixed Git/linting options
 

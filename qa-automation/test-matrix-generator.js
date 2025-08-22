@@ -22,7 +22,7 @@ const CONFIG_OPTIONS = {
     "none",
   ],
   testing: ["vitest", "jest", "none"],
-  packageManager: ["npm", "yarn", "pnpm"],
+  packageManager: ["npm", "yarn"],
   linting: [true, false],
   initGit: [true, false],
 };
@@ -257,7 +257,7 @@ function main() {
   // Save configurations
   Object.entries(testConfigs).forEach(([category, configs]) => {
     writeFileSync(
-      `qa-automation/test-configs/${category}-tests.json`,
+      `test-configs/${category}-tests.json`,
       JSON.stringify(configs, null, 2)
     );
     console.log(`💾 Saved ${configs.length} ${category} test configurations`);
@@ -279,10 +279,7 @@ function main() {
     },
   };
 
-  writeFileSync(
-    "qa-automation/test-matrix-summary.json",
-    JSON.stringify(summary, null, 2)
-  );
+  writeFileSync("test-matrix-summary.json", JSON.stringify(summary, null, 2));
 
   console.log("\n✨ Test matrix generation complete!");
   console.log("📁 Files generated in qa-automation/");

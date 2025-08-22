@@ -68,7 +68,6 @@ ${frameworkIgnores[framework]?.join("\n") || "# build output\n/dist/\n"}
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
 # editor directories and files
 .vscode/*

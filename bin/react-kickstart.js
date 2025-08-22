@@ -57,7 +57,7 @@ program
     "Next.js routing (app, pages) - Next.js only",
     "app"
   )
-  .option("--package-manager <pm>", "Package manager (npm, yarn, pnpm)", "npm")
+  .option("--package-manager <pm>", "Package manager (npm, yarn)", "npm")
   .option("--no-linting", "Disable ESLint")
   .option("--no-git", "Skip Git initialization")
   .option("--no-summary", "Skip the configuration summary")
