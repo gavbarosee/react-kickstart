@@ -51,7 +51,9 @@ export class ZustandSetup extends BaseStateSetup {
     );
 
     // Create App with Counter
-    createAppWithCounter(path.dirname(directories.store), userChoices);
+    // Fix: Use the project root, not the parent of the store directory
+    const projectRoot = path.dirname(path.dirname(directories.store)); // Go up two levels from src/store to project root
+    createAppWithCounter(projectRoot, userChoices);
   }
 
   getZustandImports() {
