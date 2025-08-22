@@ -51,8 +51,12 @@ export class ZustandSetup extends BaseStateSetup {
     );
 
     // Create App with Counter
-    // Fix: Use the project root, not the parent of the store directory
-    const projectRoot = path.dirname(path.dirname(directories.store)); // Go up two levels from src/store to project root
+    // For Next.js, directories.store is "/path/to/project/lib", so we go up one level
+    // For other frameworks, directories.store is "/path/to/project/src/store", so we go up two levels
+    const projectRoot =
+      this.framework === "nextjs"
+        ? path.dirname(directories.store) // Go up from "/path/to/project/lib" to "/path/to/project"
+        : path.dirname(path.dirname(directories.store)); // Go up two levels from "/path/to/project/src/store" to "/path/to/project"
     createAppWithCounter(projectRoot, userChoices);
   }
 
@@ -72,10 +76,12 @@ export class ZustandSetup extends BaseStateSetup {
    * Update entry points for Zustand (minimal changes needed)
    */
   updateEntryPoints(projectPath, directories, userChoices) {
-    if (this.framework === "nextjs") {
-      this.updateNextjsMainPage(projectPath, userChoices);
+    // For Next.js, the counter is already integrated directly into the page via createAppWithCounter
+    // so we don't need the separate Counter component approach
+    if (this.framework !== "nextjs") {
+      // Standard frameworks might need entry point updates for Zustand
+      // (currently none needed, but placeholder for future)
     }
-    // Standard frameworks don't need entry point updates for Zustand
   }
 
   updateNextjsMainPage(projectPath, userChoices) {

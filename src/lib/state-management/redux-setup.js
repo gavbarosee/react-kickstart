@@ -111,8 +111,12 @@ export class ReduxSetup extends BaseStateSetup {
     );
 
     // Create App with Counter
-    // Fix: Use the project root, not the parent of the store directory
-    const projectRoot = path.dirname(path.dirname(directories.store)); // Go up two levels from src/store to project root
+    // For Next.js, directories.store is "/path/to/project/lib", so we go up one level
+    // For other frameworks, directories.store is "/path/to/project/src/store", so we go up two levels
+    const projectRoot =
+      this.framework === "nextjs"
+        ? path.dirname(directories.store) // Go up from "/path/to/project/lib" to "/path/to/project"
+        : path.dirname(path.dirname(directories.store)); // Go up two levels from "/path/to/project/src/store" to "/path/to/project"
     createAppWithCounter(projectRoot, userChoices);
   }
 
@@ -190,17 +194,21 @@ export class ReduxSetup extends BaseStateSetup {
 
   createStoreProvider(projectPath, userChoices) {
     const extensions = this.getExtensions(userChoices);
-    const appDir = path.join(
-      projectPath,
-      userChoices.nextRouting === "app" ? "app" : "pages"
-    );
+    let targetDir;
 
-    const content = `'use client';
+    if (userChoices.nextRouting === "app") {
+      targetDir = path.join(projectPath, "app");
+    } else {
+      // For Pages Router, create StoreProvider directly in components directory
+      targetDir = CORE_UTILS.createProjectDirectory(projectPath, "components");
+    }
 
-import { useRef } from 'react';
+    const useClientDirective =
+      userChoices.nextRouting === "app" ? "'use client';\n\n" : "";
+    const content = `${useClientDirective}import { useRef } from 'react';
 import { Provider } from 'react-redux';
-import { makeStore, ${
-      userChoices.typescript ? "AppStore" : ""
+import { makeStore${
+      userChoices.typescript ? ", AppStore" : ""
     } } from '../lib/store';
 
 export default function StoreProvider({
@@ -219,7 +227,7 @@ export default function StoreProvider({
 `;
 
     fs.writeFileSync(
-      path.join(appDir, `StoreProvider.${extensions.component}`),
+      path.join(targetDir, `StoreProvider.${extensions.component}`),
       content
     );
   }
@@ -269,36 +277,48 @@ export default function StoreProvider({
       // Pages Router
       const importLine =
         "import StoreProvider from '../components/StoreProvider';";
-      const componentsDir = CORE_UTILS.createProjectDirectory(
-        projectPath,
-        "components"
-      );
 
-      // Move StoreProvider to components directory
-      const providerPath = path.join(
-        projectPath,
-        "pages",
-        `StoreProvider.${extensions.component}`
-      );
-      if (fs.existsSync(providerPath)) {
-        const destPath = path.join(
-          componentsDir,
-          `StoreProvider.${extensions.component}`
-        );
-        fs.moveSync(providerPath, destPath, { overwrite: true });
+      if (!content.includes("StoreProvider")) {
+        // Try to find existing imports first
+        const hasImports = /import\s+/m.test(content);
+
+        if (hasImports) {
+          // Find all import lines and add after the last one
+          const lines = content.split("\n");
+          let lastImportIndex = -1;
+
+          for (let i = 0; i < lines.length; i++) {
+            if (/^\s*import\s+/.test(lines[i])) {
+              lastImportIndex = i;
+            }
+          }
+
+          if (lastImportIndex !== -1) {
+            lines.splice(lastImportIndex + 1, 0, importLine);
+            content = lines.join("\n");
+          } else {
+            // Fallback - add at top
+            content = importLine + "\n\n" + content;
+          }
+        } else {
+          // No imports exist - add at the very top
+          content = importLine + "\n\n" + content;
+        }
       }
 
-      if (!content.includes(importLine)) {
-        content = content.replace(
-          /import .* from ['"].*['"];/,
-          "$&\n" + importLine
-        );
-      }
-
+      // More flexible regex to match the Component rendering
       content = content.replace(
-        /<Component {.*?} \/>/,
+        /<Component\s+{\.\.\.pageProps}\s*\/>/,
         "<StoreProvider><Component {...pageProps} /></StoreProvider>"
       );
+
+      // Fallback: try a more general pattern if the specific one didn't match
+      if (!content.includes("<StoreProvider>")) {
+        content = content.replace(
+          /<Component\s+[^>]*\/>/,
+          "<StoreProvider><Component {...pageProps} /></StoreProvider>"
+        );
+      }
     }
 
     fs.writeFileSync(layoutPath, content);
