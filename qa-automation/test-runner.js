@@ -24,10 +24,19 @@ class TestRunner {
    * Load test configurations from JSON files
    */
   loadTestConfigurations(category = "critical") {
-    const configFile = `qa-automation/test-configs/${category}-tests.json`;
+    // Try local path first (when run from qa-automation/), then parent path
+    const localPath = `test-configs/${category}-tests.json`;
+    const parentPath = `qa-automation/test-configs/${category}-tests.json`;
 
-    if (!existsSync(configFile)) {
-      throw new Error(`Configuration file not found: ${configFile}`);
+    let configFile;
+    if (existsSync(localPath)) {
+      configFile = localPath;
+    } else if (existsSync(parentPath)) {
+      configFile = parentPath;
+    } else {
+      throw new Error(
+        `Configuration file not found. Tried: ${localPath}, ${parentPath}`
+      );
     }
 
     return JSON.parse(readFileSync(configFile, "utf8"));
