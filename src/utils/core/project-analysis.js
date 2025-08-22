@@ -385,21 +385,11 @@ export function getStateManagementInfo(stateManagement) {
       name: "Redux Toolkit",
       description: "Predictable state container",
       docs: "https://redux-toolkit.js.org/",
-      tips: [
-        "Use createSlice to define actions and reducers together",
-        "TypedHooks provide automatic type inference for state and dispatch",
-        "Use redux dev tools extension for debugging your state changes",
-      ],
     },
     zustand: {
       name: "Zustand",
       description: "Small, fast state management",
       docs: "https://zustand-demo.pmnd.rs/",
-      tips: [
-        "Perfect for small to medium-sized applications",
-        "No boilerplate, simple API",
-        "TypeScript-friendly out of the box",
-      ],
     },
   };
 

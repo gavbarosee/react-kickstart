@@ -1,27 +1,15 @@
 import chalk from "chalk";
 import figures from "figures";
-import path from "path";
-import fs from "fs-extra";
 
 function getReduxInfo() {
   return {
     docs: "https://redux-toolkit.js.org/introduction/getting-started",
-    tips: [
-      "Use createSlice to define actions and reducers together",
-      "TypedHooks provide automatic type inference for state and dispatch",
-      "Use redux dev tools extension for debugging your state changes",
-    ],
   };
 }
 
 function getZustandInfo() {
   return {
     docs: "https://zustand-demo.pmnd.rs/",
-    tips: [
-      "Create custom hooks with create() for different state slices",
-      "Use middleware for persistent storage, tracking, etc.",
-      "Remember state is shared between components without context providers",
-    ],
   };
 }
 
@@ -31,19 +19,11 @@ export function getFrameworkDocumentation(framework) {
       docs: "https://vitejs.dev/guide/",
       port: 5173,
       buildDir: "dist",
-      tips: [
-        "Enable Vite-specific features with plugins in vite.config.js",
-        "Fast HMR makes development highly responsive",
-      ],
     },
     nextjs: {
       docs: "https://nextjs.org/docs",
       port: 3000,
       buildDir: ".next",
-      tips: [
-        "Create API routes in the 'api' directory",
-        "Use next/image for optimized image loading",
-      ],
     },
   };
 
@@ -52,7 +32,6 @@ export function getFrameworkDocumentation(framework) {
       docs: "",
       port: 3000,
       buildDir: "dist",
-      tips: [],
     }
   );
 }
@@ -61,45 +40,27 @@ function getRoutingInfo(routing) {
   const info = {
     "react-router": {
       docs: "https://reactrouter.com/en/main",
-      tips: [
-        "Use useParams() for route parameters",
-        "Explore useNavigate() for programmatic navigation",
-        "Consider React Router's data API for data loading",
-      ],
     },
   };
-  return info[routing] || { docs: "", tips: [] };
+  return info[routing] || { docs: "" };
 }
 
 function getStylingInfo(styling) {
   const info = {
     tailwind: {
       docs: "https://tailwindcss.com/docs",
-      tips: [
-        "Install Tailwind CSS IntelliSense extension for your editor",
-        "Configure custom themes in tailwind.config.js",
-      ],
     },
     "styled-components": {
       docs: "https://styled-components.com/docs",
-      tips: [
-        "Use ThemeProvider for consistent styling across components",
-        "Consider the Babel plugin for better debugging",
-      ],
     },
     css: {
       docs: "https://developer.mozilla.org/en-US/docs/Web/CSS",
-      tips: [
-        "CSS files are automatically processed by your bundler",
-        "Consider adding a CSS methodology like BEM",
-      ],
     },
   };
 
   return (
     info[styling] || {
       docs: "",
-      tips: [],
     }
   );
 }
@@ -108,19 +69,11 @@ function getLanguageInfo(typescript) {
   if (typescript) {
     return {
       docs: "https://www.typescriptlang.org/docs/",
-      tips: [
-        "Configure strictness levels in tsconfig.json",
-        "Use type assertion only when necessary",
-      ],
     };
   }
 
   return {
     docs: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
-    tips: [
-      "Consider adding JSDoc comments for better code understanding",
-      "Use modern JavaScript features for cleaner code",
-    ],
   };
 }
 
@@ -245,35 +198,7 @@ export function generateCompletionSummary(
   ].join("\n");
 
   // STEP 3: tech-specific tips
-  const tipsList = [
-    ...frameworkInfo.tips.map((tip) => `   • ${userChoices.framework}: ${tip}`),
-    ...stylingInfo.tips.map((tip) => `   • ${userChoices.styling}: ${tip}`),
-    ...(userChoices.framework !== "nextjs" &&
-    userChoices.routing &&
-    userChoices.routing !== "none"
-      ? getRoutingInfo(userChoices.routing).tips.map(
-          (tip) => `   • ${userChoices.routing}: ${tip}`
-        )
-      : []),
-    ...(userChoices.typescript
-      ? languageInfo.tips.map((tip) => `   • TypeScript: ${tip}`)
-      : []),
-    ...(userChoices.stateManagement === "redux"
-      ? getReduxInfo().tips.map((tip) => `   • Redux Toolkit: ${tip}`)
-      : []),
-    ...(userChoices.stateManagement === "zustand"
-      ? getZustandInfo().tips.map((tip) => `   • Zustand: ${tip}`)
-      : []),
-  ];
-
-  const tipsSection =
-    tipsList.length > 0
-      ? [
-          "",
-          chalk.bgYellow(`${figures.pointer} Quick Tips for Your Stack:`),
-          ...tipsList,
-        ].join("\n")
-      : "";
+  // (Quick Tips removed)
 
   // STEP 4: documentation links
   const docsSection = [
@@ -342,13 +267,7 @@ export function generateCompletionSummary(
         ].join("\n")
       : "";
 
-  return [
-    securitySection,
-    successHeader,
-    nextStepsSection,
-    tipsSection,
-    docsSection,
-  ]
+  return [securitySection, successHeader, nextStepsSection, docsSection]
     .filter((section) => section)
     .join("\n");
 }
