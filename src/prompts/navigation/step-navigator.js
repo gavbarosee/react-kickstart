@@ -20,8 +20,10 @@ export class StepNavigator {
    */
   goBack() {
     if (this.history.length > 0) {
+      // Don't pop - just set current step to the last item in history
+      this.currentStep = this.history[this.history.length - 1];
+      // Remove the step we're going back to from history so we can go back further
       this.history.pop();
-      this.currentStep = this.history[this.history.length - 1] || null;
     }
   }
 
@@ -29,8 +31,8 @@ export class StepNavigator {
    * Gets the previous step name
    */
   getPreviousStep() {
-    if (this.history.length > 1) {
-      return this.history[this.history.length - 2];
+    if (this.history.length > 0) {
+      return this.history[this.history.length - 1];
     }
     return null;
   }

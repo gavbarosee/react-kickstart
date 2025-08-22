@@ -57,7 +57,6 @@ export class BaseStep {
    * Handles the back navigation
    */
   handleBackNavigation() {
-    this.navigator.goBack();
     return "BACK";
   }
 
@@ -69,10 +68,7 @@ export class BaseStep {
       return this.handleBackNavigation();
     }
 
-    // Record this step in navigation history
-    this.navigator.recordStep(this.stepName);
-
-    // Store the answer
+    // Store the answer (don't record step in history here - that happens in PromptFlow)
     answers[this.getAnswerKey()] = selection;
 
     return selection;

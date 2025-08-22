@@ -25,7 +25,18 @@ export class PackageManagerStep extends BaseStep {
   }
 
   getDefault(answers) {
-    return answers.packageManager || this.defaultPackageManager || "npm";
+    if (answers.packageManager) {
+      const choices = this.getChoices(answers);
+      const index = choices.findIndex(
+        (c) => c.value === answers.packageManager
+      );
+      return index >= 0 ? index : 0;
+    }
+    // Find default package manager in choices
+    const choices = this.getChoices(answers);
+    const defaultValue = this.defaultPackageManager || "npm";
+    const index = choices.findIndex((c) => c.value === defaultValue);
+    return index >= 0 ? index : 0;
   }
 
   getNextStep(selection, answers) {

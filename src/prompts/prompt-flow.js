@@ -76,9 +76,19 @@ export class PromptFlow {
 
         // Handle back navigation
         if (result.selection === "BACK") {
-          this.currentStepName = this.getPreviousStepName();
+          const previousStepName = this.getPreviousStepName();
+          this.currentStepName = previousStepName;
+
+          // Update navigator state to match
+          this.navigator.goBack();
+
+          // Clear answers for steps that come after the step we're going back to
+          this.clearAnswersAfterStep(previousStepName);
           continue;
         }
+
+        // Record this step in navigation history only when moving forward
+        this.navigator.recordStep(this.currentStepName);
 
         // Move to next step
         this.currentStepName = result.nextStep;
@@ -106,6 +116,69 @@ export class PromptFlow {
     }
 
     return previousStep;
+  }
+
+  /**
+   * Clears answers for steps that come after the specified step in the flow
+   */
+  clearAnswersAfterStep(stepName) {
+    // Define the step order - this should match the actual flow
+    const stepOrder = [
+      "packageManager",
+      "framework",
+      "nextjsOptions", // conditional
+      "routing", // conditional
+      "language",
+      "codeQuality",
+      "styling",
+      "stateManagement",
+      "api",
+      "testing",
+      "git",
+      "deployment",
+      "editor",
+    ];
+
+    const currentStepIndex = stepOrder.indexOf(stepName);
+    if (currentStepIndex === -1) return;
+
+    // Clear answers for all steps after the current step
+    const stepsToKeep = stepOrder.slice(0, currentStepIndex + 1);
+    const keysToKeep = new Set();
+
+    // Map step names to answer keys
+    const stepToAnswerKey = {
+      packageManager: "packageManager",
+      framework: "framework",
+      nextjsOptions: "nextRouting",
+      routing: "routing",
+      language: "typescript",
+      codeQuality: "linting",
+      styling: "styling",
+      stateManagement: "stateManagement",
+      api: "api",
+      testing: "testing",
+      git: "initGit",
+      deployment: "deployment",
+      editor: ["openEditor", "editor"],
+    };
+
+    // Collect keys to keep
+    stepsToKeep.forEach((step) => {
+      const answerKey = stepToAnswerKey[step];
+      if (Array.isArray(answerKey)) {
+        answerKey.forEach((key) => keysToKeep.add(key));
+      } else if (answerKey) {
+        keysToKeep.add(answerKey);
+      }
+    });
+
+    // Remove answers that are not in the keep list
+    Object.keys(this.answers).forEach((key) => {
+      if (!keysToKeep.has(key)) {
+        delete this.answers[key];
+      }
+    });
   }
 
   /**
