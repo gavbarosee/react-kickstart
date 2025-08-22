@@ -33,15 +33,19 @@ jobs:
       - name: Run quick validation tests
         run: |
           cd qa-automation
-          node quick-validator.js
+          npm install
+          npm run test:quick
 
       - name: Upload quick test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: quick-test-results
-          path: qa-automation/quick-test/
+          path: |
+            qa-automation/test-report-*.json
+            qa-automation/reports/
           retention-days: 3
+          if-no-files-found: warn
 
   critical-qa:
     name: Critical Configuration Tests
@@ -66,11 +70,13 @@ jobs:
       - name: Generate test matrix
         run: |
           cd qa-automation
+          npm install
           node test-matrix-generator.js
 
       - name: Run critical configuration tests
         run: |
           cd qa-automation
+          npm install
           node test-runner.js critical 20
 
       - name: Upload test results
@@ -78,8 +84,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: critical-test-results
-          path: qa-automation/test-report-*.json
+          path: |
+            qa-automation/test-report-*.json
+            qa-automation/reports/
           retention-days: 7
+          if-no-files-found: warn
 
       - name: Comment test results on PR
         if: github.event_name == 'pull_request' && always()
@@ -91,11 +100,24 @@ jobs:
 
             // Find the latest test report
             const qaDir = path.join(process.cwd(), 'qa-automation');
-            const files = fs.readdirSync(qaDir);
-            const reportFiles = files.filter(f => f.startsWith('test-report-') && f.endsWith('.json'));
+            const reportsDir = path.join(qaDir, 'reports');
+
+            let reportFiles = [];
+
+            // Check both locations for test reports
+            if (fs.existsSync(qaDir)) {
+              const files = fs.readdirSync(qaDir);
+              reportFiles = files.filter(f => f.startsWith('test-report-') && f.endsWith('.json'));
+            }
+
+            if (reportFiles.length === 0 && fs.existsSync(reportsDir)) {
+              const files = fs.readdirSync(reportsDir);
+              reportFiles = files.filter(f => f.startsWith('test-report-') && f.endsWith('.json'))
+                .map(f => path.join('reports', f));
+            }
 
             if (reportFiles.length === 0) {
-              console.log('No test report found');
+              console.log('No test report found in qa-automation/ or qa-automation/reports/');
               return;
             }
 
@@ -156,11 +178,13 @@ jobs:
       - name: Generate test matrix
         run: |
           cd qa-automation
+          npm install
           node test-matrix-generator.js
 
       - name: Run comprehensive tests
         run: |
           cd qa-automation
+          npm install
           node test-runner.js critical
           node test-runner.js standard 25
           node test-runner.js edge 10
@@ -170,8 +194,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: comprehensive-test-results
-          path: qa-automation/test-report-*.json
+          path: |
+            qa-automation/test-report-*.json
+            qa-automation/reports/
           retention-days: 14
+          if-no-files-found: warn
 
       - name: Create release comment
         if: success()
@@ -183,11 +210,25 @@ jobs:
 
             // Find all test reports from this run
             const qaDir = path.join(process.cwd(), 'qa-automation');
-            const files = fs.readdirSync(qaDir);
-            const reportFiles = files.filter(f => f.startsWith('test-report-') && f.endsWith('.json'));
+            const reportsDir = path.join(qaDir, 'reports');
+
+            let reportFiles = [];
+
+            // Check both locations for test reports
+            if (fs.existsSync(qaDir)) {
+              const files = fs.readdirSync(qaDir);
+              reportFiles = files.filter(f => f.startsWith('test-report-') && f.endsWith('.json'));
+            }
+
+            if (fs.existsSync(reportsDir)) {
+              const files = fs.readdirSync(reportsDir);
+              const reportsSubdir = files.filter(f => f.startsWith('test-report-') && f.endsWith('.json'))
+                .map(f => path.join('reports', f));
+              reportFiles = [...reportFiles, ...reportsSubdir];
+            }
 
             if (reportFiles.length === 0) {
-              console.log('No test reports found');
+              console.log('No test reports found in qa-automation/ or qa-automation/reports/');
               return;
             }
 
@@ -198,10 +239,16 @@ jobs:
             let totalFailed = 0;
 
             recentReports.forEach(file => {
-              const report = JSON.parse(fs.readFileSync(path.join(qaDir, file), 'utf8'));
-              totalTests += report.summary.total;
-              totalSuccessful += report.summary.successful;
-              totalFailed += report.summary.failed;
+              try {
+                const report = JSON.parse(fs.readFileSync(path.join(qaDir, file), 'utf8'));
+                if (report.summary) {
+                  totalTests += report.summary.total || 0;
+                  totalSuccessful += report.summary.successful || 0;
+                  totalFailed += report.summary.failed || 0;
+                }
+              } catch (error) {
+                console.log(`Error reading report file ${file}:`, error.message);
+              }
             });
 
             const successRate = Math.round((totalSuccessful / totalTests) * 100);
