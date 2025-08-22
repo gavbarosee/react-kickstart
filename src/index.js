@@ -84,18 +84,23 @@ export async function createApp(projectDirectory, options = {}) {
 
       // More atomic directory handling to prevent race conditions
       try {
-        // Try to create directory first - this will fail if it exists and is not empty
+        // Ensure directory exists (creates if missing)
         await fs.ensureDir(projectPath);
 
-        // Check if directory was pre-existing and has files
+        // Check directory contents AFTER ensuring it exists
         const files = await fs.readdir(projectPath);
         if (files.length > 0) {
+          // Do not mark for cleanup if directory is not empty
           throw new Error(`The directory ${projectPath} is not empty.`);
         }
 
-        // Mark for cleanup since we created/ensured the directory
+        // Directory exists and is empty → safe to mark for cleanup
         shouldCleanup = true;
         errorHandler.setContext({ shouldCleanup });
+
+        // Write a temporary marker so cleanup is safe and scoped to this run only
+        const markerPath = path.join(projectPath, ".react-kickstart.tmp");
+        await fs.writeFile(markerPath, "temporary setup marker\n");
       } catch (error) {
         // If it's our "not empty" error, re-throw it
         if (error.message.includes("is not empty")) {
@@ -224,10 +229,19 @@ export async function createApp(projectDirectory, options = {}) {
           { type: ERROR_TYPES.PROCESS }
         );
       }
+
+      // Cleanup temporary marker after successful setup to prevent accidental deletions
+      try {
+        const markerPath = path.join(projectPath, ".react-kickstart.tmp");
+        if (await fs.pathExists(markerPath)) {
+          await fs.remove(markerPath);
+        }
+      } catch (_) {}
     },
     {
       type: ERROR_TYPES.GENERAL,
-      shouldCleanup: true,
+      // Only clean up when we explicitly mark shouldCleanup during this run
+      shouldCleanup: false,
       verbose: options.verbose,
       showRecovery: false,
     }

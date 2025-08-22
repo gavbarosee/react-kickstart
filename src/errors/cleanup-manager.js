@@ -144,6 +144,12 @@ export class CleanupManager {
    */
   isOurProject(projectPath) {
     try {
+      // Prefer explicit marker created during this run
+      const markerPath = path.join(projectPath, ".react-kickstart.tmp");
+      if (fs.existsSync(markerPath)) {
+        return true;
+      }
+
       // Check for package.json with React dependencies
       const packageJsonPath = path.join(projectPath, "package.json");
       if (fs.existsSync(packageJsonPath)) {
