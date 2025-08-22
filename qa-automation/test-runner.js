@@ -61,6 +61,16 @@ class TestRunner {
       this.log(`   Styling: ${testConfig.config.styling}`);
       this.log(`   State: ${testConfig.config.stateManagement}`);
       this.log(`   API: ${testConfig.config.api}`);
+      this.log(`   Testing: ${testConfig.config.testing}`);
+      this.log(`   PackageManager: ${testConfig.config.packageManager}`);
+      this.log(`   Linting: ${testConfig.config.linting}`);
+      this.log(`   InitGit: ${testConfig.config.initGit}`);
+      if (testConfig.config.framework === "vite") {
+        this.log(`   Routing: ${testConfig.config.routing}`);
+      }
+      if (testConfig.config.framework === "nextjs") {
+        this.log(`   NextRouting: ${testConfig.config.nextRouting}`);
+      }
 
       // Create test directory and clean up any existing project
       mkdirSync(testDirPath, { recursive: true });
