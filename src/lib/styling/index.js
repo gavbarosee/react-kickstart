@@ -192,40 +192,58 @@ export function setupStyledComponents(projectPath, stylingInfo) {
     stylingInfo.cssDir
   );
 
-  // Create a minimal CSS reset with modern font stack
-  const resetCssContent = `/* CSS Reset and Global Styles for styled-components */
-* {
+  // Create a minimal CSS reset with Tailwind-like styling
+  const resetCssContent = `/* CSS Reset and Global Styles for styled-components - Tailwind-inspired */
+*, *::before, *::after {
   box-sizing: border-box;
+}
+
+* {
+  margin: 0;
 }
 
 html, body {
   margin: 0;
   padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: #111827;
   background-color: #ffffff;
+}
+
+body {
+  line-height: inherit;
 }
 
 #root {
   min-height: 100vh;
 }
 
-/* Improve text rendering */
+/* Typography improvements matching Tailwind */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
-  line-height: 1.25;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
 }
 
 p {
-  line-height: 1.6;
+  margin: 0;
+}
+
+button, input, optgroup, select, textarea {
+  font-family: inherit;
+  font-size: 100%;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
 }
 
 button {
-  font-family: inherit;
+  text-transform: none;
 }
 `;
 

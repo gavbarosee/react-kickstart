@@ -42,47 +42,37 @@ function createHomePage(pagesDir, ext, userChoices) {
 import styled from 'styled-components';
 
 const PageContainer = styled.div\`
-  padding: 3rem 0;
-  max-width: 800px;
-  margin: 0 auto;
+  padding: 2rem 0;
 \`;
 
 const Title = styled.h1\`
   font-size: 3rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #1a1a1a;
-  line-height: 1.2;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #111827;
+  line-height: 1.1;
 \`;
 
 const Description = styled.p\`
-  font-size: 1.2rem;
-  color: #555;
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin-bottom: 2rem;
+  line-height: 1.7;
 \`;
 
 const InteractiveButton = styled.button\`
-  border-radius: 8px;
-  border: 2px solid transparent;
-  padding: 0.75em 1.5em;
-  font-size: 1.1rem;
-  font-weight: 600;
-  background-color: #646cff;
+  background-color: #2563eb;
   color: white;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(100, 108, 255, 0.2);
+  font-size: 1rem;
+  transition: background-color 0.15s ease-in-out;
 
   &:hover {
-    background-color: #5145e6;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(100, 108, 255, 0.3);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(100, 108, 255, 0.2);
+    background-color: #1d4ed8;
   }
 \`;
 
@@ -140,23 +130,21 @@ function createAboutPage(pagesDir, ext, userChoices) {
     }import styled from 'styled-components';
 
 const PageContainer = styled.div\`
-  padding: 3rem 0;
-  max-width: 800px;
-  margin: 0 auto;
+  padding: 2rem 0;
 \`;
 
 const Title = styled.h1\`
   font-size: 3rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #1a1a1a;
-  line-height: 1.2;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #111827;
+  line-height: 1.1;
 \`;
 
 const Paragraph = styled.p\`
-  font-size: 1.2rem;
-  color: #555;
-  margin-bottom: 1.5rem;
+  font-size: 1.125rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
   line-height: 1.7;
 \`;
 
@@ -217,24 +205,22 @@ function createNotFoundPage(pagesDir, ext, userChoices) {
     }import styled from 'styled-components';
 
 const PageContainer = styled.div\`
-  padding: 3rem 0;
+  padding: 2rem 0;
   text-align: center;
-  max-width: 800px;
-  margin: 0 auto;
 \`;
 
 const ErrorTitle = styled.h1\`
   font-size: 3rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  color: #dc2626;
-  line-height: 1.2;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  color: #ef4444;
+  line-height: 1.1;
 \`;
 
 const ErrorMessage = styled.p\`
-  font-size: 1.2rem;
-  color: #555;
-  line-height: 1.6;
+  font-size: 1.125rem;
+  color: #6b7280;
+  line-height: 1.7;
 \`;
 
 export default function NotFoundPage() {
@@ -287,22 +273,20 @@ function createLayout(componentsDir, ext, userChoices) {
 import styled from 'styled-components';
 
 const LayoutContainer = styled.div\`
-  max-width: 1200px;
+  max-width: 1024px;
   margin: 0 auto;
-  padding: 0 2rem;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  padding: 0 1rem;
 \`;
 
 const NavBar = styled.nav\`
   display: flex;
-  padding: 1.5rem 0;
-  border-bottom: 2px solid #f0f0f0;
+  padding: 1rem 0;
   margin-bottom: 2rem;
 \`;
 
 const NavList = styled.ul\`
   display: flex;
-  gap: 2.5rem;
+  gap: 2rem;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -310,31 +294,13 @@ const NavList = styled.ul\`
 
 const NavLink = styled(Link)\`
   text-decoration: none;
-  color: #646cff;
-  font-weight: 600;
-  font-size: 1.1rem;
-  padding: 0.5rem 0;
-  transition: all 0.3s ease;
-  position: relative;
+  color: #2563eb;
+  font-weight: 500;
+  font-size: 1.125rem;
+  transition: color 0.15s ease-in-out;
   
   &:hover {
-    color: #5145e6;
-    transform: translateY(-1px);
-  }
-  
-  &:after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: #646cff;
-    transition: width 0.3s ease;
-  }
-  
-  &:hover:after {
-    width: 100%;
+    text-decoration: underline;
   }
 \`;
 
