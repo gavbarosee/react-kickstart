@@ -1,2 +1,14 @@
 node_modules
 .DS_Store
+
+# QA Test Reports and Generated Projects (keep QA source code)
+qa-automation/reports/
+qa-test-projects/
+test-deployment-project*
+test-output/
+
+# Temporary test projects created during development/testing
+/test-*
+/debug-*
+/quick-test/
+/feature-test-*/

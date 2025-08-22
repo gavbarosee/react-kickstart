@@ -1,0 +1,125 @@
+{
+  "totalCombinations": 12960,
+  "validCombinations": 12960,
+  "categorized": {
+    "critical": 6632,
+    "standard": 5548,
+    "edge": 780
+  },
+  "sampleConfigurations": {
+    "critical": [
+      {
+        "framework": "vite",
+        "typescript": true,
+        "styling": "tailwind",
+        "stateManagement": "redux",
+        "api": "axios-react-query",
+        "testing": "vitest",
+        "packageManager": "npm",
+        "linting": true,
+        "initGit": true,
+        "routing": "react-router"
+      },
+      {
+        "framework": "vite",
+        "typescript": true,
+        "styling": "tailwind",
+        "stateManagement": "redux",
+        "api": "axios-react-query",
+        "testing": "vitest",
+        "packageManager": "npm",
+        "linting": true,
+        "initGit": true,
+        "routing": "none"
+      },
+      {
+        "framework": "vite",
+        "typescript": true,
+        "styling": "tailwind",
+        "stateManagement": "redux",
+        "api": "axios-react-query",
+        "testing": "vitest",
+        "packageManager": "npm",
+        "linting": true,
+        "initGit": false,
+        "routing": "react-router"
+      }
+    ],
+    "standard": [
+      {
+        "framework": "vite",
+        "typescript": true,
+        "styling": "tailwind",
+        "stateManagement": "redux",
+        "api": "axios-only",
+        "testing": "jest",
+        "packageManager": "pnpm",
+        "linting": false,
+        "initGit": false,
+        "routing": "react-router"
+      },
+      {
+        "framework": "vite",
+        "typescript": true,
+        "styling": "tailwind",
+        "stateManagement": "redux",
+        "api": "axios-only",
+        "testing": "jest",
+        "packageManager": "pnpm",
+        "linting": false,
+        "initGit": false,
+        "routing": "none"
+      },
+      {
+        "framework": "vite",
+        "typescript": true,
+        "styling": "tailwind",
+        "stateManagement": "redux",
+        "api": "axios-only",
+        "testing": "none",
+        "packageManager": "pnpm",
+        "linting": false,
+        "initGit": false,
+        "routing": "react-router"
+      }
+    ],
+    "edge": [
+      {
+        "framework": "vite",
+        "typescript": true,
+        "styling": "css",
+        "stateManagement": "none",
+        "api": "axios-only",
+        "testing": "jest",
+        "packageManager": "pnpm",
+        "linting": false,
+        "initGit": false,
+        "routing": "react-router"
+      },
+      {
+        "framework": "vite",
+        "typescript": true,
+        "styling": "css",
+        "stateManagement": "none",
+        "api": "axios-only",
+        "testing": "jest",
+        "packageManager": "pnpm",
+        "linting": false,
+        "initGit": false,
+        "routing": "none"
+      },
+      {
+        "framework": "vite",
+        "typescript": true,
+        "styling": "css",
+        "stateManagement": "none",
+        "api": "axios-only",
+        "testing": "none",
+        "packageManager": "pnpm",
+        "linting": false,
+        "initGit": false,
+        "routing": "react-router"
+      }
+    ]
+  }
+}

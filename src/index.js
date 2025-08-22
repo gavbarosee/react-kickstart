@@ -10,6 +10,34 @@ import generateProject from "./generators/index.js";
 import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "./utils/index.js";
 import { createErrorHandler, ERROR_TYPES } from "./errors/index.js";
 
+/**
+ * Build userChoices object from CLI options when --yes flag is used
+ */
+function buildUserChoicesFromOptions(options) {
+  const framework = options.framework || "vite";
+  const baseDefaults = getFrameworkDefaults(framework);
+
+  return {
+    ...baseDefaults,
+    // Override with explicit CLI options
+    framework,
+    typescript: options.typescript || false,
+    styling: options.styling || "tailwind",
+    stateManagement: options.state || "none",
+    api: options.api || "none",
+    testing: options.testing || "none",
+    routing: options.routing || (framework === "vite" ? "none" : undefined),
+    nextRouting:
+      options.nextRouting || (framework === "nextjs" ? "app" : undefined),
+    packageManager: options.packageManager || "npm",
+    linting: options.linting !== false, // Default true unless --no-linting
+    initGit: options.git !== false, // Default true unless --no-git
+    openEditor: false, // Always false in CLI mode
+    editor: "vscode",
+    autoStart: options.autostart !== false, // Respect --no-autostart
+  };
+}
+
 export async function createApp(projectDirectory, options = {}) {
   // Initialize error handler
   const errorHandler = createErrorHandler();
@@ -81,7 +109,7 @@ export async function createApp(projectDirectory, options = {}) {
 
       // Get user choices
       const userChoices = options.yes
-        ? getFrameworkDefaults(options.framework || "vite")
+        ? buildUserChoicesFromOptions(options)
         : await promptUser({ verbose: options.verbose });
 
       // Show summary and get confirmation

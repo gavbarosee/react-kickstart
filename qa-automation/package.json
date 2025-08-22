@@ -1,0 +1,26 @@
+{
+  "name": "react-kickstart-qa",
+  "version": "1.0.0",
+  "description": "QA automation tools for React Kickstart CLI",
+  "type": "module",
+  "scripts": {
+    "generate-matrix": "node test-matrix-generator.js",
+    "test:critical": "node test-runner.js critical 15",
+    "test:standard": "node test-runner.js standard 25",
+    "test:edge": "node test-runner.js edge 10",
+    "test:quick": "node test-runner.js critical 5",
+    "test:comprehensive": "node test-runner.js critical 50",
+    "test:all": "npm run test:critical && npm run test:standard && npm run test:edge",
+    "validate:features": "node feature-validator.js",
+    "cleanup": "rm -rf qa-test-projects/ test-* debug-* reports/",
+    "report": "ls -la reports/test-report-*.json | tail -1 | xargs cat | jq '.summary'"
+  },
+  "keywords": [
+    "qa",
+    "testing",
+    "cli",
+    "automation"
+  ],
+  "author": "React Kickstart QA",
+  "license": "MIT"
+}

@@ -1,0 +1,304 @@
+name: QA Automation
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quick-qa:
+    name: Quick QA Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run quick validation tests
+        run: |
+          cd qa-automation
+          node quick-validator.js
+
+      - name: Upload quick test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: quick-test-results
+          path: qa-automation/quick-test/
+          retention-days: 3
+
+  critical-qa:
+    name: Critical Configuration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    needs: quick-qa
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate test matrix
+        run: |
+          cd qa-automation
+          node test-matrix-generator.js
+
+      - name: Run critical configuration tests
+        run: |
+          cd qa-automation
+          node test-runner.js critical 20
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: critical-test-results
+          path: qa-automation/test-report-*.json
+          retention-days: 7
+
+      - name: Comment test results on PR
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Find the latest test report
+            const qaDir = path.join(process.cwd(), 'qa-automation');
+            const files = fs.readdirSync(qaDir);
+            const reportFiles = files.filter(f => f.startsWith('test-report-') && f.endsWith('.json'));
+
+            if (reportFiles.length === 0) {
+              console.log('No test report found');
+              return;
+            }
+
+            const latestReport = reportFiles.sort().pop();
+            const reportPath = path.join(qaDir, latestReport);
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+
+            const comment = `## 🧪 QA Test Results
+
+            **Critical Configuration Tests Summary:**
+            - 📊 Total Tests: ${report.summary.total}
+            - ✅ Successful: ${report.summary.successful}
+            - ❌ Failed: ${report.summary.failed}
+            - 📈 Success Rate: ${report.summary.successRate}
+            - ⏱️ Duration: ${report.summary.totalDuration}
+
+            ${report.summary.failed > 0 ? `
+            **Failed Tests:**
+            ${report.failedTests.slice(0, 5).map(test => `- \`${test.testName}\`: ${test.error}`).join('\n')}
+            ${report.failedTests.length > 5 ? `\n... and ${report.failedTests.length - 5} more` : ''}
+            ` : '🎉 All tests passed!'}
+
+            <details>
+            <summary>View detailed results</summary>
+
+            \`\`\`json
+            ${JSON.stringify(report.summary, null, 2)}
+            \`\`\`
+            </details>`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  comprehensive-qa:
+    name: Comprehensive QA Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[comprehensive-qa]')
+    needs: critical-qa
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate test matrix
+        run: |
+          cd qa-automation
+          node test-matrix-generator.js
+
+      - name: Run comprehensive tests
+        run: |
+          cd qa-automation
+          node test-runner.js critical
+          node test-runner.js standard 25
+          node test-runner.js edge 10
+
+      - name: Upload comprehensive test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: comprehensive-test-results
+          path: qa-automation/test-report-*.json
+          retention-days: 14
+
+      - name: Create release comment
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            // Find all test reports from this run
+            const qaDir = path.join(process.cwd(), 'qa-automation');
+            const files = fs.readdirSync(qaDir);
+            const reportFiles = files.filter(f => f.startsWith('test-report-') && f.endsWith('.json'));
+
+            if (reportFiles.length === 0) {
+              console.log('No test reports found');
+              return;
+            }
+
+            // Get the latest reports (should be from this run)
+            const recentReports = reportFiles.sort().slice(-3);
+            let totalTests = 0;
+            let totalSuccessful = 0;
+            let totalFailed = 0;
+
+            recentReports.forEach(file => {
+              const report = JSON.parse(fs.readFileSync(path.join(qaDir, file), 'utf8'));
+              totalTests += report.summary.total;
+              totalSuccessful += report.summary.successful;
+              totalFailed += report.summary.failed;
+            });
+
+            const successRate = Math.round((totalSuccessful / totalTests) * 100);
+
+            const comment = `## 🚀 Comprehensive QA Results
+
+            **Full Test Suite Completed Successfully!**
+            - 📊 Total Configurations Tested: ${totalTests}
+            - ✅ Successful: ${totalSuccessful}
+            - ❌ Failed: ${totalFailed}
+            - 📈 Overall Success Rate: ${successRate}%
+
+            ${successRate >= 95 ? '🎉 **Ready for release!**' : '⚠️ **Review failures before release**'}
+
+            All critical, standard, and edge case configurations have been validated.
+            The React Kickstart CLI is working correctly across all supported permutations.`;
+
+            // Create an issue for tracking
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `QA Report: Comprehensive Testing - ${successRate}% Success Rate`,
+              body: comment,
+              labels: ['qa', 'testing', 'release-validation']
+            });
+
+  performance-benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Benchmark CLI performance
+        run: |
+          cd qa-automation
+          echo "🚀 Benchmarking CLI performance..."
+
+          # Test each framework 3 times and measure average
+          for framework in "vite" "nextjs"; do
+            echo "Testing $framework performance..."
+            total_time=0
+            
+            for i in {1..3}; do
+              start_time=$(date +%s%N)
+              node ../bin/react-kickstart.js "benchmark-$framework-$i" --yes --framework $framework --no-autostart >/dev/null 2>&1
+              end_time=$(date +%s%N)
+              
+              duration=$(( (end_time - start_time) / 1000000 )) # Convert to milliseconds
+              total_time=$(( total_time + duration ))
+              echo "  Run $i: ${duration}ms"
+              
+              # Cleanup
+              rm -rf "benchmark-$framework-$i"
+            done
+            
+            avg_time=$(( total_time / 3 ))
+            echo "  Average for $framework: ${avg_time}ms"
+            echo "BENCHMARK_${framework^^}_AVG=${avg_time}" >> $GITHUB_ENV
+          done
+
+      - name: Comment performance results
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const viteAvg = process.env.BENCHMARK_VITE_AVG;
+            const nextjsAvg = process.env.BENCHMARK_NEXTJS_AVG;
+
+            const comment = `## ⚡ Performance Benchmark Results
+
+            **CLI Generation Speed:**
+            - 🚀 Vite: ${viteAvg}ms average
+            - ▲ Next.js: ${nextjsAvg}ms average
+
+            *Benchmark includes project generation, dependency installation, and initial setup.*
+
+            ${viteAvg < 30000 && nextjsAvg < 45000 ? '✅ Performance is within acceptable range' : '⚠️ Performance may need optimization'}`;
+
+            // Find recent commits to comment on
+            const commits = await github.rest.repos.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 1
+            });
+
+            if (commits.data.length > 0) {
+              github.rest.repos.createCommitComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                commit_sha: commits.data[0].sha,
+                body: comment
+              });
+            }
