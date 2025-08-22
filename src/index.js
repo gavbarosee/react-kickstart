@@ -154,35 +154,40 @@ export async function createApp(projectDirectory, options = {}) {
 
       await generateProject(projectPath, projectName, userChoices);
 
-      // STEP 2: install dependencies
-      UI_UTILS.nextStep("Installing dependencies");
-      UI_UTILS.startProgress("Installing packages", { size: 26 });
-
-      const installResult = await errorHandler.withErrorHandling(
-        () =>
-          PROCESS_UTILS.installDependencies(
-            projectPath,
-            userChoices.packageManager,
-            userChoices.framework
-          ),
-        {
-          type: ERROR_TYPES.DEPENDENCY,
-          shouldCleanup,
-          showRecovery: true,
-        }
-      );
-
-      // finalize progress bar
-      UI_UTILS.stopProgress(true);
-
-      if (installResult.skipped) {
+      // STEP 2: install dependencies (skippable via --skip-install)
+      let installResult = { success: true, skipped: false };
+      if (options.skipInstall) {
         console.log(
-          chalk.yellow(
-            "⚠️ Dependency installation was skipped. Some features may not work properly."
-          )
+          chalk.yellow("Skipping dependency installation (--skip-install).")
         );
-      } else if (!installResult.success) {
-        throw new Error("Failed to install dependencies");
+        installResult = { success: true, skipped: true };
+      } else {
+        UI_UTILS.nextStep("Installing dependencies");
+        UI_UTILS.startProgress("Installing packages", { size: 26 });
+        installResult = await errorHandler.withErrorHandling(
+          () =>
+            PROCESS_UTILS.installDependencies(
+              projectPath,
+              userChoices.packageManager,
+              userChoices.framework
+            ),
+          {
+            type: ERROR_TYPES.DEPENDENCY,
+            shouldCleanup,
+            showRecovery: true,
+          }
+        );
+        // finalize progress bar
+        UI_UTILS.stopProgress(true);
+        if (installResult.skipped) {
+          console.log(
+            chalk.yellow(
+              "⚠️ Dependency installation was skipped. Some features may not work properly."
+            )
+          );
+        } else if (!installResult.success) {
+          throw new Error("Failed to install dependencies");
+        }
       }
 
       // STEP 3: additional setups

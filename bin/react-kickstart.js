@@ -62,6 +62,7 @@ program
   .option("--no-git", "Skip Git initialization")
   .option("--no-summary", "Skip the configuration summary")
   .option("--no-autostart", "Disable automatic project startup")
+  .option("--skip-install", "Skip dependency installation")
   .action(async (projectDirectory, options) => {
     await createApp(projectDirectory, options);
   });

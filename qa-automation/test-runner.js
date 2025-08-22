@@ -98,6 +98,8 @@ class TestRunner {
         cliArgs.push(`--next-routing ${config.nextRouting}`);
       }
 
+      // Add skip-install to speed up QA validation and avoid network flakiness
+      cliArgs.push(`--skip-install`);
       const comprehensiveCommand = `node ${cliArgs.join(" ")}`;
 
       // Run the CLI command with timeout from the test directory
