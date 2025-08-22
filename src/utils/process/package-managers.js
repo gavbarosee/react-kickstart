@@ -127,11 +127,11 @@ async function detectYarn(managers, verbose) {
  * @returns {string} - Default package manager name
  */
 export function getDefaultPackageManager(packageManagers) {
-  // Prefer yarn if available, fallback to npm
-  if (packageManagers.yarn?.available) {
-    return "yarn";
-  } else if (packageManagers.npm?.available) {
+  // Prefer npm if available, fallback to yarn
+  if (packageManagers.npm?.available) {
     return "npm";
+  } else if (packageManagers.yarn?.available) {
+    return "yarn";
   }
   return "npm"; // Default fallback
 }
@@ -403,9 +403,7 @@ export function formatPackageManagerChoices(managers) {
 
   if (managers.yarn.available) {
     choices.push({
-      name: `${chalk.blue("yarn")}${
-        managers.yarn.recommended ? " " + chalk.gray("(recommended)") : ""
-      }`,
+      name: `${chalk.blue("yarn")}`,
       value: "yarn",
       short: "yarn",
     });

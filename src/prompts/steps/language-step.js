@@ -38,7 +38,7 @@ export class LanguageStep extends BaseStep {
       const choices = this.getChoices(answers);
       return choices.findIndex((c) => c.value === answers.typescript);
     }
-    return 1; // Default to No
+    return 0; // Default to Yes
   }
 
   getNextStep(selection, answers) {
