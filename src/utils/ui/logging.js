@@ -189,3 +189,72 @@ export function fileGenerationInfo(projectPath) {
   // This will be moved to use consolidated filesystem utilities
   console.log(`  📦 Project files generated at ${chalk.cyan(projectPath)}`);
 }
+
+// Inline progress state
+let __progressInterval = null;
+let __progressPercent = 0;
+let __progressLabel = "";
+let __progressSize = 24;
+
+/**
+ * Start an inline updating progress bar (single-line, terminal-friendly)
+ * @param {string} label - Label to show before the bar
+ * @param {object} options - Optional settings { size?: number }
+ */
+export function startProgress(label = "", options = {}) {
+  // Compute bar size adaptively for small terminals
+  const columns = process.stdout.columns || 80;
+  const requestedSize = typeof options.size === "number" ? options.size : null;
+  __progressSize = requestedSize || Math.max(10, Math.min(40, columns - 40));
+
+  // Reset any existing progress
+  stopProgress(false);
+
+  __progressLabel = label;
+  __progressPercent = 0;
+
+  // Use template engine directly to avoid auto-logging
+  const renderProgress = uiRenderer.engine.createRenderer("progressBar");
+
+  // Initial draw
+  const initial = renderProgress(__progressPercent, __progressLabel, {
+    size: __progressSize,
+  });
+  process.stdout.write(`  ${initial}`);
+
+  __progressInterval = setInterval(() => {
+    // Smoothly advance up to 95% while work is ongoing
+    if (__progressPercent < 95) {
+      const step = __progressPercent < 50 ? 2 : 1;
+      __progressPercent = Math.min(95, __progressPercent + step);
+    }
+
+    const line = renderProgress(__progressPercent, __progressLabel, {
+      size: __progressSize,
+    });
+    process.stdout.write(`\r  ${line}`);
+  }, 120);
+}
+
+/**
+ * Stop the inline progress bar and optionally complete it at 100%
+ * @param {boolean} complete - When true, show 100% before finalizing
+ */
+export function stopProgress(complete = true) {
+  if (__progressInterval) {
+    clearInterval(__progressInterval);
+    __progressInterval = null;
+  }
+
+  if (__progressLabel) {
+    const renderProgress = uiRenderer.engine.createRenderer("progressBar");
+    const finalPercent = complete ? 100 : __progressPercent;
+    const finalLine = renderProgress(finalPercent, __progressLabel, {
+      size: __progressSize,
+    });
+    process.stdout.write(`\r  ${finalLine}\n\n`);
+  }
+
+  __progressPercent = 0;
+  __progressLabel = "";
+}

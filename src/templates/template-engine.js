@@ -200,7 +200,7 @@ export class TemplateEngine {
         const empty = size - filled;
 
         const bar =
-          theme.colors.success("█".repeat(filled)) +
+          theme.colors.primary("█".repeat(filled)) +
           theme.colors.dim("░".repeat(empty));
 
         return `${label} [${bar}] ${percentage}%`;

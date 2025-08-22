@@ -151,7 +151,7 @@ export async function createApp(projectDirectory, options = {}) {
 
       // STEP 2: install dependencies
       UI_UTILS.nextStep("Installing dependencies");
-      console.log();
+      UI_UTILS.startProgress("Installing packages", { size: 26 });
 
       const installResult = await errorHandler.withErrorHandling(
         () =>
@@ -166,6 +166,9 @@ export async function createApp(projectDirectory, options = {}) {
           showRecovery: true,
         }
       );
+
+      // finalize progress bar
+      UI_UTILS.stopProgress(true);
 
       if (installResult.skipped) {
         console.log(
