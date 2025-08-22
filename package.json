@@ -11,8 +11,8 @@
     "start": "node bin/react-kickstart.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage --silent",
-    "qa:critical": "node qa-automation/test-runner.js --config qa-automation/test-configs/critical-tests.json",
-    "qa:standard": "node qa-automation/test-runner.js --config qa-automation/test-configs/standard-tests.json",
+    "qa:critical": "node qa-automation/test-runner.js critical",
+    "qa:standard": "node qa-automation/test-runner.js standard",
     "prepare": "husky"
   },
   "keywords": [
