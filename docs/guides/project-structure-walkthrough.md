@@ -80,7 +80,7 @@ Rendering note: This guide uses low-tech ASCII diagrams that render everywhere.
 #### Key concepts
 
 - **Template Method**: `BaseGenerator` defines the sequence; each framework generator fills in its steps.
-- **Registry**: `FrameworkRegistry` maps the selected framework to a generator.
+- **Generator selection**: A switch in `src/generators/index.js` maps the selected framework to its generator.
 - **Builders**: Config and `package.json` are produced by builder objects for clarity and consistency.
 
 ---
@@ -292,7 +292,7 @@ Prompts → Generator (by framework) → Config/Files/Features → Install → S
 ## Glossary
 
 - Generator: A class that creates a project for a specific framework, extending `BaseGenerator`.
-- FrameworkRegistry: A map from framework name (e.g., `vite`) to its generator class.
+- Generator selection: A switch maps framework name (e.g., `vite`) to its generator class in `src/generators/index.js`.
 - ConfigurationBuilder: Writes config files (vite/next/ts/testing/tailwind/postcss).
 - PackageJsonBuilder: Builds `package.json` scripts and dependencies via the resolver.
 - DependencyResolver: Decides which packages go to `dependencies` vs `devDependencies` per framework/feature.

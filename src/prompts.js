@@ -46,7 +46,6 @@ export function getFrameworkDefaults(framework) {
         ...baseDefaults,
         framework: "nextjs",
         nextRouting: "app", // Default to App Router for Next.js
-        routing: "nextjs", // Enable Next.js routing
       };
     case "vite":
     default:

@@ -11,13 +11,14 @@ A fast, opinionated CLI to scaffold React apps with your preferred framework and
 
 #### Key features
 
-- Frameworks: Vite, Next.js (extensible via `FrameworkRegistry`).
+- Frameworks: Vite, Next.js (extensible via a generator switch in `src/generators/index.js`).
 - Language: TypeScript or JavaScript.
 - Styling: Tailwind, styled-components, or CSS.
 - Routing: React Router (for Vite), Next.js routing (app/pages) when Next.js is selected.
 - State: Redux Toolkit or Zustand.
 - API options: Axios, React Query integrations, or Fetch-only.
-- Testing: Vitest (Vite) or Jest (Next.js), with example tests.
+- Testing: Vitest or Jest for both frameworks (recommended: Vitest for Vite, Jest for Next.js), with example tests.
+  - Note: When using Jest with Vite, a minimal `babel.config.json` is generated and `babel-jest` + Babel presets are added to enable JSX/TS transforms.
 - Linting, Git init, editor open, and deployment scripts support.
 - QA automation to validate numerous combinations (critical, standard, edge).
 
@@ -57,7 +58,7 @@ bin/react-kickstart.js -> src/index.js(createApp)
 - API: `axios-react-query`, `axios-only`, `fetch-react-query`, `fetch-only`, `none`
 - Testing: `vitest`, `jest`, `none`
 - Package manager: `npm`, `yarn`
-- Linting: true/false; Git init: true/false; Open editor: VS Code or none
+- Linting: true/false; Git init: true/false; Open editor: Cursor or VS Code
 
 #### Extending (adding a framework)
 

@@ -242,6 +242,26 @@ export function getJestDependencies() {
   };
 }
 
+// Additional deps for using Jest with Vite (Babel transform)
+export const jestBabel = {
+  babelJest: "^29.7.0",
+  babelPresetEnv: "^7.23.9",
+  babelPresetReact: "^7.23.3",
+  babelPresetTypescript: "^7.23.3",
+};
+
+export function getJestBabelDependencies(includeTypescript = false) {
+  const deps = {
+    "babel-jest": jestBabel.babelJest,
+    "@babel/preset-env": jestBabel.babelPresetEnv,
+    "@babel/preset-react": jestBabel.babelPresetReact,
+  };
+  if (includeTypescript) {
+    deps["@babel/preset-typescript"] = jestBabel.babelPresetTypescript;
+  }
+  return deps;
+}
+
 export function getTestingDependencies(testingFramework) {
   switch (testingFramework) {
     case "vitest":

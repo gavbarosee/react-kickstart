@@ -20,7 +20,7 @@ If your framework needs an HTML entry (like Vite), call `createHtmlFile(...)` an
 
 #### 2) Register the Framework for Selection
 
-This codebase currently selects frameworks via a simple switch in `src/generators/index.js`. Add a case for your new framework and instantiate your generator there.
+Framework selection is handled via a switch in `src/generators/index.js`. Add a case for your new framework and instantiate your generator there.
 
 #### 3) Make It Selectable in the Prompt Flow (Required)
 

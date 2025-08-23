@@ -203,9 +203,44 @@ module.exports = nextConfig;
     // Testing config
     if (userChoices.testing && userChoices.testing !== "none") {
       configs.testing = this.generateTestingConfig(projectPath, userChoices);
+      // For Vite + Jest, write a minimal babel.config.json
+      if (this.framework === "vite" && userChoices.testing === "jest") {
+        configs.babel = this.generateBabelConfig(projectPath, userChoices);
+      }
     }
 
     return configs;
+  }
+
+  /**
+   * Generate minimal Babel config for Jest transform when using Vite
+   */
+  generateBabelConfig(projectPath, userChoices) {
+    const presets = [
+      [
+        "@babel/preset-env",
+        {
+          targets: { node: "current" },
+        },
+      ],
+      ["@babel/preset-react", { runtime: "automatic" }],
+    ];
+
+    if (userChoices.typescript) {
+      presets.push(["@babel/preset-typescript"]);
+    }
+
+    const babelConfig = {
+      presets,
+    };
+
+    const configPath = path.join(projectPath, "babel.config.json");
+    fs.writeFileSync(configPath, JSON.stringify(babelConfig, null, 2));
+
+    return {
+      file: "babel.config.json",
+      content: babelConfig,
+    };
   }
 
   /**
@@ -446,6 +481,7 @@ module.exports = {
           "./pages/**/*.{js,ts,jsx,tsx,mdx}",
           "./components/**/*.{js,ts,jsx,tsx,mdx}",
           "./app/**/*.{js,ts,jsx,tsx,mdx}",
+          "./src/**/*.{js,ts,jsx,tsx,mdx}",
         ];
       default:
         // Fallback for other frameworks
@@ -565,9 +601,9 @@ module.exports = createJestConfig(customJestConfig);
   setupFilesAfterEnv: ['${setupFile}'],
   moduleFileExtensions: ${JSON.stringify(moduleFileExtensions)},
   transform: {
-    '^.+\\\\.(js|jsx|ts|tsx)$': 'babel-jest',
+    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
   },
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testMatch: [

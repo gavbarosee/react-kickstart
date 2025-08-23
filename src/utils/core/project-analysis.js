@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import path from "path";
 
-import { getConfigExtension } from "./file-extensions.js";
+import { getConfigExtension, getComponentExtension } from "./file-extensions.js";
 
 /**
  * Project analysis utilities - analyze and categorize project components
@@ -31,7 +31,7 @@ export function categorizeDependencies(packageJsonPath) {
     };
 
     // Helper to categorize a dependency
-    function categorize(name, version, isDev) {
+    function categorize(name, version) {
       const dep = `${name}@${version}`;
 
       // React ecosystem
@@ -125,7 +125,7 @@ export function categorizeDependencies(packageJsonPath) {
  * @param {string} framework - Framework name
  * @returns {Array} - Project structure items
  */
-export function getProjectStructure(framework) {
+export function getProjectStructure(framework, typescript = false) {
   const baseStructure = [
     { label: "src/", description: "Source code directory" },
     { label: "public/", description: "Static assets" },
@@ -133,12 +133,15 @@ export function getProjectStructure(framework) {
     { label: "README.md", description: "Project documentation" },
   ];
 
+  const componentExt = getComponentExtension({ typescript });
+  const configExt = getConfigExtension({ typescript });
+
   const frameworkStructure = {
     vite: [
       { label: "index.html", description: "Entry HTML file" },
-      { label: "src/main.jsx", description: "Application entry point" },
-      { label: "src/App.jsx", description: "Main component" },
-      { label: "vite.config.js", description: "Vite configuration" },
+      { label: `src/main.${componentExt}`, description: "Application entry point" },
+      { label: `src/App.${componentExt}`, description: "Main component" },
+      { label: `vite.config.${configExt}`, description: "Vite configuration" },
     ],
     nextjs: [
       { label: "next.config.js", description: "Next.js configuration" },
@@ -205,15 +208,21 @@ export function getConfigurationFiles(
   // Linting configuration
   if (linting) {
     configs.push({
-      label: ".eslintrc.js",
+      label: ".eslintrc.json",
       description: "ESLint rules and configuration",
     });
     if (typescript) {
       configs.push({
-        label: ".eslintrc.js",
+        label: ".eslintrc.json",
         description: "TypeScript-specific ESLint rules",
       });
     }
+
+    // Prettier configuration
+    configs.push({
+      label: ".prettierrc",
+      description: "Prettier formatting configuration",
+    });
   }
 
   // State management

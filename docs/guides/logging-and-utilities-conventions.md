@@ -14,14 +14,14 @@ Example:
 ```js
 import { UI_UTILS, CORE_UTILS } from "../../src/utils/index.js";
 
-UI_UTILS.logInfo("Starting...");
+UI_UTILS.log("Starting...");
 const isValid = CORE_UTILS.validateProjectName("my-app");
 ```
 
 ## Logging
 
 - Always import logging via `UI_UTILS` rather than direct `./ui/logging.js` imports.
-- Prefer intent-revealing helpers: `logInfo`, `logWarn`, `logError`, `logSuccess`.
+- Available helpers: `log`, `warning`, `error`, `success`.
 - Keep messages actionable and concise.
 
 ## Organization

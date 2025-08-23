@@ -27,7 +27,11 @@ export class TestingSetup {
       this.userChoices.testing === "vitest" ? "vitest" : "@jest/globals";
 
     // Create example component test
-    const exampleTest = this.generateExampleComponentTest(testFrameworkImport, fileExt);
+    const exampleTest = this.generateExampleComponentTest(
+      testFrameworkImport,
+      fileExt,
+      isTypeScript,
+    );
 
     // Write the test file
     const testDir = path.join(this.projectPath, "src", "__tests__");
@@ -52,7 +56,7 @@ export class TestingSetup {
   /**
    * Generate example component test content
    */
-  generateExampleComponentTest(testFrameworkImport, fileExt) {
+  generateExampleComponentTest(testFrameworkImport, fileExt, isTypeScript) {
     const isNextJs = this.userChoices.framework === "nextjs";
     const appImportPath = isNextJs ? "../pages/_app" : "../App";
     const componentName = isNextJs ? "MyApp" : "App";
@@ -67,16 +71,16 @@ import { describe, it, expect } from '${testFrameworkImport}';
 import userEvent from '@testing-library/user-event';
 ${
   isNextJs
-    ? `import { AppProps } from 'next/app';
-import MyApp from '${appImportPath}';
+    ? `${isTypeScript ? "import { AppProps } from 'next/app';\n" : ""}import MyApp from '${appImportPath}';
 
 // Mock a simple component for testing
 const MockComponent = () => <div>Test Component</div>;
 
-const mockAppProps: AppProps = {
-  Component: MockComponent,
-  pageProps: {},
-};`
+${
+  isTypeScript
+    ? `const mockAppProps: AppProps = {\n  Component: MockComponent,\n  pageProps: {},\n};`
+    : `const mockAppProps = {\n  Component: MockComponent,\n  pageProps: {},\n};`
+}`
     : `import ${componentName} from '${appImportPath}';${
         hasStateManagement
           ? `

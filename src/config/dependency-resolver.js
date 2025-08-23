@@ -82,10 +82,10 @@ export class DependencyResolver {
       case "styled-components":
         const deps = getStyledComponentsDependencies();
 
-        // Both Next.js and Vite need the babel plugin for styled-components
-        // Next.js: Uses built-in compiler optimization
-        // Vite: Configured via React plugin babel configuration
-        deps["babel-plugin-styled-components"] = styling.babelPluginStyledComponents;
+        // Add babel plugin only for Vite; Next.js uses SWC compiler option
+        if (this.framework === "vite") {
+          deps["babel-plugin-styled-components"] = styling.babelPluginStyledComponents;
+        }
 
         return deps;
 

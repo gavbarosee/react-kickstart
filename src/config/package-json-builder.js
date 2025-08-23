@@ -248,9 +248,17 @@ export class PackageJsonBuilder {
     const testingDeps = this.dependencyResolver.getTestingDependencies(
       userChoices.testing,
     );
+    // For Vite + Jest, ensure babel-jest and presets are available
+    let viteJestBabelDeps = {};
+    if (this.framework === "vite" && userChoices.testing === "jest") {
+      // Add Babel presets to devDependencies to enable jest transform
+      const includeTs = !!userChoices.typescript;
+      viteJestBabelDeps = this.dependencyResolver.getJestBabelDependencies(includeTs);
+    }
     this.packageData.devDependencies = {
       ...this.packageData.devDependencies,
       ...testingDeps,
+      ...viteJestBabelDeps,
     };
 
     return this;
