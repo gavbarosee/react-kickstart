@@ -8,7 +8,6 @@ import {
   getReduxDependencies,
   getZustandDependencies,
   getAxiosDependencies,
-  getReactQueryDependencies,
   getAxiosReactQueryDependencies,
   getFetchReactQueryDependencies,
   getTestingDependencies,

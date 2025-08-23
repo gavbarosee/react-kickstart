@@ -59,12 +59,22 @@ export default [
           alphabetize: { order: "asc", caseInsensitive: true },
         },
       ],
-      "no-unused-vars": "off",
+      "no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern:
+            "^(?:_|userChoices|projectPath|projectName|directories|error|err|res|fileExt|stateManager|srcDir|extensions|isDevDependency|options|context|packageManager|isViteWithRouting)$",
+          varsIgnorePattern:
+            "^(?:_|userChoices|projectPath|projectName|directories|error|err|res|fileExt|stateManager|srcDir|extensions|isDevDependency|options|context|fs|path|structure|stylingType|packageManager|isViteWithRouting|errorType|isDev|createUIRenderer|CORE_UTILS|packageManager)$",
+        },
+      ],
       "no-console": "off", // CLI tool, allow console
-      "no-empty": "off",
-      "no-case-declarations": "off",
-      "no-constant-condition": "off",
-      "no-control-regex": "off",
+      "no-empty": ["warn", { allowEmptyCatch: true }],
+      "no-case-declarations": "warn",
+      "no-constant-condition": "warn",
+      "no-control-regex": "warn",
+      "no-fallthrough": "warn",
+      eqeqeq: ["error", "smart"],
     },
   },
 
