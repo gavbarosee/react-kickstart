@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { BaseStateSetup } from "./base-state-setup.js";
 import { createAppWithCounter } from "../../features/redux/counter-template.js";
 import { createCommonTemplateBuilder } from "../../templates/index.js";
@@ -22,21 +23,11 @@ export class ReduxSetup extends BaseStateSetup {
     if (this.framework === "nextjs") {
       this.createNextjsStoreFile(directories.store, userChoices, extensions);
       this.createNextjsHooksFile(directories.store, userChoices, extensions);
-      this.createCounterSlice(
-        directories.counter,
-        userChoices,
-        extensions,
-        true
-      );
+      this.createCounterSlice(directories.counter, userChoices, extensions, true);
     } else {
       this.createStandardStoreFile(directories.store, userChoices, extensions);
       this.createStandardHooksFile(directories.store, userChoices, extensions);
-      this.createCounterSlice(
-        directories.store,
-        userChoices,
-        extensions,
-        false
-      );
+      this.createCounterSlice(directories.store, userChoices, extensions, false);
     }
   }
 
@@ -44,50 +35,35 @@ export class ReduxSetup extends BaseStateSetup {
     const templateBuilder = createCommonTemplateBuilder();
     const content = templateBuilder.generateReduxStore(userChoices, false);
 
-    fs.writeFileSync(
-      path.join(storeDir, `store.${extensions.script}`),
-      content
-    );
+    fs.writeFileSync(path.join(storeDir, `store.${extensions.script}`), content);
   }
 
   createNextjsStoreFile(storeDir, userChoices, extensions) {
     const templateBuilder = createCommonTemplateBuilder();
     const content = templateBuilder.generateReduxStore(userChoices, true);
 
-    fs.writeFileSync(
-      path.join(storeDir, `store.${extensions.script}`),
-      content
-    );
+    fs.writeFileSync(path.join(storeDir, `store.${extensions.script}`), content);
   }
 
   createStandardHooksFile(storeDir, userChoices, extensions) {
     const templateBuilder = createCommonTemplateBuilder();
     const content = templateBuilder.generateReduxHooks(userChoices, false);
 
-    fs.writeFileSync(
-      path.join(storeDir, `hooks.${extensions.script}`),
-      content
-    );
+    fs.writeFileSync(path.join(storeDir, `hooks.${extensions.script}`), content);
   }
 
   createNextjsHooksFile(storeDir, userChoices, extensions) {
     const templateBuilder = createCommonTemplateBuilder();
     const content = templateBuilder.generateReduxHooks(userChoices, true);
 
-    fs.writeFileSync(
-      path.join(storeDir, `hooks.${extensions.script}`),
-      content
-    );
+    fs.writeFileSync(path.join(storeDir, `hooks.${extensions.script}`), content);
   }
 
   createCounterSlice(sliceDir, userChoices, extensions, isNextjs) {
     const templateBuilder = createCommonTemplateBuilder();
     const content = templateBuilder.generateReduxSlice(userChoices, isNextjs);
 
-    fs.writeFileSync(
-      path.join(sliceDir, `counterSlice.${extensions.script}`),
-      content
-    );
+    fs.writeFileSync(path.join(sliceDir, `counterSlice.${extensions.script}`), content);
   }
 
   /**
@@ -102,12 +78,12 @@ export class ReduxSetup extends BaseStateSetup {
       userChoices,
       imports,
       storeLogic,
-      "Redux Toolkit Counter"
+      "Redux Toolkit Counter",
     );
 
     fs.writeFileSync(
       path.join(directories.components, `Counter.${extensions.component}`),
-      counterContent
+      counterContent,
     );
 
     // Create App with Counter
@@ -164,28 +140,28 @@ export class ReduxSetup extends BaseStateSetup {
       // React 18
       content = content.replace(
         /import React from ['"]react['"];/,
-        `import React from 'react';\nimport { Provider } from 'react-redux';\nimport { store } from './store/store';`
+        `import React from 'react';\nimport { Provider } from 'react-redux';\nimport { store } from './store/store';`,
       );
 
       content = content.replace(
         /<React.StrictMode>/,
-        `<React.StrictMode>\n    <Provider store={store}>`
+        `<React.StrictMode>\n    <Provider store={store}>`,
       );
 
       content = content.replace(
         /<\/React.StrictMode>/,
-        `    </Provider>\n  </React.StrictMode>`
+        `    </Provider>\n  </React.StrictMode>`,
       );
     } else {
       // Older React versions
       content = content.replace(
         /import React from ['"]react['"];/,
-        `import React from 'react';\nimport { Provider } from 'react-redux';\nimport { store } from './store/store';`
+        `import React from 'react';\nimport { Provider } from 'react-redux';\nimport { store } from './store/store';`,
       );
 
       content = content.replace(
         /<App \/>/,
-        `<Provider store={store}>\n      <App />\n    </Provider>`
+        `<Provider store={store}>\n      <App />\n    </Provider>`,
       );
     }
 
@@ -207,16 +183,12 @@ export class ReduxSetup extends BaseStateSetup {
       userChoices.nextRouting === "app" ? "'use client';\n\n" : "";
     const content = `${useClientDirective}import { useRef } from 'react';
 import { Provider } from 'react-redux';
-import { makeStore${
-      userChoices.typescript ? ", AppStore" : ""
-    } } from '../lib/store';
+import { makeStore${userChoices.typescript ? ", AppStore" : ""} } from '../lib/store';
 
 export default function StoreProvider({
   children
 }${userChoices.typescript ? ": {\n  children: React.ReactNode\n}" : ""}) {
-  const storeRef = useRef${
-    userChoices.typescript ? "<AppStore | null>" : ""
-  }(null);
+  const storeRef = useRef${userChoices.typescript ? "<AppStore | null>" : ""}(null);
   if (!storeRef.current) {
     // Create the store instance the first time this renders
     storeRef.current = makeStore();
@@ -228,7 +200,7 @@ export default function StoreProvider({
 
     fs.writeFileSync(
       path.join(targetDir, `StoreProvider.${extensions.component}`),
-      content
+      content,
     );
   }
 
@@ -237,17 +209,9 @@ export default function StoreProvider({
     let layoutPath;
 
     if (userChoices.nextRouting === "app") {
-      layoutPath = path.join(
-        projectPath,
-        "app",
-        `layout.${extensions.component}`
-      );
+      layoutPath = path.join(projectPath, "app", `layout.${extensions.component}`);
     } else {
-      layoutPath = path.join(
-        projectPath,
-        "pages",
-        `_app.${extensions.component}`
-      );
+      layoutPath = path.join(projectPath, "pages", `_app.${extensions.component}`);
     }
 
     if (!fs.existsSync(layoutPath)) return;
@@ -260,10 +224,7 @@ export default function StoreProvider({
 
       if (!content.includes(importLine)) {
         if (content.includes("'use client'")) {
-          content = content.replace(
-            "'use client'",
-            "'use client';\n" + importLine
-          );
+          content = content.replace("'use client'", "'use client';\n" + importLine);
         } else {
           content = importLine + "\n" + content;
         }
@@ -271,12 +232,11 @@ export default function StoreProvider({
 
       content = content.replace(
         /<body>(.*?){children}<\/body>/s,
-        "<body>$1<StoreProvider>{children}</StoreProvider></body>"
+        "<body>$1<StoreProvider>{children}</StoreProvider></body>",
       );
     } else {
       // Pages Router
-      const importLine =
-        "import StoreProvider from '../components/StoreProvider';";
+      const importLine = "import StoreProvider from '../components/StoreProvider';";
 
       if (!content.includes("StoreProvider")) {
         // Try to find existing imports first
@@ -309,14 +269,14 @@ export default function StoreProvider({
       // More flexible regex to match the Component rendering
       content = content.replace(
         /<Component\s+{\.\.\.pageProps}\s*\/>/,
-        "<StoreProvider><Component {...pageProps} /></StoreProvider>"
+        "<StoreProvider><Component {...pageProps} /></StoreProvider>",
       );
 
       // Fallback: try a more general pattern if the specific one didn't match
       if (!content.includes("<StoreProvider>")) {
         content = content.replace(
           /<Component\s+[^>]*\/>/,
-          "<StoreProvider><Component {...pageProps} /></StoreProvider>"
+          "<StoreProvider><Component {...pageProps} /></StoreProvider>",
         );
       }
     }

@@ -1,10 +1,7 @@
-import { execa } from "execa";
 import chalk from "chalk";
-import {
-  createErrorHandler,
-  ERROR_TYPES,
-  classifyError,
-} from "../../errors/index.js";
+import { execa } from "execa";
+
+import { createErrorHandler, ERROR_TYPES, classifyError } from "../../errors/index.js";
 
 /**
  * Package manager utilities - detection, installation, and management
@@ -63,14 +60,12 @@ export async function detectPackageManagers(options = {}) {
               chalk.dim(
                 `Detected ${name} v${info.version}${
                   info.recommended ? " (recommended)" : ""
-                }`
-              )
+                }`,
+              ),
             );
           } else {
             console.log(
-              chalk.dim(
-                `${name} not available: ${info.error || "Not installed"}`
-              )
+              chalk.dim(`${name} not available: ${info.error || "Not installed"}`),
             );
           }
         });
@@ -81,7 +76,7 @@ export async function detectPackageManagers(options = {}) {
     {
       type: ERROR_TYPES.PROCESS,
       onError: () => managers, // Return default managers on error
-    }
+    },
   );
 }
 
@@ -146,7 +141,7 @@ export function getDefaultPackageManager(packageManagers) {
 export async function installDependencies(
   projectPath,
   packageManager = "npm",
-  framework = "vite"
+  framework = "vite",
 ) {
   const startTime = Date.now();
 
@@ -154,24 +149,17 @@ export async function installDependencies(
     const installCommand = packageManager === "yarn" ? "install" : "install";
     const args = packageManager === "yarn" ? [] : ["--prefer-offline"];
 
-    const { stdout, stderr } = await execa(
-      packageManager,
-      [installCommand, ...args],
-      {
-        cwd: projectPath,
-        stdio: ["inherit", "pipe", "pipe"],
-      }
-    );
+    const { stdout, stderr } = await execa(packageManager, [installCommand, ...args], {
+      cwd: projectPath,
+      stdio: ["inherit", "pipe", "pipe"],
+    });
 
     const endTime = Date.now();
     const installTime = endTime - startTime;
 
     // Parse output for package count and vulnerabilities
     const packageCount = parsePackageCount(stdout, packageManager);
-    const vulnerabilities = parseVulnerabilities(
-      stdout + stderr,
-      packageManager
-    );
+    const vulnerabilities = parseVulnerabilities(stdout + stderr, packageManager);
 
     return {
       success: true,
@@ -205,7 +193,7 @@ export async function installDependenciesWithRetry(
   projectPath,
   packageManager = "npm",
   framework = "vite",
-  maxRetries = 3
+  maxRetries = 3,
 ) {
   const errorHandler = createErrorHandler();
   const userReporter = errorHandler.userReporter;
@@ -225,17 +213,13 @@ export async function installDependenciesWithRetry(
     if (attempts > 1) {
       console.log(
         chalk.yellow(
-          `\nRetrying dependency installation (attempt ${attempts}/${maxRetries})...`
-        )
+          `\nRetrying dependency installation (attempt ${attempts}/${maxRetries})...`,
+        ),
       );
     }
 
     try {
-      result = await installDependencies(
-        projectPath,
-        packageManager,
-        framework
-      );
+      result = await installDependencies(projectPath, packageManager, framework);
       if (result.success) return result;
     } catch (err) {
       if (attempts >= maxRetries) {
@@ -263,8 +247,8 @@ export async function installDependenciesWithRetry(
     } else if (action === "skip") {
       console.log(
         chalk.yellow(
-          "\nSkipping dependency installation. The project may not work properly."
-        )
+          "\nSkipping dependency installation. The project may not work properly.",
+        ),
       );
       return { success: true, skipped: true };
     } else {
@@ -275,7 +259,7 @@ export async function installDependenciesWithRetry(
   // Final fallback after exhausting retries
   if (!result || !result.success) {
     const finalError = new Error(
-      "Failed to install dependencies after multiple attempts"
+      "Failed to install dependencies after multiple attempts",
     );
     const handleResult = await errorHandler.handle(finalError, {
       type: ERROR_TYPES.DEPENDENCY,
@@ -341,10 +325,10 @@ function parseVulnerabilities(output, packageManager) {
           severity: pattern.source.includes("moderate")
             ? "moderate"
             : pattern.source.includes("high")
-            ? "high"
-            : pattern.source.includes("critical")
-            ? "critical"
-            : "unknown",
+              ? "high"
+              : pattern.source.includes("critical")
+                ? "critical"
+                : "unknown",
         });
       }
     });
@@ -423,7 +407,7 @@ export function formatPackageManagerChoices(managers) {
     });
     choices.push({
       name: `${chalk.gray(
-        "Or install Yarn: https://yarnpkg.com/getting-started/install"
+        "Or install Yarn: https://yarnpkg.com/getting-started/install",
       )}`,
       value: null,
       disabled: true,

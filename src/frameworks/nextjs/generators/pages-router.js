@@ -1,14 +1,11 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { createContentGenerator } from "../../../lib/content-generation/index.js";
 import { setupStyling } from "../../../lib/styling/index.js";
 import { CORE_UTILS } from "../../../utils/index.js";
 
-export function createPagesRouterStructure(
-  projectPath,
-  projectName,
-  userChoices
-) {
+export function createPagesRouterStructure(projectPath, projectName, userChoices) {
   const directories = CORE_UTILS.createProjectDirectories(projectPath, {
     pages: "pages",
     api: "pages/api",
@@ -27,17 +24,14 @@ export function createPagesRouterStructure(
   // Create _document file if using styled-components
   if (userChoices.styling === "styled-components") {
     const documentContent = generator.generateDocumentFile(ext);
-    fs.writeFileSync(
-      path.join(directories.pages, `_document.${ext}`),
-      documentContent
-    );
+    fs.writeFileSync(path.join(directories.pages, `_document.${ext}`), documentContent);
   }
 
   // Generate index page content
   const indexContent = generator.generateAppComponent(
     ext,
     userChoices.styling,
-    userChoices
+    userChoices,
   );
   fs.writeFileSync(path.join(directories.pages, `index.${ext}`), indexContent);
 
@@ -53,6 +47,6 @@ function createApiRoute(apiDir, userChoices) {
 
   fs.writeFileSync(
     path.join(apiDir, `hello.${CORE_UTILS.getApiExtension(userChoices)}`),
-    apiRouteContent
+    apiRouteContent,
   );
 }

@@ -14,6 +14,7 @@
     "lint": "eslint src bin --ext .js,.cjs",
     "lint:fix": "eslint src bin --ext .js,.cjs --fix",
     "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "qa:critical": "node qa-automation/test-runner.js critical",
     "qa:standard": "node qa-automation/test-runner.js standard",
     "prepare": "husky install"

@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { PackageManagerStep } from "../prompts/steps/package-manager-step.js";
+
 import { FrameworkStep } from "../prompts/steps/framework-step.js";
-import { NextjsOptionsStep } from "../prompts/steps/nextjs-options-step.js";
-import { RoutingStep } from "../prompts/steps/routing-step.js";
 import { LanguageStep } from "../prompts/steps/language-step.js";
+import { NextjsOptionsStep } from "../prompts/steps/nextjs-options-step.js";
+import { PackageManagerStep } from "../prompts/steps/package-manager-step.js";
+import { RoutingStep } from "../prompts/steps/routing-step.js";
 
 function createRendererStub() {
   return {
@@ -32,7 +33,7 @@ describe("Steps - choices and flow", () => {
         npm: { available: true, recommended: true },
         yarn: { available: true },
       },
-      "npm"
+      "npm",
     );
     renderer.promptChoice.mockResolvedValue("npm");
     const answers = {};
@@ -54,9 +55,7 @@ describe("Steps - choices and flow", () => {
     // back option present when canGoBack
     // Ensure back option was offered by verifying choices passed include our marker
     const callArg = renderer.promptChoice.mock.calls[0][0];
-    expect(callArg.choices.some((c) => c && c.value === "BACK_OPTION")).toBe(
-      true
-    );
+    expect(callArg.choices.some((c) => c && c.value === "BACK_OPTION")).toBe(true);
   });
 
   it("NextjsOptionsStep goes to language and supports back", async () => {
@@ -87,9 +86,7 @@ describe("Steps - choices and flow", () => {
     const renderer = createRendererStub();
     const navigator = createNavigatorStub(true);
     const step = new LanguageStep(renderer, navigator);
-    expect(step.getNextStep("BACK", { framework: "nextjs" })).toBe(
-      "nextjsOptions"
-    );
+    expect(step.getNextStep("BACK", { framework: "nextjs" })).toBe("nextjsOptions");
     expect(step.getNextStep("BACK", { framework: "vite" })).toBe("routing");
   });
 });

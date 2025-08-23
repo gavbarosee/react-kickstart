@@ -114,14 +114,14 @@ export function generateCompletionSummary(
   projectName,
   userChoices,
   vulnerabilities,
-  packageCount = null
+  packageCount = null,
 ) {
   const frameworkInfo = getFrameworkDocumentation(userChoices.framework);
   const stylingInfo = getStylingInfo(userChoices.styling);
   const languageInfo = getLanguageInfo(userChoices.typescript);
   const commandExamples = getCommandExamples(
     userChoices.packageManager,
-    userChoices.framework
+    userChoices.framework,
   );
 
   // get project size in MB (approximate)
@@ -139,9 +139,7 @@ export function generateCompletionSummary(
     `   ${chalk.cyan("Name:")} ${chalk.bold(projectName)}`,
     `   ${chalk.cyan("Location:")} ${projectPath}`,
     `   ${chalk.cyan("Size:")} ${projectSizeText}`,
-    `   ${chalk.cyan("Auto-Start:")} ${chalk.green(
-      "Yes (in default browser)"
-    )}`,
+    `   ${chalk.cyan("Auto-Start:")} ${chalk.green("Yes (in default browser)")}`,
   ].join("\n");
 
   // STEP 2: next steps with commands
@@ -154,39 +152,33 @@ export function generateCompletionSummary(
   let cmdIndex = 2;
 
   commandLines.push(
-    `   ${chalk.bold(
-      `${cmdIndex}️⃣ `
-    )} Development server starting automatically`
+    `   ${chalk.bold(`${cmdIndex}️⃣ `)} Development server starting automatically`,
   );
   commandLines.push(
     `      ${chalk.gray(
-      `→ Opening your default browser to http://localhost:${frameworkInfo.port}`
-    )}`
+      `→ Opening your default browser to http://localhost:${frameworkInfo.port}`,
+    )}`,
   );
   commandLines.push("");
   cmdIndex++;
 
   if (commandExamples.dev) {
-    commandLines.push(
-      `   ${chalk.bold(`${cmdIndex}️⃣ `)} Manual server control`
-    );
+    commandLines.push(`   ${chalk.bold(`${cmdIndex}️⃣ `)} Manual server control`);
     commandLines.push(
       `      ${chalk.cyan(`$ ${commandExamples.dev.command}`)} ${chalk.gray(
-        `→ Restart development server if needed`
-      )}`
+        `→ Restart development server if needed`,
+      )}`,
     );
     commandLines.push("");
     cmdIndex++;
   }
 
   if (commandExamples.build) {
-    commandLines.push(
-      `   ${chalk.bold(`${cmdIndex}️⃣ `)} Build for production`
-    );
+    commandLines.push(`   ${chalk.bold(`${cmdIndex}️⃣ `)} Build for production`);
     commandLines.push(
       `      ${chalk.cyan(`$ ${commandExamples.build.command}`)} ${chalk.gray(
-        `→ ${commandExamples.build.description}`
-      )}`
+        `→ ${commandExamples.build.description}`,
+      )}`,
     );
     cmdIndex++;
   }
@@ -211,7 +203,7 @@ export function generateCompletionSummary(
     userChoices.routing !== "none"
       ? [
           `   • ${userChoices.routing}: ${chalk.underline(
-            getRoutingInfo(userChoices.routing).docs
+            getRoutingInfo(userChoices.routing).docs,
           )}`,
         ]
       : []),
@@ -239,8 +231,8 @@ export function generateCompletionSummary(
           chalk.bgYellow(
             `${figures.pointer} Security Notice: ${vulnerabilities.reduce(
               (sum, v) => sum + v.count,
-              0
-            )} vulnerabilities found`
+              0,
+            )} vulnerabilities found`,
           ),
           ...vulnerabilities.map((vuln) => {
             const severityColor =
@@ -252,17 +244,15 @@ export function generateCompletionSummary(
               }[vuln.severity] || chalk.gray;
 
             return `   • ${severityColor(vuln.count)} ${severityColor(
-              vuln.severity
-            )} severity ${
-              vuln.count === 1 ? "vulnerability" : "vulnerabilities"
-            }`;
+              vuln.severity,
+            )} severity ${vuln.count === 1 ? "vulnerability" : "vulnerabilities"}`;
           }),
           "",
           `   ${chalk.cyan(
-            "Fix now (potential breaking changes):"
+            "Fix now (potential breaking changes):",
           )} ${chalk.cyan(`$ cd ${projectName} && ${auditFixCommand}`)}`,
           `   ${chalk.cyan("Learn more:")} ${chalk.cyan(
-            `$ cd ${projectName} && ${auditCommand}`
+            `$ cd ${projectName} && ${auditCommand}`,
           )}`,
         ].join("\n")
       : "";

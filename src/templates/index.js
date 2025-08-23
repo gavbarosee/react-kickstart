@@ -5,12 +5,7 @@ import { FileTemplateEngine } from "./file-template-engine.js";
 import { CommonTemplateBuilder } from "./common-template-builder.js";
 
 // Export template system classes
-export {
-  TemplateEngine,
-  UIRenderer,
-  FileTemplateEngine,
-  CommonTemplateBuilder,
-};
+export { TemplateEngine, UIRenderer, FileTemplateEngine, CommonTemplateBuilder };
 
 // Export factory functions for easy instantiation
 export function createUIRenderer(theme = "default") {

@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { StepNavigator } from "../prompts/navigation/step-navigator.js";
 
 describe("StepNavigator", () => {

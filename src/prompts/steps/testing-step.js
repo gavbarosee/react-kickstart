@@ -1,4 +1,5 @@
 import chalk from "chalk";
+
 import { BaseStep } from "./base-step.js";
 import { UI_UTILS } from "../../utils/index.js";
 
@@ -34,9 +35,7 @@ export class TestingStep extends BaseStep {
     } else if (answers.framework === "nextjs") {
       choices.push({
         name:
-          chalk.blue("Jest") +
-          " + React Testing Library " +
-          chalk.dim("(Recommended)"),
+          chalk.blue("Jest") + " + React Testing Library " + chalk.dim("(Recommended)"),
         value: "jest",
         description: "Next.js optimized testing setup",
       });
@@ -96,15 +95,12 @@ export class TestingStep extends BaseStep {
     if (testingSelection === "jest" && answers.framework === "vite") {
       console.log();
       UI_UTILS.warning(
-        "Using Jest with Vite. Consider Vitest for better Vite integration and faster execution."
+        "Using Jest with Vite. Consider Vitest for better Vite integration and faster execution.",
       );
-    } else if (
-      testingSelection === "vitest" &&
-      answers.framework === "nextjs"
-    ) {
+    } else if (testingSelection === "vitest" && answers.framework === "nextjs") {
       console.log();
       UI_UTILS.warning(
-        "Using Vitest with Next.js. Jest has better Next.js integration and built-in optimizations."
+        "Using Vitest with Next.js. Jest has better Next.js integration and built-in optimizations.",
       );
     }
   }

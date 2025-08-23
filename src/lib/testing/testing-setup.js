@@ -27,10 +27,7 @@ export class TestingSetup {
       this.userChoices.testing === "vitest" ? "vitest" : "@jest/globals";
 
     // Create example component test
-    const exampleTest = this.generateExampleComponentTest(
-      testFrameworkImport,
-      fileExt
-    );
+    const exampleTest = this.generateExampleComponentTest(testFrameworkImport, fileExt);
 
     // Write the test file
     const testDir = path.join(this.projectPath, "src", "__tests__");
@@ -46,7 +43,7 @@ export class TestingSetup {
         this.projectPath,
         "src",
         "test",
-        `test-utils.${testExt}`
+        `test-utils.${testExt}`,
       );
       await fs.writeFile(utilsPath, testUtilsContent);
     }
@@ -60,13 +57,10 @@ export class TestingSetup {
     const appImportPath = isNextJs ? "../pages/_app" : "../App";
     const componentName = isNextJs ? "MyApp" : "App";
     const hasStateManagement =
-      this.userChoices.stateManagement &&
-      this.userChoices.stateManagement !== "none";
+      this.userChoices.stateManagement && this.userChoices.stateManagement !== "none";
     const stateManagement = this.userChoices.stateManagement;
-    const hasRouting =
-      this.userChoices.routing && this.userChoices.routing !== "none";
-    const isViteWithRouting =
-      this.userChoices.framework === "vite" && hasRouting;
+    const hasRouting = this.userChoices.routing && this.userChoices.routing !== "none";
+    const isViteWithRouting = this.userChoices.framework === "vite" && hasRouting;
 
     return `import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from '${testFrameworkImport}';
@@ -90,11 +84,7 @@ ${
   stateManagement === "redux"
     ? "import { Provider } from 'react-redux';\nimport { store } from '../store/store';"
     : ""
-}${
-              stateManagement === "zustand"
-                ? "\n// Zustand store is automatically available"
-                : ""
-            }
+}${stateManagement === "zustand" ? "\n// Zustand store is automatically available" : ""}
 
 // Test wrapper for state management
 const TestWrapper = ({ children }) => {
@@ -123,9 +113,9 @@ describe('${componentName}', () => {
         ? `render(<MyApp {...mockAppProps} />);
     expect(screen.getByText('Test Component')).toBeInTheDocument();`
         : hasStateManagement && stateManagement === "redux"
-        ? `renderWithProvider(<${componentName} />);
+          ? `renderWithProvider(<${componentName} />);
     expect(screen.getByText(/react kickstart/i)).toBeInTheDocument();`
-        : `render(<${componentName} />);
+          : `render(<${componentName} />);
     expect(screen.getByText(/react kickstart/i)).toBeInTheDocument();`
     }
   });
@@ -156,8 +146,7 @@ describe('${componentName}', () => {
   });
 
   ${
-    hasStateManagement &&
-    (stateManagement === "redux" || stateManagement === "zustand")
+    hasStateManagement && (stateManagement === "redux" || stateManagement === "zustand")
       ? `it('handles counter interactions', async () => {
     const user = userEvent.setup();
     ${

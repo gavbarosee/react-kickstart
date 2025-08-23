@@ -1,4 +1,5 @@
 import chalk from "chalk";
+
 import { BaseStep } from "./base-step.js";
 import { PROCESS_UTILS } from "../../utils/index.js";
 
@@ -27,9 +28,7 @@ export class PackageManagerStep extends BaseStep {
   getDefault(answers) {
     if (answers.packageManager) {
       const choices = this.getChoices(answers);
-      const index = choices.findIndex(
-        (c) => c.value === answers.packageManager
-      );
+      const index = choices.findIndex((c) => c.value === answers.packageManager);
       return index >= 0 ? index : 0;
     }
     // Find default package manager in choices

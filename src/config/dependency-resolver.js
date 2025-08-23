@@ -86,8 +86,7 @@ export class DependencyResolver {
         // Both Next.js and Vite need the babel plugin for styled-components
         // Next.js: Uses built-in compiler optimization
         // Vite: Configured via React plugin babel configuration
-        deps["babel-plugin-styled-components"] =
-          styling.babelPluginStyledComponents;
+        deps["babel-plugin-styled-components"] = styling.babelPluginStyledComponents;
 
         return deps;
 
@@ -215,7 +214,7 @@ export class DependencyResolver {
     // State management
     if (userChoices.stateManagement && userChoices.stateManagement !== "none") {
       const stateDeps = this.getStateManagementDependencies(
-        userChoices.stateManagement
+        userChoices.stateManagement,
       );
       allDeps.dependencies = { ...allDeps.dependencies, ...stateDeps };
     }
@@ -252,7 +251,7 @@ export class DependencyResolver {
 
     if (userChoices.typescript && !userChoices.linting) {
       issues.push(
-        "TypeScript is enabled but linting is disabled. Consider enabling linting for better TypeScript support."
+        "TypeScript is enabled but linting is disabled. Consider enabling linting for better TypeScript support.",
       );
     }
 
@@ -271,11 +270,7 @@ export class DependencyResolver {
     // Validate TypeScript configuration compatibility
     if (userChoices.typescript) {
       const tsDeps = this.getTypeScriptDependencies();
-      const requiredTsPackages = [
-        "typescript",
-        "@types/react",
-        "@types/react-dom",
-      ];
+      const requiredTsPackages = ["typescript", "@types/react", "@types/react-dom"];
 
       for (const pkg of requiredTsPackages) {
         if (!tsDeps[pkg]) {
@@ -286,7 +281,7 @@ export class DependencyResolver {
       // Check for potential conflicts with harmonized config
       if (userChoices.framework === "vite" && userChoices.testing === "jest") {
         issues.push(
-          "Jest with Vite and TypeScript may require additional Babel configuration. Consider using Vitest for better TypeScript integration."
+          "Jest with Vite and TypeScript may require additional Babel configuration. Consider using Vitest for better TypeScript integration.",
         );
       }
     }

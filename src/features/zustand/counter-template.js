@@ -1,7 +1,8 @@
 import fs from "fs-extra";
 import path from "path";
-import { CORE_UTILS } from "../../utils/index.js";
+
 import { createCommonTemplateBuilder } from "../../templates/index.js";
+import { CORE_UTILS } from "../../utils/index.js";
 
 /**
  * Creates a replacement App component that includes the Counter
@@ -38,10 +39,7 @@ export function createAppWithCounter(projectPath, userChoices) {
 
     // Generate App component using CommonTemplateBuilder
     const templateBuilder = createCommonTemplateBuilder();
-    const content = templateBuilder.generateAppWithCounter(
-      userChoices,
-      "zustand"
-    );
+    const content = templateBuilder.generateAppWithCounter(userChoices, "zustand");
 
     // backup the original file
     fs.copyFileSync(appFile, `${appFile}.bak`);
@@ -73,7 +71,7 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
   if (userChoices.typescript) {
     content = content.replace(
       /import React from 'react';/,
-      `import React from 'react';\n${zustandImports}`
+      `import React from 'react';\n${zustandImports}`,
     );
   } else {
     // If no React import, add at the top
@@ -91,17 +89,17 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
   if (content.includes("useState")) {
     content = content.replace(
       /import { useState } from 'react';/,
-      "import React from 'react';" // Remove useState, keep React if needed
+      "import React from 'react';", // Remove useState, keep React if needed
     );
     content = content.replace(
       /const \[count, setCount\] = useState\(0\);/,
-      zustandLogic
+      zustandLogic,
     );
   } else {
     // Add Zustand logic after function declaration
     content = content.replace(
       /(export default function HomePage\(\) {\s*)/,
-      `$1${zustandLogic}\n`
+      `$1${zustandLogic}\n`,
     );
   }
 
@@ -113,7 +111,7 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
     // Update existing button onClick handlers for Zustand
     content = content.replace(
       /onClick={\(\) => setCount\(\(count\) => count \+ 1\)}/g,
-      "onClick={increment}"
+      "onClick={increment}",
     );
 
     // Add decrement and increment by amount buttons if using styled-components
@@ -130,7 +128,7 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
           <InteractiveButton onClick={() => incrementByAmount(5)}>
             +5
           </InteractiveButton>
-        </div>`
+        </div>`,
       );
     } else if (userChoices.styling === "tailwind") {
       content = content.replace(
@@ -154,7 +152,7 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
           >
             +5
           </button>
-        </div>`
+        </div>`,
       );
     } else {
       // CSS styling
@@ -164,7 +162,7 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
           <button onClick={decrement}>-</button>
           <button onClick={increment}>count is {count}</button>
           <button onClick={() => incrementByAmount(5)}>+5</button>
-        </div>`
+        </div>`,
       );
     }
   } else {
@@ -174,7 +172,7 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
     // Add the counter after the welcome message
     content = content.replace(
       /(Welcome to your new React project with React Router!\s*<\/p>)/,
-      `$1\n      ${counterSection}`
+      `$1\n      ${counterSection}`,
     );
   }
 
@@ -213,7 +211,7 @@ function addZustandCounterToNextjsAppPage(projectPath, userChoices) {
   // Replace the component function to include Zustand logic - more flexible regex
   content = content.replace(
     /(export default function Home\(\)\s*{)/,
-    `$1\n${zustandLogic}\n`
+    `$1\n${zustandLogic}\n`,
   );
 
   // Add Zustand counter section to the component
@@ -221,10 +219,7 @@ function addZustandCounterToNextjsAppPage(projectPath, userChoices) {
 
   // Add the counter section before the closing tag - simpler insertion
   if (userChoices.styling === "styled-components") {
-    content = content.replace(
-      /<\/Container>/,
-      `${counterSection}\n    </Container>`
-    );
+    content = content.replace(/<\/Container>/, `${counterSection}\n    </Container>`);
   } else if (userChoices.styling === "tailwind") {
     content = content.replace(/<\/main>/, `${counterSection}\n    </main>`);
   } else {
@@ -274,7 +269,7 @@ function addZustandCounterToNextjsPagesIndex(projectPath, userChoices) {
   // Replace the component function to include Zustand logic - more flexible regex
   content = content.replace(
     /(export default function Home\(\)\s*{)/,
-    `$1\n${zustandLogic}\n`
+    `$1\n${zustandLogic}\n`,
   );
 
   // Add Zustand counter section to the component
@@ -282,10 +277,7 @@ function addZustandCounterToNextjsPagesIndex(projectPath, userChoices) {
 
   // Add the counter section before the closing tag - simpler insertion
   if (userChoices.styling === "styled-components") {
-    content = content.replace(
-      /<\/Container>/,
-      `${counterSection}\n    </Container>`
-    );
+    content = content.replace(/<\/Container>/, `${counterSection}\n    </Container>`);
   } else if (userChoices.styling === "tailwind") {
     content = content.replace(/<\/main>/, `${counterSection}\n    </main>`);
   } else {

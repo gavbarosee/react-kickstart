@@ -51,7 +51,7 @@ export function setupTypeScript(projectPath, userChoices, framework = "vite") {
 
     fs.writeFileSync(
       path.join(projectPath, "tsconfig.node.json"),
-      JSON.stringify(nodeConfig, null, 2)
+      JSON.stringify(nodeConfig, null, 2),
     );
   } else if (framework === "nextjs") {
     // Next.js has a completely different TypeScript configuration
@@ -85,7 +85,7 @@ export function setupTypeScript(projectPath, userChoices, framework = "vite") {
 
     fs.writeFileSync(
       path.join(projectPath, "tsconfig.json"),
-      JSON.stringify(nextTsConfig, null, 2)
+      JSON.stringify(nextTsConfig, null, 2),
     );
 
     // Create next-env.d.ts
@@ -103,6 +103,6 @@ export function setupTypeScript(projectPath, userChoices, framework = "vite") {
   // Write the TypeScript configuration for all other frameworks
   fs.writeFileSync(
     path.join(projectPath, "tsconfig.json"),
-    JSON.stringify(baseConfig, null, 2)
+    JSON.stringify(baseConfig, null, 2),
   );
 }

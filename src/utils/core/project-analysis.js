@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { getConfigExtension } from "./file-extensions.js";
 
 /**
@@ -34,11 +35,7 @@ export function categorizeDependencies(packageJsonPath) {
       const dep = `${name}@${version}`;
 
       // React ecosystem
-      if (
-        ["react", "react-dom", "@types/react", "@types/react-dom"].includes(
-          name
-        )
-      ) {
+      if (["react", "react-dom", "@types/react", "@types/react-dom"].includes(name)) {
         categories["React ecosystem"].push(dep);
       }
       // UI frameworks
@@ -74,20 +71,12 @@ export function categorizeDependencies(packageJsonPath) {
         categories["Dev tools"].push(dep);
       }
       // Routing
-      else if (
-        ["react-router-dom", "@reach/router", "next/router"].includes(name)
-      ) {
+      else if (["react-router-dom", "@reach/router", "next/router"].includes(name)) {
         categories["Routing"].push(dep);
       }
       // State management
       else if (
-        [
-          "@reduxjs/toolkit",
-          "react-redux",
-          "zustand",
-          "jotai",
-          "valtio",
-        ].includes(name)
+        ["@reduxjs/toolkit", "react-redux", "zustand", "jotai", "valtio"].includes(name)
       ) {
         categories["State management"].push(dep);
       }
@@ -176,7 +165,7 @@ export function getConfigurationFiles(
   styling,
   linting,
   stateManagement,
-  testing
+  testing,
 ) {
   const configs = [];
 

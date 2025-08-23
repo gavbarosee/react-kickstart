@@ -1,7 +1,7 @@
-import { AxiosReactQuerySetup } from "./axios-react-query-setup.js";
 import { AxiosOnlySetup } from "./axios-only-setup.js";
-import { FetchReactQuerySetup } from "./fetch-react-query-setup.js";
+import { AxiosReactQuerySetup } from "./axios-react-query-setup.js";
 import { FetchOnlySetup } from "./fetch-only-setup.js";
+import { FetchReactQuerySetup } from "./fetch-react-query-setup.js";
 
 /**
  * Factory function for creating API setup instances
@@ -32,10 +32,5 @@ export function setupApiManagement(projectPath, userChoices, framework) {
 }
 
 // Export the classes for direct use if needed
-export {
-  AxiosReactQuerySetup,
-  AxiosOnlySetup,
-  FetchReactQuerySetup,
-  FetchOnlySetup,
-};
+export { AxiosReactQuerySetup, AxiosOnlySetup, FetchReactQuerySetup, FetchOnlySetup };
 export { BaseApiSetup } from "./base-api-setup.js";

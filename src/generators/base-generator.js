@@ -1,14 +1,15 @@
 import fs from "fs-extra";
 import path from "path";
-import { UI_UTILS } from "../utils/index.js";
-import { createDirectoryStructure } from "../lib/file-generation/index.js";
-import { setupLinting } from "../lib/linting.js";
-import { setupTypeScript } from "../lib/typescript.js";
+
+import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
+import { setupApi } from "../features/api/index.js";
 import { setupRedux } from "../features/redux/index.js";
 import { setupZustand } from "../features/zustand/index.js";
-import { setupApi } from "../features/api/index.js";
+import { createDirectoryStructure } from "../lib/file-generation/index.js";
+import { setupLinting } from "../lib/linting.js";
 import { TestingSetup } from "../lib/testing/index.js";
-import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
+import { setupTypeScript } from "../lib/typescript.js";
+import { UI_UTILS } from "../utils/index.js";
 
 /**
  * Abstract base class for all project generators
@@ -41,11 +42,7 @@ export class BaseGenerator {
         await this.createBaseStructure(projectPath);
 
         // Step 3: Create package.json
-        await this.createPackageConfiguration(
-          projectPath,
-          projectName,
-          userChoices
-        );
+        await this.createPackageConfiguration(projectPath, projectName, userChoices);
 
         // Step 4: Create framework-specific config files
         await this.createFrameworkConfiguration(projectPath, userChoices);
@@ -64,7 +61,7 @@ export class BaseGenerator {
       {
         type: ERROR_TYPES.FILESYSTEM,
         shouldCleanup: true,
-      }
+      },
     );
   }
 
@@ -86,18 +83,14 @@ export class BaseGenerator {
    * Step 3: Create package.json - Must be implemented by subclasses
    */
   async createPackageConfiguration(projectPath, projectName, userChoices) {
-    throw new Error(
-      "createPackageConfiguration must be implemented by subclass"
-    );
+    throw new Error("createPackageConfiguration must be implemented by subclass");
   }
 
   /**
    * Step 4: Create framework-specific configuration files - Must be implemented by subclasses
    */
   async createFrameworkConfiguration(projectPath, userChoices) {
-    throw new Error(
-      "createFrameworkConfiguration must be implemented by subclass"
-    );
+    throw new Error("createFrameworkConfiguration must be implemented by subclass");
   }
 
   /**
@@ -183,16 +176,10 @@ export class BaseGenerator {
       if (deployment === "vercel") {
         await this.createVercelConfiguration(projectPath, framework);
       } else if (deployment === "netlify") {
-        await this.createNetlifyConfiguration(
-          projectPath,
-          framework,
-          userChoices
-        );
+        await this.createNetlifyConfiguration(projectPath, framework, userChoices);
       }
     } catch (error) {
-      UI_UTILS.error(
-        `Failed to create deployment configuration: ${error.message}`
-      );
+      UI_UTILS.error(`Failed to create deployment configuration: ${error.message}`);
       throw error;
     }
   }
@@ -298,9 +285,7 @@ module.exports = nextConfig;
    * Step 7: Create framework-specific files - Must be implemented by subclasses
    */
   async createFrameworkSpecificFiles(projectPath, userChoices) {
-    throw new Error(
-      "createFrameworkSpecificFiles must be implemented by subclass"
-    );
+    throw new Error("createFrameworkSpecificFiles must be implemented by subclass");
   }
 
   /**

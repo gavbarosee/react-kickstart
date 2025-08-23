@@ -1,7 +1,8 @@
 import chalk from "chalk";
-import inquirer from "inquirer";
-import { BaseStep } from "./base-step.js";
 import { execa } from "execa";
+import inquirer from "inquirer";
+
+import { BaseStep } from "./base-step.js";
 import { UI_UTILS } from "../../utils/index.js";
 
 export class EditorStep extends BaseStep {
@@ -55,8 +56,7 @@ export class EditorStep extends BaseStep {
     // If user selected "Yes" to open editor, prompt for editor choice
     if (result.selection === true) {
       const resolveEditorCommand = (ed) => {
-        if (ed === "vscode")
-          return process.platform === "win32" ? "code.cmd" : "code";
+        if (ed === "vscode") return process.platform === "win32" ? "code.cmd" : "code";
         if (ed === "cursor")
           return process.platform === "win32" ? "cursor.cmd" : "cursor";
         return null;
@@ -88,9 +88,7 @@ export class EditorStep extends BaseStep {
         });
 
       if (choices.length === 0) {
-        UI_UTILS.warning(
-          "No supported editor detected in PATH (Cursor or VS Code)."
-        );
+        UI_UTILS.warning("No supported editor detected in PATH (Cursor or VS Code).");
         UI_UTILS.warning("You can open the project manually after setup.");
         answers.openEditor = false;
       } else {
@@ -100,7 +98,7 @@ export class EditorStep extends BaseStep {
             available.vscode ? "VS Code" : null,
           ]
             .filter(Boolean)
-            .join(", ")}`
+            .join(", ")}`,
         );
 
         const { editor } = await inquirer.prompt([

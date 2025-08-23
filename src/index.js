@@ -1,14 +1,11 @@
-import path from "path";
-import fs from "fs-extra";
 import chalk from "chalk";
-import {
-  promptUser,
-  getDefaultChoices,
-  getFrameworkDefaults,
-} from "./prompts.js";
-import generateProject from "./generators/index.js";
-import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "./utils/index.js";
+import fs from "fs-extra";
+import path from "path";
+
 import { createErrorHandler, ERROR_TYPES } from "./errors/index.js";
+import generateProject from "./generators/index.js";
+import { promptUser, getDefaultChoices, getFrameworkDefaults } from "./prompts.js";
+import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "./utils/index.js";
 
 /**
  * Build userChoices object from CLI options when --yes flag is used
@@ -27,8 +24,7 @@ function buildUserChoicesFromOptions(options) {
     api: options.api || "none",
     testing: options.testing || "none",
     routing: options.routing || (framework === "vite" ? "none" : undefined),
-    nextRouting:
-      options.nextRouting || (framework === "nextjs" ? "app" : undefined),
+    nextRouting: options.nextRouting || (framework === "nextjs" ? "app" : undefined),
     packageManager: options.packageManager || "npm",
     linting: options.linting !== false, // Default true unless --no-linting
     initGit: options.git !== false, // Default true unless --no-git
@@ -49,8 +45,7 @@ export async function createApp(projectDirectory, options = {}) {
   return errorHandler.withErrorHandling(
     async () => {
       // Validate project directory input for security
-      const dirValidation =
-        CORE_UTILS.validateProjectDirectory(projectDirectory);
+      const dirValidation = CORE_UTILS.validateProjectDirectory(projectDirectory);
       if (!dirValidation.valid) {
         throw new Error(`Invalid project directory: ${dirValidation.error}`);
       }
@@ -108,7 +103,7 @@ export async function createApp(projectDirectory, options = {}) {
         }
         // For other errors (permission, etc), throw a more descriptive error
         throw new Error(
-          `Cannot create or access directory ${projectPath}: ${error.message}`
+          `Cannot create or access directory ${projectPath}: ${error.message}`,
         );
       }
 
@@ -124,7 +119,7 @@ export async function createApp(projectDirectory, options = {}) {
         const confirmed = await UI_UTILS.showSummaryPrompt(
           projectPath,
           projectName,
-          userChoices
+          userChoices,
         );
 
         if (!confirmed) {
@@ -148,7 +143,7 @@ export async function createApp(projectDirectory, options = {}) {
         console.log(
           `Project configured with:\n  ${chalk.magenta("🎨")} ${
             userChoices.styling
-          } styling`
+          } styling`,
         );
       }
 
@@ -157,9 +152,7 @@ export async function createApp(projectDirectory, options = {}) {
       // STEP 2: install dependencies (skippable via --skip-install)
       let installResult = { success: true, skipped: false };
       if (options.skipInstall) {
-        console.log(
-          chalk.yellow("Skipping dependency installation (--skip-install).")
-        );
+        console.log(chalk.yellow("Skipping dependency installation (--skip-install)."));
         installResult = { success: true, skipped: true };
       } else {
         UI_UTILS.nextStep("Installing dependencies");
@@ -169,21 +162,21 @@ export async function createApp(projectDirectory, options = {}) {
             PROCESS_UTILS.installDependencies(
               projectPath,
               userChoices.packageManager,
-              userChoices.framework
+              userChoices.framework,
             ),
           {
             type: ERROR_TYPES.DEPENDENCY,
             shouldCleanup,
             showRecovery: true,
-          }
+          },
         );
         // finalize progress bar
         UI_UTILS.stopProgress(true);
         if (installResult.skipped) {
           console.log(
             chalk.yellow(
-              "⚠️ Dependency installation was skipped. Some features may not work properly."
-            )
+              "⚠️ Dependency installation was skipped. Some features may not work properly.",
+            ),
           );
         } else if (!installResult.success) {
           throw new Error("Failed to install dependencies");
@@ -197,19 +190,14 @@ export async function createApp(projectDirectory, options = {}) {
       if (userChoices.initGit) {
         await errorHandler.withErrorHandling(
           () => PROCESS_UTILS.initGit(projectPath, userChoices),
-          { type: ERROR_TYPES.PROCESS }
+          { type: ERROR_TYPES.PROCESS },
         );
       }
 
       if (userChoices.openEditor) {
         await errorHandler.withErrorHandling(
-          () =>
-            PROCESS_UTILS.openEditor(
-              projectPath,
-              userChoices.editor,
-              userChoices
-            ),
-          { type: ERROR_TYPES.PROCESS }
+          () => PROCESS_UTILS.openEditor(projectPath, userChoices.editor, userChoices),
+          { type: ERROR_TYPES.PROCESS },
         );
       }
 
@@ -223,7 +211,7 @@ export async function createApp(projectDirectory, options = {}) {
         projectName,
         userChoices,
         installResult.vulnerabilities,
-        installResult.packageCount
+        installResult.packageCount,
       );
       console.log(completionSummary);
 
@@ -231,7 +219,7 @@ export async function createApp(projectDirectory, options = {}) {
       if (options.autostart !== false && userChoices.autoStart !== false) {
         await errorHandler.withErrorHandling(
           () => PROCESS_UTILS.startProject(projectPath, userChoices),
-          { type: ERROR_TYPES.PROCESS }
+          { type: ERROR_TYPES.PROCESS },
         );
       }
 
@@ -249,6 +237,6 @@ export async function createApp(projectDirectory, options = {}) {
       shouldCleanup: false,
       verbose: options.verbose,
       showRecovery: false,
-    }
+    },
   );
 }

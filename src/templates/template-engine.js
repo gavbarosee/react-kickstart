@@ -212,9 +212,7 @@ export class TemplateEngine {
       render: (icon, label, value, description = "") => {
         const theme = this.getTheme();
         const paddedLabel = `${icon} ${label}:`.padEnd(20);
-        const descText = description
-          ? theme.colors.dim(` → ${description}`)
-          : "";
+        const descText = description ? theme.colors.dim(` → ${description}`) : "";
         return `${paddedLabel} ${value}${descText}`;
       },
     });
@@ -233,9 +231,7 @@ export class TemplateEngine {
           output.push("");
           output.push(theme.colors.info("Suggestions:"));
           suggestions.forEach((suggestion) => {
-            output.push(
-              theme.colors.info(`  ${theme.icons.bullet} ${suggestion}`)
-            );
+            output.push(theme.colors.info(`  ${theme.icons.bullet} ${suggestion}`));
           });
         }
 
@@ -259,9 +255,7 @@ export class TemplateEngine {
 
         const ext = typescript ? "tsx" : "jsx";
         const reactImport = typescript ? "import React from 'react';" : "";
-        const additionalImports = imports
-          .map((imp) => `import ${imp};`)
-          .join("\n");
+        const additionalImports = imports.map((imp) => `import ${imp};`).join("\n");
 
         let component = `${reactImport}
 ${additionalImports}
@@ -285,17 +279,11 @@ export ${exports === "default" ? "default " : ""}function ${componentName}() {
     this.templates.set("htmlFile", {
       type: "file",
       render: (projectName, options = {}) => {
-        const {
-          framework = "vite",
-          typescript = false,
-          entryPoint = "main",
-        } = options;
+        const { framework = "vite", typescript = false, entryPoint = "main" } = options;
 
         const ext = typescript ? "tsx" : "jsx";
         const scriptSrc =
-          framework === "vite"
-            ? `/src/${entryPoint}.${ext}`
-            : `/${entryPoint}.js`;
+          framework === "vite" ? `/src/${entryPoint}.${ext}` : `/${entryPoint}.js`;
 
         return `<!doctype html>
 <html lang="en">
@@ -336,7 +324,7 @@ export ${exports === "default" ? "default " : ""}function ${componentName}() {
             devDependencies,
           },
           null,
-          2
+          2,
         );
       },
     });

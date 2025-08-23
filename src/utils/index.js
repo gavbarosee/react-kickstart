@@ -7,19 +7,19 @@
  */
 
 // Import all utilities from their respective modules
-import * as filesystem from "./core/filesystem.js";
-import * as validation from "./core/validation.js";
-import * as projectAnalysis from "./core/project-analysis.js";
 import * as dataFormatting from "./core/data-formatting.js";
-import * as fileExtensions from "./core/file-extensions.js";
 import * as directoryManagement from "./core/directory-management.js";
-import * as packageManagers from "./process/package-managers.js";
-import * as uiLogging from "./ui/logging.js";
-import * as git from "./process/git.js";
+import * as fileExtensions from "./core/file-extensions.js";
+import * as filesystem from "./core/filesystem.js";
+import * as projectAnalysis from "./core/project-analysis.js";
+import * as validation from "./core/validation.js";
 import * as editor from "./process/editor.js";
+import * as git from "./process/git.js";
+import * as packageManagers from "./process/package-managers.js";
 import * as startProject from "./process/start-project.js";
-import * as summary from "./ui/summary.js";
 import * as completion from "./ui/completion.js";
+import * as uiLogging from "./ui/logging.js";
+import * as summary from "./ui/summary.js";
 
 // ============================================================================
 // CORE_UTILS - Fundamental functions used throughout the application

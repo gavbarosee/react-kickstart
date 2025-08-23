@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
+
 import { PromptRenderer } from "../prompts/ui/prompt-renderer.js";
 
 describe("PromptRenderer call order and omissions", () => {

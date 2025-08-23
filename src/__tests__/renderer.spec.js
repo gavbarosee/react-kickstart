@@ -1,5 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import chalk from "chalk";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+
 import { PromptRenderer } from "../prompts/ui/prompt-renderer.js";
 
 describe("PromptRenderer", () => {

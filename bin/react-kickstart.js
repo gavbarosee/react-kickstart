@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
-import { readFile } from "fs/promises";
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
 import { program } from "commander";
+import { readFile } from "fs/promises";
+import { dirname, resolve } from "path";
+import { fileURLToPath } from "url";
+
 import { createApp } from "../src/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -24,38 +25,30 @@ program
   .version(packageJson.version)
   .argument("[project-directory]", "Project directory name")
   .option("-y, --yes", "Skip all prompts and use default values")
-  .option(
-    "-f, --framework <framework>",
-    "Framework to use (vite, nextjs)",
-    "vite"
-  )
+  .option("-f, --framework <framework>", "Framework to use (vite, nextjs)", "vite")
   .option("--typescript", "Enable TypeScript")
   .option("--no-typescript", "Disable TypeScript (default)")
   .option(
     "--styling <styling>",
     "Styling solution (tailwind, styled-components, css)",
-    "tailwind"
+    "tailwind",
   )
   .option("--state <state>", "State management (redux, zustand, none)", "none")
   .option(
     "--api <api>",
     "API setup (axios-react-query, axios-only, fetch-react-query, fetch-only, none)",
-    "none"
+    "none",
   )
-  .option(
-    "--testing <testing>",
-    "Testing framework (vitest, jest, none)",
-    "none"
-  )
+  .option("--testing <testing>", "Testing framework (vitest, jest, none)", "none")
   .option(
     "--routing <routing>",
     "Routing library (react-router, none) - Vite only",
-    "none"
+    "none",
   )
   .option(
     "--next-routing <routing>",
     "Next.js routing (app, pages) - Next.js only",
-    "app"
+    "app",
   )
   .option("--package-manager <pm>", "Package manager (npm, yarn)", "npm")
   .option("--no-linting", "Disable ESLint")

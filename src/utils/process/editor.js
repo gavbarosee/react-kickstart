@@ -1,9 +1,10 @@
 import { execa } from "execa";
 import fs from "fs-extra";
-import path from "path";
 import ora from "ora";
-import { UI_UTILS, CORE_UTILS } from "../index.js";
+import path from "path";
+
 import { createErrorHandler, ERROR_TYPES } from "../../errors/index.js";
+import { UI_UTILS, CORE_UTILS } from "../index.js";
 
 export async function openEditor(projectPath, editor = "vscode", userChoices) {
   const errorHandler = createErrorHandler();
@@ -24,8 +25,7 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
   return errorHandler.withErrorHandling(
     async () => {
       const resolveEditorCommand = (ed) => {
-        if (ed === "vscode")
-          return process.platform === "win32" ? "code.cmd" : "code";
+        if (ed === "vscode") return process.platform === "win32" ? "code.cmd" : "code";
         if (ed === "cursor")
           return process.platform === "win32" ? "cursor.cmd" : "cursor";
         return null;
@@ -51,7 +51,6 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
 
       let selectedEditor = null;
       for (const candidate of preferredOrder) {
-        // eslint-disable-next-line no-await-in-loop
         if (await isEditorAvailable(candidate)) {
           selectedEditor = candidate;
           break;
@@ -62,14 +61,12 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
         if (isExplicitChoice) {
           spinner.fail(`${humanName(editor)} CLI not found in PATH.`);
           UI_UTILS.warning(
-            `Install ${humanName(editor)} CLI and ensure it's in your PATH.`
+            `Install ${humanName(editor)} CLI and ensure it's in your PATH.`,
           );
         } else {
-          spinner.fail(
-            "No supported editor found in PATH (Cursor or VS Code)."
-          );
+          spinner.fail("No supported editor found in PATH (Cursor or VS Code).");
           UI_UTILS.warning(
-            "Install Cursor (`cursor`) or VS Code (`code`) CLI and ensure it's in your PATH."
+            "Install Cursor (`cursor`) or VS Code (`code`) CLI and ensure it's in your PATH.",
           );
         }
         return false;
@@ -81,18 +78,14 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
       spinner.stop();
 
       console.log(`  🧰 Setting up ${humanName(selectedEditor)} configuration`);
-      console.log(
-        "    → Added .vscode/extensions.json with recommended extensions"
-      );
+      console.log("    → Added .vscode/extensions.json with recommended extensions");
 
       if (typescript) {
         console.log("    → Suggested TypeScript and React extensions");
       }
 
       if (styling === "tailwind") {
-        console.log(
-          "    → Configured settings.json with Tailwind IntelliSense"
-        );
+        console.log("    → Configured settings.json with Tailwind IntelliSense");
       } else if (styling === "styled-components") {
         console.log("    → Suggested styled-components syntax highlighting");
       }
@@ -124,8 +117,8 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
         if (fallback && (await isEditorAvailable(fallback))) {
           UI_UTILS.warning(
             `Couldn't open ${humanName(
-              selectedEditor
-            )}. Falling back to ${humanName(fallback)}...`
+              selectedEditor,
+            )}. Falling back to ${humanName(fallback)}...`,
           );
           const secondAttempt = await tryOpen(fallback);
           if (secondAttempt.success) return true;
@@ -134,13 +127,13 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
 
       UI_UTILS.warning(
         `Couldn't open ${humanName(
-          selectedEditor
-        )}. It might not be installed or not in PATH.`
+          selectedEditor,
+        )}. It might not be installed or not in PATH.`,
       );
       UI_UTILS.warning(
         `To open your project manually, run: ${resolveEditorCommand(
-          "cursor"
-        )} ${projectPath} or ${resolveEditorCommand("vscode")} ${projectPath}`
+          "cursor",
+        )} ${projectPath} or ${resolveEditorCommand("vscode")} ${projectPath}`,
       );
       return false;
     },
@@ -150,7 +143,7 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
         spinner.fail("Failed to open project in your editor");
         return false; // Continue without opening editor
       },
-    }
+    },
   );
 }
 
@@ -169,18 +162,14 @@ function createEditorConfig(projectPath, editor, userChoices) {
 
   // ts extensions
   if (typescript) {
-    extensions.recommendations.push(
-      "ms-typescript.typescript-language-features"
-    );
+    extensions.recommendations.push("ms-typescript.typescript-language-features");
   }
 
   // styling extensions
   if (styling === "tailwind") {
     extensions.recommendations.push("bradlc.vscode-tailwindcss");
   } else if (styling === "styled-components") {
-    extensions.recommendations.push(
-      "styled-components.vscode-styled-components"
-    );
+    extensions.recommendations.push("styled-components.vscode-styled-components");
   }
 
   if (framework === "vite") {

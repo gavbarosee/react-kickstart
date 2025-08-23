@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { PromptFlow } from "../prompts/prompt-flow.js";
 
 const stepOrder = [
@@ -62,18 +63,14 @@ describe("PromptFlow.clearAnswersAfterStep parametric", () => {
       const keepKeys = new Set();
       const index = stepOrder.indexOf(stepName);
       const stepsToKeep = stepOrder.slice(0, index + 1);
-      stepsToKeep.forEach((s) =>
-        stepToAnswerKey[s].forEach((k) => keepKeys.add(k))
-      );
+      stepsToKeep.forEach((s) => stepToAnswerKey[s].forEach((k) => keepKeys.add(k)));
 
       // kept
       for (const k of keepKeys) {
         expect(flow.answers[k]).not.toBeUndefined();
       }
       // cleared
-      for (const k of Object.keys(stepToAnswerKey).flatMap(
-        (s) => stepToAnswerKey[s]
-      )) {
+      for (const k of Object.keys(stepToAnswerKey).flatMap((s) => stepToAnswerKey[s])) {
         if (!keepKeys.has(k)) {
           expect(flow.answers[k]).toBeUndefined();
         }

@@ -1,5 +1,5 @@
-import validateProjectName from "validate-npm-package-name";
 import path from "path";
+import validateProjectName from "validate-npm-package-name";
 
 /**
  * Validation utilities - input validation and verification functions
@@ -81,8 +81,7 @@ export function validateProjectDirectory(projectDir) {
   ) {
     return {
       valid: false,
-      error:
-        "Project directory cannot contain path traversal sequences (../, .\\)",
+      error: "Project directory cannot contain path traversal sequences (../, .\\)",
     };
   }
 
@@ -180,7 +179,7 @@ export function validateUserChoices(userChoices) {
     errors.push(
       `Invalid framework: ${
         userChoices.framework
-      }. Must be one of: ${validFrameworks.join(", ")}`
+      }. Must be one of: ${validFrameworks.join(", ")}`,
     );
   }
 
@@ -190,7 +189,7 @@ export function validateUserChoices(userChoices) {
     errors.push(
       `Invalid package manager: ${
         userChoices.packageManager
-      }. Must be one of: ${validPackageManagers.join(", ")}`
+      }. Must be one of: ${validPackageManagers.join(", ")}`,
     );
   }
 
@@ -200,7 +199,7 @@ export function validateUserChoices(userChoices) {
     errors.push(
       `Invalid styling option: ${
         userChoices.styling
-      }. Must be one of: ${validStyling.join(", ")}`
+      }. Must be one of: ${validStyling.join(", ")}`,
     );
   }
 
@@ -210,7 +209,7 @@ export function validateUserChoices(userChoices) {
     errors.push(
       `Invalid routing option: ${
         userChoices.routing
-      }. Must be one of: ${validRouting.join(", ")}`
+      }. Must be one of: ${validRouting.join(", ")}`,
     );
   }
 
@@ -220,7 +219,7 @@ export function validateUserChoices(userChoices) {
     warnings.push(
       `Unknown editor: ${
         userChoices.editor
-      }. Supported editors: ${validEditors.join(", ")}`
+      }. Supported editors: ${validEditors.join(", ")}`,
     );
   }
 
@@ -249,7 +248,7 @@ export function validateChoiceCombinations(userChoices) {
   // 1. Styling conflicts: Tailwind + styled-components
   if (userChoices.styling === "styled-components") {
     warnings.push(
-      "⚠️  Using styled-components with component-scoped styles. Consider if you need global styling as well."
+      "⚠️  Using styled-components with component-scoped styles. Consider if you need global styling as well.",
     );
   }
 
@@ -257,12 +256,12 @@ export function validateChoiceCombinations(userChoices) {
   if (userChoices.api && userChoices.api.includes("react-query")) {
     if (userChoices.stateManagement === "redux") {
       warnings.push(
-        "⚠️  React Query + Redux detected. React Query handles server state very well - you might not need Redux for server data. Consider using Redux only for client-side state."
+        "⚠️  React Query + Redux detected. React Query handles server state very well - you might not need Redux for server data. Consider using Redux only for client-side state.",
       );
     }
     if (userChoices.stateManagement === "zustand") {
       warnings.push(
-        "⚠️  React Query + Zustand detected. React Query handles server state - consider using Zustand primarily for client-side application state."
+        "⚠️  React Query + Zustand detected. React Query handles server state - consider using Zustand primarily for client-side application state.",
       );
     }
   }
@@ -270,19 +269,19 @@ export function validateChoiceCombinations(userChoices) {
   // 3. Testing framework + framework optimization warnings
   if (userChoices.testing === "jest" && userChoices.framework === "vite") {
     warnings.push(
-      "⚠️  Using Jest with Vite. Vitest is optimized for Vite and provides better performance and zero-config setup."
+      "⚠️  Using Jest with Vite. Vitest is optimized for Vite and provides better performance and zero-config setup.",
     );
   }
   if (userChoices.testing === "vitest" && userChoices.framework === "nextjs") {
     warnings.push(
-      "⚠️  Using Vitest with Next.js. Jest is better integrated with Next.js and has built-in optimizations."
+      "⚠️  Using Vitest with Next.js. Jest is better integrated with Next.js and has built-in optimizations.",
     );
   }
 
   // 4. TypeScript + linting combination advice
   if (userChoices.typescript && !userChoices.linting) {
     warnings.push(
-      "⚠️  TypeScript without ESLint detected. ESLint with TypeScript rules helps catch additional issues beyond type checking."
+      "⚠️  TypeScript without ESLint detected. ESLint with TypeScript rules helps catch additional issues beyond type checking.",
     );
   }
 
@@ -293,7 +292,7 @@ export function validateChoiceCombinations(userChoices) {
   ) {
     // This is actually handled well by Next.js, so just informational
     warnings.push(
-      "ℹ️  Next.js + styled-components: SSR support is automatically configured."
+      "ℹ️  Next.js + styled-components: SSR support is automatically configured.",
     );
   }
 
@@ -309,14 +308,14 @@ export function validateChoiceCombinations(userChoices) {
 
   if (complexFeatures >= 5) {
     warnings.push(
-      "ℹ️  You've selected many advanced features. This creates a powerful setup but may increase complexity for beginners."
+      "ℹ️  You've selected many advanced features. This creates a powerful setup but may increase complexity for beginners.",
     );
   }
 
   // 7. Minimal setup suggestion
   if (complexFeatures <= 2 && !userChoices.typescript) {
     warnings.push(
-      "ℹ️  Simple setup detected. Consider adding TypeScript and ESLint for better development experience."
+      "ℹ️  Simple setup detected. Consider adding TypeScript and ESLint for better development experience.",
     );
   }
 

@@ -12,17 +12,10 @@ export class BaseContentGenerator {
    * Main content generation method - Template Method pattern
    */
   generateAppComponent(fileExt, stylingType, userChoices) {
-    const componentStructure = this.getComponentStructure(
-      stylingType,
-      userChoices
-    );
+    const componentStructure = this.getComponentStructure(stylingType, userChoices);
     const imports = this.generateImports(stylingType, userChoices);
     const styles = this.generateStyles(stylingType, userChoices);
-    const component = this.generateComponent(
-      componentStructure,
-      fileExt,
-      userChoices
-    );
+    const component = this.generateComponent(componentStructure, fileExt, userChoices);
 
     return `${imports}${styles}${component}`;
   }
@@ -140,8 +133,7 @@ export class BaseContentGenerator {
         nextjs:
           "background-color: #0070f3; color: white; font-weight: bold; border: none; border-radius: 4px; padding: 0.5rem 1rem; cursor: pointer; transition: background-color 0.3s ease; &:hover { background-color: #0051a2; }",
       },
-      tailwind:
-        "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
+      tailwind: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
       css: "",
     };
 

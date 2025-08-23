@@ -1,6 +1,6 @@
+import chalk from "chalk";
 import fs from "fs-extra";
 import path from "path";
-import chalk from "chalk";
 
 /**
  * Filesystem utilities - file/directory operations and analysis
@@ -28,8 +28,7 @@ export function isProjectCreatedByTool(dirPath) {
       // Check if dependencies contain React
       const hasReactDep =
         packageJson.dependencies &&
-        (packageJson.dependencies.react ||
-          packageJson.dependencies["react-dom"]);
+        (packageJson.dependencies.react || packageJson.dependencies["react-dom"]);
 
       if (hasExpectedScripts && hasReactDep) {
         return true;
@@ -45,9 +44,7 @@ export function isProjectCreatedByTool(dirPath) {
     // Evidence of our generated structure
     return (srcExists && publicExists) || appExists || pagesExists;
   } catch (error) {
-    console.error(
-      chalk.red(`Error checking directory contents: ${error.message}`)
-    );
+    console.error(chalk.red(`Error checking directory contents: ${error.message}`));
     return false;
   }
 }
@@ -129,9 +126,7 @@ export function countPackages(packageJsonPath) {
   try {
     const packageData = fs.readJsonSync(packageJsonPath);
     const dependencies = Object.keys(packageData.dependencies || {}).length;
-    const devDependencies = Object.keys(
-      packageData.devDependencies || {}
-    ).length;
+    const devDependencies = Object.keys(packageData.devDependencies || {}).length;
     const totalDirectDeps = dependencies + devDependencies;
 
     // Estimate total packages (including transitive dependencies)

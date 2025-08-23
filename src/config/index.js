@@ -1,7 +1,7 @@
 // Import classes for factory functions
 import { ConfigurationBuilder } from "./configuration-builder.js";
-import { PackageJsonBuilder } from "./package-json-builder.js";
 import { DependencyResolver } from "./dependency-resolver.js";
+import { PackageJsonBuilder } from "./package-json-builder.js";
 
 // Export the main configuration builders
 export { ConfigurationBuilder } from "./configuration-builder.js";

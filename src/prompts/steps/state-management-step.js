@@ -1,4 +1,5 @@
 import chalk from "chalk";
+
 import { BaseStep } from "./base-step.js";
 
 export class StateManagementStep extends BaseStep {
@@ -24,13 +25,11 @@ export class StateManagementStep extends BaseStep {
   getChoices(answers) {
     return [
       {
-        name:
-          chalk.blue("Redux Toolkit") + " - Powerful state management library",
+        name: chalk.blue("Redux Toolkit") + " - Powerful state management library",
         value: "redux",
       },
       {
-        name:
-          chalk.green("Zustand") + " - Lightweight state management solution",
+        name: chalk.green("Zustand") + " - Lightweight state management solution",
         value: "zustand",
       },
       {

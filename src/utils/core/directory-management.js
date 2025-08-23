@@ -121,11 +121,7 @@ export const DIRECTORY_STRUCTURES = {
  * @param {Object} options - Setup options
  * @returns {Object} Created directory paths
  */
-export function createFrameworkDirectories(
-  projectPath,
-  framework,
-  options = {}
-) {
+export function createFrameworkDirectories(projectPath, framework, options = {}) {
   const { routing, stateManagement, nextRouting } = options;
 
   let structure;
@@ -164,11 +160,7 @@ export function createFrameworkDirectories(
  * @param {string} stateManager - State manager type ('redux' or 'zustand')
  * @returns {Object} Created directory paths
  */
-export function createStateManagementDirectories(
-  projectPath,
-  framework,
-  stateManager
-) {
+export function createStateManagementDirectories(projectPath, framework, stateManager) {
   if (framework === "nextjs") {
     return createProjectDirectories(projectPath, {
       lib: "lib",

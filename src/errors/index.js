@@ -24,8 +24,8 @@ export const ERROR_SEVERITY = {
 };
 
 // Import classes for factory functions
-import { ErrorHandler } from "./error-handler.js";
 import { CleanupManager } from "./cleanup-manager.js";
+import { ErrorHandler } from "./error-handler.js";
 import { UserErrorReporter } from "./user-error-reporter.js";
 
 // Factory function to create error handler

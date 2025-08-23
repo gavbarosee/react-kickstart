@@ -1,4 +1,5 @@
 import chalk from "chalk";
+
 import { CleanupManager } from "./cleanup-manager.js";
 import { UserErrorReporter } from "./user-error-reporter.js";
 
@@ -140,16 +141,12 @@ export class ErrorHandler {
         console.error(chalk.red("\n🚨 Critical Error Handler Failure:"));
         console.error(chalk.red(`Original Error: ${error?.message || error}`));
         console.error(
-          chalk.red(`Handler Error: ${handlerError?.message || handlerError}`)
+          chalk.red(`Handler Error: ${handlerError?.message || handlerError}`),
         );
         console.error(
-          chalk.red(
-            `Reporter Error: ${reporterError?.message || reporterError}`
-          )
+          chalk.red(`Reporter Error: ${reporterError?.message || reporterError}`),
         );
-        console.error(
-          chalk.red("\nPlease report this issue to the developers.")
-        );
+        console.error(chalk.red("\nPlease report this issue to the developers."));
       }
       process.exit(1);
     }
@@ -384,8 +381,7 @@ export class ErrorHandler {
     // Handle unhandled promise rejections
     process.on("unhandledRejection", async (reason) => {
       console.error(chalk.red("\nUnhandled Promise Rejection:"));
-      const error =
-        reason instanceof Error ? reason : new Error(String(reason));
+      const error = reason instanceof Error ? reason : new Error(String(reason));
       await this.handle(error, {
         type: "process",
         severity: "critical",

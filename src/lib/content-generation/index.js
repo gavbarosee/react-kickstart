@@ -1,8 +1,8 @@
 // src/shared/content-generation/index.js
 
-import { ViteContentGenerator } from "./vite-content-generator.js";
 import { NextjsAppRouterGenerator } from "./nextjs-app-router-generator.js";
 import { NextjsPagesRouterGenerator } from "./nextjs-pages-router-generator.js";
+import { ViteContentGenerator } from "./vite-content-generator.js";
 
 /**
  * Factory function to create the appropriate content generator
@@ -31,8 +31,4 @@ export function createContentGenerator(framework, routingType = null) {
 }
 
 // Export the generator classes for direct usage if needed
-export {
-  ViteContentGenerator,
-  NextjsAppRouterGenerator,
-  NextjsPagesRouterGenerator,
-};
+export { ViteContentGenerator, NextjsAppRouterGenerator, NextjsPagesRouterGenerator };

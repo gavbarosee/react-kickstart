@@ -1,4 +1,5 @@
 import chalk from "chalk";
+
 import { BaseStep } from "./base-step.js";
 
 export class NextjsOptionsStep extends BaseStep {

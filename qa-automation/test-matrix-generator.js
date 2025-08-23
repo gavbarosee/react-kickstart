@@ -14,13 +14,7 @@ const CONFIG_OPTIONS = {
   typescript: [true, false],
   styling: ["tailwind", "styled-components", "css"],
   stateManagement: ["redux", "zustand", "none"],
-  api: [
-    "axios-react-query",
-    "axios-only",
-    "fetch-react-query",
-    "fetch-only",
-    "none",
-  ],
+  api: ["axios-react-query", "axios-only", "fetch-react-query", "fetch-only", "none"],
   testing: ["vitest", "jest", "none"],
   packageManager: ["npm", "yarn"],
   linting: [true, false],
@@ -186,11 +180,7 @@ function calculatePriorityScore(combo) {
  * Generate test commands for a combination
  */
 function generateTestCommand(combo, index) {
-  const args = [
-    `test-project-${index}`,
-    "--yes",
-    `--framework ${combo.framework}`,
-  ];
+  const args = [`test-project-${index}`, "--yes", `--framework ${combo.framework}`];
 
   // Add other options as environment variables for the test
   const envVars = {
@@ -227,9 +217,7 @@ function main() {
 
   // Filter valid combinations
   const validCombinations = filterValidCombinations(allCombinations);
-  console.log(
-    `✅ ${validCombinations.length} valid combinations after filtering`
-  );
+  console.log(`✅ ${validCombinations.length} valid combinations after filtering`);
 
   // Categorize by priority
   const categorized = categorizeCombinations(validCombinations);
@@ -244,21 +232,19 @@ function main() {
   // Generate test configurations
   const testConfigs = {
     critical: categorized.critical.map((combo, i) =>
-      generateTestCommand(combo, `critical-${i}`)
+      generateTestCommand(combo, `critical-${i}`),
     ),
     standard: categorized.standard.map((combo, i) =>
-      generateTestCommand(combo, `standard-${i}`)
+      generateTestCommand(combo, `standard-${i}`),
     ),
-    edge: categorized.edge.map((combo, i) =>
-      generateTestCommand(combo, `edge-${i}`)
-    ),
+    edge: categorized.edge.map((combo, i) => generateTestCommand(combo, `edge-${i}`)),
   };
 
   // Save configurations
   Object.entries(testConfigs).forEach(([category, configs]) => {
     writeFileSync(
       `test-configs/${category}-tests.json`,
-      JSON.stringify(configs, null, 2)
+      JSON.stringify(configs, null, 2),
     );
     console.log(`💾 Saved ${configs.length} ${category} test configurations`);
   });

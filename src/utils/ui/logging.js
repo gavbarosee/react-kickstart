@@ -1,8 +1,9 @@
 import chalk from "chalk";
-import symbols from "log-symbols";
 import figures from "figures";
-import { createUIRenderer } from "../../templates/index.js";
+import symbols from "log-symbols";
+
 import { createUserErrorReporter } from "../../errors/index.js";
+import { createUIRenderer } from "../../templates/index.js";
 
 /**
  * Logging utilities - console output and messaging functions

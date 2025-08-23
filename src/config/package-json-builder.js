@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { DependencyResolver } from "./dependency-resolver.js";
 
 /**
@@ -25,8 +26,7 @@ export class PackageJsonBuilder {
       ...this.packageData,
       name: projectName,
       version: options.version || defaults.version,
-      private:
-        options.private !== undefined ? options.private : defaults.private,
+      private: options.private !== undefined ? options.private : defaults.private,
       ...defaults.packageFields,
     };
 
@@ -41,7 +41,7 @@ export class PackageJsonBuilder {
     const testingScripts = this.getTestingScripts(userChoices.testing);
     const deploymentScripts = this.getDeploymentScripts(
       userChoices.deployment,
-      userChoices.packageManager
+      userChoices.packageManager,
     );
 
     this.packageData.scripts = {
@@ -120,7 +120,7 @@ export class PackageJsonBuilder {
     if (!userChoices.linting) return this;
 
     const lintingDeps = this.dependencyResolver.getLintingDependencies(
-      userChoices.typescript
+      userChoices.typescript,
     );
 
     // Linting always goes to devDependencies for Vite, Next.js handles it internally mostly
@@ -141,7 +141,7 @@ export class PackageJsonBuilder {
     if (!userChoices.styling || userChoices.styling === "css") return this;
 
     const stylingDeps = this.dependencyResolver.getStylingDependencies(
-      userChoices.styling
+      userChoices.styling,
     );
 
     // Styling dependencies placement varies by framework and styling type
@@ -196,7 +196,7 @@ export class PackageJsonBuilder {
     if (!userChoices.routing || userChoices.routing === "none") return this;
 
     const routingDeps = this.dependencyResolver.getRoutingDependencies(
-      userChoices.routing
+      userChoices.routing,
     );
     this.packageData.dependencies = {
       ...this.packageData.dependencies,
@@ -214,7 +214,7 @@ export class PackageJsonBuilder {
       return this;
 
     const stateDeps = this.dependencyResolver.getStateManagementDependencies(
-      userChoices.stateManagement
+      userChoices.stateManagement,
     );
     this.packageData.dependencies = {
       ...this.packageData.dependencies,
@@ -246,7 +246,7 @@ export class PackageJsonBuilder {
     if (!userChoices.testing || userChoices.testing === "none") return this;
 
     const testingDeps = this.dependencyResolver.getTestingDependencies(
-      userChoices.testing
+      userChoices.testing,
     );
     this.packageData.devDependencies = {
       ...this.packageData.devDependencies,
@@ -260,11 +260,10 @@ export class PackageJsonBuilder {
    * Add deployment CLI dependencies if enabled
    */
   addDeploymentDependencies(userChoices) {
-    if (!userChoices.deployment || userChoices.deployment === "none")
-      return this;
+    if (!userChoices.deployment || userChoices.deployment === "none") return this;
 
     const deploymentDeps = this.dependencyResolver.getDeploymentDependencies(
-      userChoices.deployment
+      userChoices.deployment,
     );
     this.packageData.devDependencies = {
       ...this.packageData.devDependencies,
@@ -290,7 +289,7 @@ export class PackageJsonBuilder {
     const packageJson = this.build();
     fs.writeFileSync(
       path.join(projectPath, "package.json"),
-      JSON.stringify(packageJson, null, 2)
+      JSON.stringify(packageJson, null, 2),
     );
     return packageJson;
   }

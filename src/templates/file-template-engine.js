@@ -50,9 +50,7 @@ export default function ${componentName}() {
         const propsParam =
           props.length > 0
             ? typescript
-              ? `{ ${props
-                  .map((p) => p.name)
-                  .join(", ")} }: ${componentName}Props`
+              ? `{ ${props.map((p) => p.name).join(", ")} }: ${componentName}Props`
               : `{ ${props.map((p) => p.name).join(", ")} }`
             : "";
 
@@ -80,7 +78,7 @@ ${propsInterface}export default function ${componentName}(${propsParam}) {
             (style) =>
               `const ${style.name} = styled.${style.element}\`
   ${style.css}
-\`;`
+\`;`,
           )
           .join("\n\n");
 
@@ -145,15 +143,13 @@ ${reducers
   .map(
     (reducer) => `    ${reducer.name}: (state, action) => {
       // ${reducer.description || "Add your logic here"}
-    },`
+    },`,
   )
   .join("\n")}
   },
 });
 
-export const { ${reducers
-          .map((r) => r.name)
-          .join(", ")} } = ${sliceName}Slice.actions;
+export const { ${reducers.map((r) => r.name).join(", ")} } = ${sliceName}Slice.actions;
 
 export default ${sliceName}Slice.reducer;`;
       },
@@ -169,10 +165,7 @@ export default ${sliceName}Slice.reducer;`;
           ? `interface ${storeName}State {\n${Object.entries(state)
               .map(([key, value]) => `  ${key}: ${typeof value};`)
               .join("\n")}\n${actions
-              .map(
-                (action) =>
-                  `  ${action.name}: ${action.signature || "() => void"};`
-              )
+              .map((action) => `  ${action.name}: ${action.signature || "() => void"};`)
               .join("\n")}\n}\n\n`
           : "";
 
@@ -187,9 +180,7 @@ ${Object.entries(state)
 ${actions
   .map(
     (action) =>
-      `  ${action.name}: ${
-        action.implementation || "() => set((state) => state)"
-      },`
+      `  ${action.name}: ${action.implementation || "() => set((state) => state)"},`,
   )
   .join("\n")}
 }));`;
@@ -200,11 +191,7 @@ ${actions
     this.engine.registerTemplate("nextjsPage", {
       type: "file",
       render: (pageName, options = {}) => {
-        const {
-          typescript = false,
-          layout = "default",
-          metadata = {},
-        } = options;
+        const { typescript = false, layout = "default", metadata = {} } = options;
         const reactImport = typescript ? "import React from 'react';" : "";
 
         if (options.isAppRouter) {
@@ -311,11 +298,7 @@ module.exports = nextConfig;`;
     this.engine.registerTemplate("tsConfig", {
       type: "file",
       render: (options = {}) => {
-        const {
-          framework = "vite",
-          strict = true,
-          target = "ES2020",
-        } = options;
+        const { framework = "vite", strict = true, target = "ES2020" } = options;
 
         const baseConfig = {
           compilerOptions: {
@@ -365,17 +348,12 @@ module.exports = nextConfig;`;
     const templateName = options.styled
       ? "styledComponent"
       : options.tailwind
-      ? "tailwindComponent"
-      : options.withProps
-      ? "reactComponentWithProps"
-      : "reactComponentBasic";
+        ? "tailwindComponent"
+        : options.withProps
+          ? "reactComponentWithProps"
+          : "reactComponentBasic";
 
-    return this.engine.renderFile(
-      templateName,
-      filePath,
-      componentName,
-      options
-    );
+    return this.engine.renderFile(templateName, filePath, componentName, options);
   }
 
   /**
@@ -428,12 +406,7 @@ module.exports = nextConfig;`;
    * Generate package.json file
    */
   async generatePackageJson(filePath, projectName, options = {}) {
-    return this.engine.renderFile(
-      "packageJson",
-      filePath,
-      projectName,
-      options
-    );
+    return this.engine.renderFile("packageJson", filePath, projectName, options);
   }
 
   /**
@@ -445,11 +418,7 @@ module.exports = nextConfig;`;
     for (const template of templates) {
       const { name, templateName, filePath, args = [] } = template;
       try {
-        results[name] = await this.engine.renderFile(
-          templateName,
-          filePath,
-          ...args
-        );
+        results[name] = await this.engine.renderFile(templateName, filePath, ...args);
       } catch (error) {
         results[name] = { error: error.message };
       }

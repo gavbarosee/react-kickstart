@@ -19,8 +19,7 @@ class TestRunner {
     this.timeoutMs = options.timeoutMs || 120000; // 2 minutes per test
     this.results = [];
     this.startTime = Date.now();
-    this.skipInstall =
-      options.skipInstall !== undefined ? options.skipInstall : true;
+    this.skipInstall = options.skipInstall !== undefined ? options.skipInstall : true;
   }
 
   /**
@@ -38,7 +37,7 @@ class TestRunner {
       configFile = parentPath;
     } else {
       throw new Error(
-        `Configuration file not found. Tried: ${localPath}, ${parentPath}`
+        `Configuration file not found. Tried: ${localPath}, ${parentPath}`,
       );
     }
 
@@ -126,14 +125,14 @@ class TestRunner {
           NODE_ENV: "test",
         },
         this.timeoutMs,
-        testDirPath
+        testDirPath,
       );
 
       // Validate the generated project
       const validationResult = await this.validateProject(
         projectPath,
         testConfig.config,
-        { skipInstall: this.skipInstall }
+        { skipInstall: this.skipInstall },
       );
 
       const endTime = performance.now();
@@ -161,7 +160,7 @@ class TestRunner {
           actualSuccess ? "completed" : "failed"
         } in ${duration}ms${
           !actualSuccess ? `: ${validationResult.issues.join(", ")}` : ""
-        }`
+        }`,
       );
       return testResult;
     } catch (error) {
@@ -202,7 +201,7 @@ class TestRunner {
     command,
     environment = {},
     timeoutMs,
-    workingDir = process.cwd()
+    workingDir = process.cwd(),
   ) {
     return new Promise((resolve, reject) => {
       const child = spawn("sh", ["-c", command], {
@@ -305,13 +304,11 @@ class TestRunner {
             };
             if (!allDeps.typescript) {
               validation.issues.push(
-                "TypeScript enabled but typescript dependency missing"
+                "TypeScript enabled but typescript dependency missing",
               );
             }
             if (!existsSync(join(projectPath, "tsconfig.json"))) {
-              validation.issues.push(
-                "TypeScript enabled but tsconfig.json missing"
-              );
+              validation.issues.push("TypeScript enabled but tsconfig.json missing");
             }
           }
         } catch (error) {
@@ -322,9 +319,7 @@ class TestRunner {
       }
 
       // Check if dependencies were installed
-      validation.dependenciesInstalled = existsSync(
-        join(projectPath, "node_modules")
-      );
+      validation.dependenciesInstalled = existsSync(join(projectPath, "node_modules"));
       if (!validation.dependenciesInstalled && !options.skipInstall) {
         validation.issues.push("node_modules directory not found");
       }
@@ -474,7 +469,7 @@ class TestRunner {
     const testsToRun = maxTests ? testConfigs.slice(0, maxTests) : testConfigs;
 
     this.log(
-      `📋 Running ${testsToRun.length} tests with parallelism: ${this.parallel}`
+      `📋 Running ${testsToRun.length} tests with parallelism: ${this.parallel}`,
     );
 
     // Create test directory
@@ -485,7 +480,7 @@ class TestRunner {
     for (let i = 0; i < testsToRun.length; i += this.parallel) {
       const batch = testsToRun.slice(i, i + this.parallel);
       const batchPromises = batch.map((config, index) =>
-        this.runSingleTest(config, i + index)
+        this.runSingleTest(config, i + index),
       );
 
       const batchResults = await Promise.all(batchPromises);
@@ -493,8 +488,8 @@ class TestRunner {
 
       this.log(
         `\n📊 Completed batch ${Math.floor(i / this.parallel) + 1}/${Math.ceil(
-          testsToRun.length / this.parallel
-        )}`
+          testsToRun.length / this.parallel,
+        )}`,
       );
     }
 
@@ -515,13 +510,10 @@ class TestRunner {
         total: this.results.length,
         successful: successful.length,
         failed: failed.length,
-        successRate: `${Math.round(
-          (successful.length / this.results.length) * 100
-        )}%`,
+        successRate: `${Math.round((successful.length / this.results.length) * 100)}%`,
         totalDuration: `${Math.round(totalDuration / 1000)}s`,
         averageDuration: `${Math.round(
-          this.results.reduce((sum, r) => sum + r.duration, 0) /
-            this.results.length
+          this.results.reduce((sum, r) => sum + r.duration, 0) / this.results.length,
         )}ms`,
       },
       results: this.results,
@@ -559,9 +551,7 @@ class TestRunner {
     if (failed.length > 0) {
       console.log("\n❌ FAILED TESTS:");
       failed.forEach((test) => {
-        console.log(
-          `   ${test.testName}: ${test.error?.message || "Unknown error"}`
-        );
+        console.log(`   ${test.testName}: ${test.error?.message || "Unknown error"}`);
       });
     }
 
@@ -580,9 +570,8 @@ class TestRunner {
         validationResult.sourceDirectoryExists &&
         validationResult.packageJsonValid &&
         // No blocking issues besides missing node_modules allowed
-        validationResult.issues.filter(
-          (i) => i !== "node_modules directory not found"
-        ).length === 0
+        validationResult.issues.filter((i) => i !== "node_modules directory not found")
+          .length === 0
       );
     }
     return (

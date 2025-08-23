@@ -1,7 +1,7 @@
 import chalk from "chalk";
+import figures from "figures";
 import inquirer from "inquirer";
 import symbols from "log-symbols";
-import figures from "figures";
 
 /**
  * Provides consistent, user-friendly error messaging and recovery options
@@ -26,9 +26,7 @@ export class UserErrorReporter {
    */
   showValidationRecovery() {
     console.log(chalk.cyan("Please check your input and try again."));
-    console.log(
-      chalk.cyan("Make sure project names are valid npm package names.")
-    );
+    console.log(chalk.cyan("Make sure project names are valid npm package names."));
     console.error();
   }
 
@@ -42,11 +40,9 @@ export class UserErrorReporter {
 
     if (this.isNetworkError(error)) {
       console.error();
+      console.error(chalk.yellow("This appears to be a network connectivity issue."));
       console.error(
-        chalk.yellow("This appears to be a network connectivity issue.")
-      );
-      console.error(
-        chalk.yellow("Please check your internet connection and try again.")
+        chalk.yellow("Please check your internet connection and try again."),
       );
     }
 
@@ -81,13 +77,11 @@ export class UserErrorReporter {
     console.error(chalk.red(`${symbols.error} Permission Error`));
     console.error(chalk.red(`${error.message || error}`));
     console.error();
-    console.error(
-      chalk.yellow("This appears to be a file system permissions issue.")
-    );
+    console.error(chalk.yellow("This appears to be a file system permissions issue."));
     console.error(
       chalk.yellow(
-        "You might need elevated privileges or different directory permissions."
-      )
+        "You might need elevated privileges or different directory permissions.",
+      ),
     );
     console.error();
   }
@@ -135,28 +129,22 @@ export class UserErrorReporter {
 
     if (errorMsg.includes("ENOTFOUND") || errorMsg.includes("ETIMEDOUT")) {
       console.error(chalk.cyan("→ Network connectivity issue detected"));
-      console.error(
-        chalk.cyan("  Check your internet connection and proxy settings")
-      );
+      console.error(chalk.cyan("  Check your internet connection and proxy settings"));
     } else if (errorMsg.includes("ENOENT")) {
       console.error(chalk.cyan("→ Package manager not found"));
       console.error(
-        chalk.cyan("  Make sure npm or yarn is installed and in your PATH")
+        chalk.cyan("  Make sure npm or yarn is installed and in your PATH"),
       );
     } else if (errorMsg.includes("EACCES") || errorMsg.includes("permission")) {
       console.error(chalk.cyan("→ Permission issue detected"));
-      console.error(
-        chalk.cyan("  You might need to run with elevated privileges")
-      );
+      console.error(chalk.cyan("  You might need to run with elevated privileges"));
     } else if (errorMsg.includes("ERESOLVE") || errorMsg.includes("peer dep")) {
       console.error(chalk.cyan("→ Dependency conflict detected"));
-      console.error(
-        chalk.cyan("  There may be version conflicts between packages")
-      );
+      console.error(chalk.cyan("  There may be version conflicts between packages"));
     } else if (errorMsg.includes("E404") || errorMsg.includes("not found")) {
       console.error(chalk.cyan("→ Package not found"));
       console.error(
-        chalk.cyan("  One or more packages may not exist or be accessible")
+        chalk.cyan("  One or more packages may not exist or be accessible"),
       );
     }
   }
@@ -199,9 +187,7 @@ export class UserErrorReporter {
     console.error();
     console.error(chalk.yellow("A file system operation failed."));
     console.error(
-      chalk.yellow(
-        "This could be due to permissions, disk space, or file locks."
-      )
+      chalk.yellow("This could be due to permissions, disk space, or file locks."),
     );
     console.error();
   }
@@ -242,9 +228,7 @@ export class UserErrorReporter {
   reportUserCancellation() {
     console.log();
     console.log(
-      chalk.yellow(
-        `${figures.warning} Cancelled by user (CTRL-C). Cleaning up…`
-      )
+      chalk.yellow(`${figures.warning} Cancelled by user (CTRL-C). Cleaning up…`),
     );
     console.log();
   }
@@ -275,9 +259,7 @@ export class UserErrorReporter {
     console.error(chalk.red(`${error.message || error}`));
     console.error();
     console.error(chalk.yellow("This is an unexpected internal error."));
-    console.error(
-      chalk.yellow("Please report this issue with the details above.")
-    );
+    console.error(chalk.yellow("Please report this issue with the details above."));
     console.error();
     this.showHelpInfo();
   }
@@ -289,18 +271,18 @@ export class UserErrorReporter {
     console.log(chalk.cyan("Need help?"));
     console.log(
       chalk.blue(
-        "  • Documentation: https://github.com/gavbarosee/react-kickstart#readme"
-      )
+        "  • Documentation: https://github.com/gavbarosee/react-kickstart#readme",
+      ),
     );
     console.log(
       chalk.blue(
-        "  • Report issues: https://github.com/gavbarosee/react-kickstart/issues/new"
-      )
+        "  • Report issues: https://github.com/gavbarosee/react-kickstart/issues/new",
+      ),
     );
     console.log(
       chalk.blue(
-        "  • Discussions: https://github.com/gavbarosee/react-kickstart/discussions"
-      )
+        "  • Discussions: https://github.com/gavbarosee/react-kickstart/discussions",
+      ),
     );
     console.log();
   }
@@ -315,7 +297,7 @@ export class UserErrorReporter {
       case "network":
         console.log(chalk.blue("  • Check your internet connection"));
         console.log(
-          chalk.blue("  • Verify proxy settings if behind a corporate firewall")
+          chalk.blue("  • Verify proxy settings if behind a corporate firewall"),
         );
         console.log(chalk.blue("  • Try again in a few minutes"));
         break;
@@ -327,15 +309,11 @@ export class UserErrorReporter {
       case "dependency":
         console.log(chalk.blue("  • Clear npm/yarn cache and try again"));
         console.log(chalk.blue("  • Switch to a different package manager"));
-        console.log(
-          chalk.blue("  • Check if all required tools are installed")
-        );
+        console.log(chalk.blue("  • Check if all required tools are installed"));
         break;
       default:
         console.log(chalk.blue("  • Try running the command again"));
-        console.log(
-          chalk.blue("  • Check the documentation for troubleshooting")
-        );
+        console.log(chalk.blue("  • Check the documentation for troubleshooting"));
         console.log(chalk.blue("  • Report the issue if it persists"));
     }
 
@@ -384,13 +362,11 @@ export class UserErrorReporter {
     return {
       totalErrors: Object.values(this.errorCounts).reduce(
         (sum, count) => sum + count,
-        0
+        0,
       ),
       errorsByType: { ...this.errorCounts },
       mostCommonError:
-        Object.entries(this.errorCounts).sort(
-          ([, a], [, b]) => b - a
-        )[0]?.[0] || null,
+        Object.entries(this.errorCounts).sort(([, a], [, b]) => b - a)[0]?.[0] || null,
     };
   }
 

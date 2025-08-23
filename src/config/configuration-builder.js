@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { PackageJsonBuilder } from "./package-json-builder.js";
 import { createFileTemplateEngine } from "../templates/index.js";
 import { CORE_UTILS } from "../utils/index.js";
@@ -24,19 +25,19 @@ export class ConfigurationBuilder {
     configs.packageJson = this.generatePackageJson(
       projectPath,
       projectName,
-      userChoices
+      userChoices,
     );
 
     // Generate framework-specific config files
     configs.frameworkConfig = await this.generateFrameworkConfig(
       projectPath,
-      userChoices
+      userChoices,
     );
 
     // Generate additional config files based on features
     configs.additionalConfigs = await this.generateAdditionalConfigs(
       projectPath,
-      userChoices
+      userChoices,
     );
 
     return configs;
@@ -122,10 +123,8 @@ import react from '@vitejs/plugin-react';
     }
 export default defineConfig({
   plugins: [${reactPluginConfig}], // Enable React JSX transformation and Fast Refresh${
-      userChoices.styling === "styled-components"
-        ? " with styled-components support"
-        : ""
-    }
+    userChoices.styling === "styled-components" ? " with styled-components support" : ""
+  }
   server: {
     open: true, // Auto-open browser on dev start for better DX
   }
@@ -187,10 +186,7 @@ module.exports = nextConfig;
 
     // TypeScript config
     if (userChoices.typescript) {
-      configs.typescript = this.generateTypeScriptConfig(
-        projectPath,
-        userChoices
-      );
+      configs.typescript = this.generateTypeScriptConfig(projectPath, userChoices);
     }
 
     // JavaScript config for Next.js when not using TypeScript
@@ -272,12 +268,7 @@ module.exports = nextConfig;
           // Next.js specific lib additions
           lib: [...baseCompilerOptions.lib, "es6"],
         },
-        include: [
-          "next-env.d.ts",
-          "**/*.ts",
-          "**/*.tsx",
-          ".next/types/**/*.ts",
-        ],
+        include: ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
         exclude: ["node_modules"],
       };
     } else {
@@ -495,9 +486,7 @@ module.exports = {
    */
   generateVitestConfig(projectPath, userChoices) {
     const configExt = CORE_UTILS.getConfigExtension(userChoices);
-    const setupFile = `./src/test/setup.${
-      userChoices.typescript ? "ts" : "js"
-    }`;
+    const setupFile = `./src/test/setup.${userChoices.typescript ? "ts" : "js"}`;
 
     const vitestConfig = `import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
@@ -639,21 +628,15 @@ module.exports = createJestConfig(customJestConfig);
     if (userChoices.styling === "tailwind") {
       const contentPaths = this.getTailwindContentPaths();
       if (contentPaths.length === 0) {
-        issues.push(
-          "Tailwind content paths are empty - no classes will be detected"
-        );
+        issues.push("Tailwind content paths are empty - no classes will be detected");
       }
 
       // Ensure content paths are framework-appropriate
       if (
         this.framework === "nextjs" &&
-        !contentPaths.some(
-          (path) => path.includes("./pages") || path.includes("./app")
-        )
+        !contentPaths.some((path) => path.includes("./pages") || path.includes("./app"))
       ) {
-        issues.push(
-          "Next.js Tailwind config missing pages/app directory paths"
-        );
+        issues.push("Next.js Tailwind config missing pages/app directory paths");
       }
 
       if (
@@ -683,15 +666,12 @@ module.exports = createJestConfig(customJestConfig);
 
       if (this.framework === "vite" && userChoices.testing === "jest") {
         issues.push(
-          "Consider using Vitest with TypeScript in Vite projects for better integration. Jest may require additional configuration."
+          "Consider using Vitest with TypeScript in Vite projects for better integration. Jest may require additional configuration.",
         );
       }
 
       // Validate path mapping compatibility
-      if (
-        userChoices.framework === "vite" &&
-        userChoices.stateManagement === "redux"
-      ) {
+      if (userChoices.framework === "vite" && userChoices.stateManagement === "redux") {
         // Redux Toolkit works well with the new automatic JSX runtime
       }
     }
@@ -733,9 +713,7 @@ module.exports = createJestConfig(customJestConfig);
     // Testing
     if (userChoices.testing && userChoices.testing !== "none") {
       if (userChoices.testing === "vitest") {
-        configs.push(
-          `vitest.config.${CORE_UTILS.getConfigExtension(userChoices)}`
-        );
+        configs.push(`vitest.config.${CORE_UTILS.getConfigExtension(userChoices)}`);
       } else if (userChoices.testing === "jest") {
         configs.push("jest.config.js");
       }

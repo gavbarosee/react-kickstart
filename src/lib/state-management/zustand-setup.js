@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { BaseStateSetup } from "./base-state-setup.js";
 import { createAppWithCounter } from "../../features/zustand/counter-template.js";
 import { createCommonTemplateBuilder } from "../../templates/index.js";
@@ -24,10 +25,7 @@ export class ZustandSetup extends BaseStateSetup {
     const templateBuilder = createCommonTemplateBuilder();
     const content = templateBuilder.generateZustandStore(userChoices);
 
-    fs.writeFileSync(
-      path.join(storeDir, `counterStore.${extensions.script}`),
-      content
-    );
+    fs.writeFileSync(path.join(storeDir, `counterStore.${extensions.script}`), content);
   }
 
   /**
@@ -42,12 +40,12 @@ export class ZustandSetup extends BaseStateSetup {
       userChoices,
       imports,
       storeLogic,
-      "Zustand Counter"
+      "Zustand Counter",
     );
 
     fs.writeFileSync(
       path.join(directories.components, `Counter.${extensions.component}`),
-      counterContent
+      counterContent,
     );
 
     // Create App with Counter
@@ -91,11 +89,7 @@ export class ZustandSetup extends BaseStateSetup {
     if (userChoices.nextRouting === "app") {
       pagePath = path.join(projectPath, "app", `page.${extensions.component}`);
     } else {
-      pagePath = path.join(
-        projectPath,
-        "pages",
-        `index.${extensions.component}`
-      );
+      pagePath = path.join(projectPath, "pages", `index.${extensions.component}`);
     }
 
     if (!fs.existsSync(pagePath)) return;
@@ -104,17 +98,13 @@ export class ZustandSetup extends BaseStateSetup {
     let updatedContent;
 
     // Add 'use client' directive if needed for app router
-    if (
-      userChoices.nextRouting === "app" &&
-      !content.includes("'use client'")
-    ) {
+    if (userChoices.nextRouting === "app" && !content.includes("'use client'")) {
       content = "'use client';\n\n" + content;
     }
 
     // Add Counter import if needed
     if (!content.includes("import { Counter }")) {
-      const importStatement =
-        "import { Counter } from '../components/Counter';\n";
+      const importStatement = "import { Counter } from '../components/Counter';\n";
 
       if (content.includes("import")) {
         const lastImportIndex = content.lastIndexOf("import");
@@ -125,10 +115,7 @@ export class ZustandSetup extends BaseStateSetup {
           content.slice(endOfImportIndex);
       } else {
         updatedContent = content.startsWith("'use client'")
-          ? content.replace(
-              "'use client';\n\n",
-              "'use client';\n\n" + importStatement
-            )
+          ? content.replace("'use client';\n\n", "'use client';\n\n" + importStatement)
           : importStatement + content;
       }
     } else {
@@ -140,18 +127,18 @@ export class ZustandSetup extends BaseStateSetup {
       if (userChoices.nextRouting === "app") {
         updatedContent = updatedContent.replace(
           /(<main.*?>)([\s\S]*?)(<\/main>)/,
-          "$1$2<Counter />\n$3"
+          "$1$2<Counter />\n$3",
         );
       } else {
         if (updatedContent.includes("<main")) {
           updatedContent = updatedContent.replace(
             /(<main.*?>)([\s\S]*?)(<\/main>)/,
-            "$1$2<Counter />\n$3"
+            "$1$2<Counter />\n$3",
           );
         } else {
           updatedContent = updatedContent.replace(
             /(<div.*?>)([\s\S]*?)(<\/div>)/,
-            "$1$2<Counter />\n$3"
+            "$1$2<Counter />\n$3",
           );
         }
       }

@@ -1,10 +1,11 @@
 import fs from "fs-extra";
 import path from "path";
-import { UI_UTILS, CORE_UTILS } from "../../utils/index.js";
-import { BaseGenerator } from "../../generators/base-generator.js";
-import { createConfigurationBuilder } from "../../config/index.js";
+
 import { createAppRouterStructure } from "./generators/app-router.js";
 import { createPagesRouterStructure } from "./generators/pages-router.js";
+import { createConfigurationBuilder } from "../../config/index.js";
+import { BaseGenerator } from "../../generators/base-generator.js";
+import { UI_UTILS, CORE_UTILS } from "../../utils/index.js";
 
 /**
  * Next.js-specific project generator
@@ -20,9 +21,7 @@ export class NextjsGenerator extends BaseGenerator {
    */
   logGenerationStart(userChoices) {
     const routerType = userChoices.nextRouting || "app";
-    UI_UTILS.log(
-      `Creating a Next.js React project with ${routerType} router...`
-    );
+    UI_UTILS.log(`Creating a Next.js React project with ${routerType} router...`);
   }
 
   /**
@@ -32,7 +31,7 @@ export class NextjsGenerator extends BaseGenerator {
     return this.configBuilder.generatePackageJson(
       projectPath,
       projectName,
-      userChoices
+      userChoices,
     );
   }
 
@@ -43,15 +42,14 @@ export class NextjsGenerator extends BaseGenerator {
     // Generate Next.js config
     const nextjsConfig = this.configBuilder.generateNextjsConfig(
       projectPath,
-      userChoices
+      userChoices,
     );
 
     // Generate additional configs (TypeScript, Tailwind, Testing, etc.)
-    const additionalConfigs =
-      await this.configBuilder.generateAdditionalConfigs(
-        projectPath,
-        userChoices
-      );
+    const additionalConfigs = await this.configBuilder.generateAdditionalConfigs(
+      projectPath,
+      userChoices,
+    );
 
     return { nextjsConfig, ...additionalConfigs };
   }

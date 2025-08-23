@@ -21,16 +21,12 @@ export class PromptRenderer {
         figlet.textSync("React Kickstart", {
           font: "Standard",
           horizontalLayout: "full",
-        })
-      )
+        }),
+      ),
     );
     console.log();
-    console.log(
-      chalk.cyan("  A modern CLI tool for creating React applications")
-    );
-    console.log(
-      chalk.cyan("  ------------------------------------------------")
-    );
+    console.log(chalk.cyan("  A modern CLI tool for creating React applications"));
+    console.log(chalk.cyan("  ------------------------------------------------"));
     console.log();
   }
 
@@ -44,23 +40,17 @@ export class PromptRenderer {
 
     if (answers.packageManager) {
       console.log(
-        `  ${chalk.dim("•")} Package Manager: ${chalk.green(
-          answers.packageManager
-        )}`
+        `  ${chalk.dim("•")} Package Manager: ${chalk.green(answers.packageManager)}`,
       );
     }
 
     if (answers.framework) {
-      console.log(
-        `  ${chalk.dim("•")} Framework: ${chalk.yellow(answers.framework)}`
-      );
+      console.log(`  ${chalk.dim("•")} Framework: ${chalk.yellow(answers.framework)}`);
     }
 
     if (answers.framework === "nextjs" && answers.nextRouting) {
       console.log(
-        `  ${chalk.dim("•")} Next.js Routing: ${chalk.blue(
-          answers.nextRouting
-        )}`
+        `  ${chalk.dim("•")} Next.js Routing: ${chalk.blue(answers.nextRouting)}`,
       );
     }
 
@@ -68,7 +58,7 @@ export class PromptRenderer {
       console.log(
         `  ${chalk.dim("•")} TypeScript: ${
           answers.typescript ? chalk.green("Yes") : chalk.red("No")
-        }`
+        }`,
       );
     }
 
@@ -76,27 +66,21 @@ export class PromptRenderer {
       console.log(
         `  ${chalk.dim("•")} Linting: ${
           answers.linting ? chalk.green("Yes") : chalk.red("No")
-        }`
+        }`,
       );
     }
 
     if (answers.styling) {
-      console.log(
-        `  ${chalk.dim("•")} Styling: ${chalk.magenta(answers.styling)}`
-      );
+      console.log(`  ${chalk.dim("•")} Styling: ${chalk.magenta(answers.styling)}`);
     }
 
     if (answers.routing) {
-      console.log(
-        `  ${chalk.dim("•")} Routing: ${chalk.blue(answers.routing)}`
-      );
+      console.log(`  ${chalk.dim("•")} Routing: ${chalk.blue(answers.routing)}`);
     }
 
     if (answers.stateManagement) {
       console.log(
-        `  ${chalk.dim("•")} State Management: ${chalk.cyan(
-          answers.stateManagement
-        )}`
+        `  ${chalk.dim("•")} State Management: ${chalk.cyan(answers.stateManagement)}`,
       );
     }
 
@@ -104,7 +88,7 @@ export class PromptRenderer {
       console.log(
         `  ${chalk.dim("•")} Git Init: ${
           answers.initGit ? chalk.green("Yes") : chalk.red("No")
-        }`
+        }`,
       );
     }
 
@@ -112,13 +96,11 @@ export class PromptRenderer {
       console.log(
         `  ${chalk.dim("•")} Open in Editor: ${
           answers.openEditor ? chalk.green("Yes") : chalk.red("No")
-        }`
+        }`,
       );
 
       if (answers.openEditor && answers.editor) {
-        console.log(
-          `  ${chalk.dim("•")} Editor: ${chalk.blue(answers.editor)}`
-        );
+        console.log(`  ${chalk.dim("•")} Editor: ${chalk.blue(answers.editor)}`);
       }
     }
 
@@ -138,9 +120,7 @@ export class PromptRenderer {
    */
   showStepHeader(stepNumber, totalSteps, title, icon = "•") {
     console.log();
-    console.log(
-      chalk.bold.cyan(` ${icon} STEP ${stepNumber} OF ${totalSteps}`)
-    );
+    console.log(chalk.bold.cyan(` ${icon} STEP ${stepNumber} OF ${totalSteps}`));
     console.log(chalk.bold.white(` ${title}`));
     console.log(chalk.cyan("━".repeat(40)));
     console.log();
@@ -167,12 +147,10 @@ export class PromptRenderer {
    * Shows final completion message
    */
   showCompletion() {
-    console.log(
-      chalk.green("\n✓ Configuration complete! Here's your full setup:\n")
-    );
+    console.log(chalk.green("\n✓ Configuration complete! Here's your full setup:\n"));
     console.log(
       chalk.cyan("Note: ") +
-        "The project will automatically start in your default browser after creation.\n"
+        "The project will automatically start in your default browser after creation.\n",
     );
   }
 

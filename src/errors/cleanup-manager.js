@@ -1,7 +1,7 @@
-import fs from "fs-extra";
-import path from "path";
 import chalk from "chalk";
+import fs from "fs-extra";
 import os from "os";
+import path from "path";
 
 /**
  * Manages project cleanup with safety checks and different cleanup strategies
@@ -33,9 +33,7 @@ export class CleanupManager {
       // Safety check 1: Prevent dangerous paths
       if (this.isDangerousPath(projectPath)) {
         console.error(
-          chalk.red(
-            `Refusing to clean up potentially dangerous path: ${projectPath}`
-          )
+          chalk.red(`Refusing to clean up potentially dangerous path: ${projectPath}`),
         );
         return { success: false, reason: "dangerous_path" };
       }
@@ -43,9 +41,7 @@ export class CleanupManager {
       // Safety check 2: Check if path exists
       if (!fs.existsSync(projectPath)) {
         if (verbose) {
-          console.log(
-            chalk.yellow(`Cleanup target does not exist: ${projectPath}`)
-          );
+          console.log(chalk.yellow(`Cleanup target does not exist: ${projectPath}`));
         }
         return { success: true, reason: "already_missing" };
       }
@@ -54,8 +50,8 @@ export class CleanupManager {
       if (!force && !this.isRecentlyCreated(projectPath, maxAge)) {
         console.error(
           chalk.yellow(
-            `Skipping cleanup of directory older than ${maxAge} minutes: ${projectPath}`
-          )
+            `Skipping cleanup of directory older than ${maxAge} minutes: ${projectPath}`,
+          ),
         );
         return { success: false, reason: "too_old" };
       }
@@ -64,8 +60,8 @@ export class CleanupManager {
       if (!force && !this.isOurProject(projectPath)) {
         console.error(
           chalk.yellow(
-            `Skipping cleanup as directory doesn't appear to be created by react-kickstart: ${projectPath}`
-          )
+            `Skipping cleanup as directory doesn't appear to be created by react-kickstart: ${projectPath}`,
+          ),
         );
         return { success: false, reason: "not_our_project" };
       }
@@ -77,16 +73,12 @@ export class CleanupManager {
       this.recordCleanup(projectPath, reason, cleanupResult);
 
       if (cleanupResult.success) {
-        console.log(
-          chalk.yellow(`Cleaned up project directory: ${projectPath}`)
-        );
+        console.log(chalk.yellow(`Cleaned up project directory: ${projectPath}`));
       }
 
       return cleanupResult;
     } catch (error) {
-      console.error(
-        chalk.red(`Failed to clean up directory: ${error.message}`)
-      );
+      console.error(chalk.red(`Failed to clean up directory: ${error.message}`));
       return { success: false, reason: "cleanup_error", error };
     }
   }
@@ -118,7 +110,7 @@ export class CleanupManager {
 
     return dangerousPaths.some(
       (dangerous) =>
-        normalizedPath === path.resolve(dangerous) || normalizedPath.length < 10 // Very short paths are suspicious
+        normalizedPath === path.resolve(dangerous) || normalizedPath.length < 10, // Very short paths are suspicious
     );
   }
 
@@ -165,8 +157,7 @@ export class CleanupManager {
         // Check if dependencies contain React
         const hasReactDep =
           packageJson.dependencies &&
-          (packageJson.dependencies.react ||
-            packageJson.dependencies["react-dom"]);
+          (packageJson.dependencies.react || packageJson.dependencies["react-dom"]);
 
         if (hasExpectedScripts && hasReactDep) {
           return true;

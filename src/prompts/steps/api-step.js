@@ -1,4 +1,5 @@
 import chalk from "chalk";
+
 import { BaseStep } from "./base-step.js";
 import { UI_UTILS } from "../../utils/index.js";
 
@@ -32,14 +33,11 @@ export class ApiStep extends BaseStep {
       },
       {
         name:
-          chalk.blue("Axios") +
-          " - HTTP client with interceptors and error handling",
+          chalk.blue("Axios") + " - HTTP client with interceptors and error handling",
         value: "axios-only",
       },
       {
-        name:
-          chalk.green("Fetch + React Query") +
-          " - Native fetch with caching layer",
+        name: chalk.green("Fetch + React Query") + " - Native fetch with caching layer",
         value: "fetch-react-query",
       },
       {
@@ -92,12 +90,12 @@ export class ApiStep extends BaseStep {
       if (answers.stateManagement === "redux") {
         console.log();
         UI_UTILS.warning(
-          "React Query + Redux detected. React Query handles server state very well - consider using Redux only for client-side state."
+          "React Query + Redux detected. React Query handles server state very well - consider using Redux only for client-side state.",
         );
       } else if (answers.stateManagement === "zustand") {
         console.log();
         UI_UTILS.warning(
-          "React Query + Zustand detected. Consider using Zustand primarily for client-side application state."
+          "React Query + Zustand detected. Consider using Zustand primarily for client-side application state.",
         );
       }
     }

@@ -1,14 +1,11 @@
 import ora from "ora";
-import { CORE_UTILS, UI_UTILS } from "../utils/index.js";
-import { ViteGenerator } from "../frameworks/vite/vite-generator.js";
-import { NextjsGenerator } from "../frameworks/nextjs/nextjs-generator.js";
-import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 
-export default async function generateProject(
-  projectPath,
-  projectName,
-  userChoices
-) {
+import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
+import { NextjsGenerator } from "../frameworks/nextjs/nextjs-generator.js";
+import { ViteGenerator } from "../frameworks/vite/vite-generator.js";
+import { CORE_UTILS, UI_UTILS } from "../utils/index.js";
+
+export default async function generateProject(projectPath, projectName, userChoices) {
   const errorHandler = createErrorHandler();
   errorHandler.setContext({
     projectPath,
@@ -34,7 +31,7 @@ export default async function generateProject(
       UI_UTILS.stepSection(
         "📋",
         "Creating project structure:",
-        CORE_UTILS.getProjectStructure(userChoices.framework)
+        CORE_UTILS.getProjectStructure(userChoices.framework),
       );
 
       // display configuration files information
@@ -47,8 +44,8 @@ export default async function generateProject(
           userChoices.styling,
           userChoices.linting,
           userChoices.stateManagement,
-          userChoices.testing
-        )
+          userChoices.testing,
+        ),
       );
 
       spinner.text = "Processing...";
@@ -76,7 +73,7 @@ export default async function generateProject(
       CORE_UTILS.fileGenerationInfo(projectPath);
 
       console.log(
-        `  ✅ Project files successfully generated [${userChoices.framework}]`
+        `  ✅ Project files successfully generated [${userChoices.framework}]`,
       );
       console.log();
       return true;
@@ -85,6 +82,6 @@ export default async function generateProject(
       type: ERROR_TYPES.FILESYSTEM,
       shouldCleanup: true,
       verbose: true,
-    }
+    },
   );
 }

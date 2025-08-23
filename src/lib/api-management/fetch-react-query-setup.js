@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { BaseApiSetup } from "./base-api-setup.js";
 
 /**
@@ -15,10 +16,7 @@ export class FetchReactQuerySetup extends BaseApiSetup {
    */
   createApiClient(directories, userChoices) {
     const extensions = this.getExtensions(userChoices);
-    const clientPath = path.join(
-      directories.config,
-      `api-client.${extensions.js}`
-    );
+    const clientPath = path.join(directories.config, `api-client.${extensions.js}`);
 
     const clientContent = `// API client using native fetch
 const API_BASE_URL = ${this.getApiUrlEnvVar()};
@@ -119,7 +117,7 @@ export default apiClient;
   createTodoService(directories, userChoices, extensions) {
     const todoServicePath = path.join(
       directories.services,
-      `todo-service.${extensions.js}`
+      `todo-service.${extensions.js}`,
     );
 
     const todoContent = `import { apiClient } from '../config/api-client.${extensions.js}';
@@ -186,7 +184,7 @@ export { todoService } from './todo-service.${extensions.js}';
   createQueryClient(directories, userChoices, extensions) {
     const queryClientPath = path.join(
       directories.config,
-      `query-client.${extensions.js}`
+      `query-client.${extensions.js}`,
     );
 
     const queryClientContent = `import { QueryClient } from '@tanstack/react-query';
@@ -209,10 +207,7 @@ export const queryClient = new QueryClient({
   }
 
   createTodoHooks(directories, userChoices, extensions) {
-    const todoHooksPath = path.join(
-      directories.hooks,
-      `use-todos.${extensions.js}`
-    );
+    const todoHooksPath = path.join(directories.hooks, `use-todos.${extensions.js}`);
 
     const todoHooksContent = `import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { todoService } from '../services/todo-service.${extensions.js}';
@@ -307,12 +302,7 @@ export * from './use-todos.${extensions.js}';
 
   updateNextjsApp(projectPath, userChoices) {
     const extensions = this.getExtensions(userChoices);
-    const appPath = path.join(
-      projectPath,
-      "src",
-      "pages",
-      `_app.${extensions.jsx}`
-    );
+    const appPath = path.join(projectPath, "src", "pages", `_app.${extensions.jsx}`);
 
     if (fs.existsSync(appPath)) {
       let appContent = fs.readFileSync(appPath, "utf8");
@@ -332,7 +322,7 @@ import { queryClient } from '../api/config/query-client.${extensions.js}';
       <Component {...pageProps} />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  )`
+  )`,
       );
 
       fs.writeFileSync(appPath, appContent);
@@ -359,7 +349,7 @@ import { queryClient } from './api/config/query-client.${extensions.js}';
         `<QueryClientProvider client={queryClient}>
       <App />
       <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>`
+    </QueryClientProvider>`,
       );
 
       fs.writeFileSync(mainPath, mainContent);

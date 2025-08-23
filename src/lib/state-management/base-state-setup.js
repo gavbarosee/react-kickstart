@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { CORE_UTILS } from "../../utils/index.js";
 
 /**
@@ -82,24 +83,22 @@ export class BaseStateSetup {
         count: "",
         button: (color) =>
           `style={{ padding: '8px 16px', backgroundColor: '${this.getButtonColor(
-            color
+            color,
           )}', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}`,
         fullButton: `style={{ padding: '8px 16px', backgroundColor: '#4caf50', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '100%' }}`,
       };
     }
 
     return {
-      container:
-        ' className="p-4 border rounded shadow-sm my-4 max-w-sm mx-auto"',
+      container: ' className="p-4 border rounded shadow-sm my-4 max-w-sm mx-auto"',
       title: ' className="text-xl font-bold mb-4"',
       buttonRow: ' className="flex items-center justify-center space-x-4 mb-4"',
       count: ' className="text-2xl font-bold"',
       button: (color) =>
         `className="px-4 py-2 ${this.getTailwindButtonColor(
-          color
+          color,
         )} text-white rounded"`,
-      fullButton:
-        'className="px-4 py-2 bg-green-500 text-white rounded w-full"',
+      fullButton: 'className="px-4 py-2 bg-green-500 text-white rounded w-full"',
     };
   }
 
@@ -127,11 +126,8 @@ export class BaseStateSetup {
   generateCounterComponent(userChoices, imports, storeLogic, title) {
     const extensions = this.getExtensions(userChoices);
     const styles = this.getStylingClasses(userChoices);
-    const useClientDirective =
-      this.framework === "nextjs" ? "'use client';\n\n" : "";
-    const reactImport = userChoices.typescript
-      ? "import React from 'react';\n"
-      : "";
+    const useClientDirective = this.framework === "nextjs" ? "'use client';\n\n" : "";
+    const reactImport = userChoices.typescript ? "import React from 'react';\n" : "";
 
     return `${useClientDirective}${reactImport}${imports}
   
@@ -195,9 +191,7 @@ ${storeLogic}
   }
 
   getIncrementByAmountHandler() {
-    throw new Error(
-      "getIncrementByAmountHandler must be implemented by subclass"
-    );
+    throw new Error("getIncrementByAmountHandler must be implemented by subclass");
   }
 
   getCountValue() {

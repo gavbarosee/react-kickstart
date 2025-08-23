@@ -59,7 +59,7 @@ export function setupLinting(projectPath, userChoices, framework = "vite") {
   // Write ESLint configuration
   fs.writeFileSync(
     path.join(projectPath, ".eslintrc.json"),
-    JSON.stringify(eslintConfig, null, 2)
+    JSON.stringify(eslintConfig, null, 2),
   );
 
   // Standard Prettier configuration
@@ -73,7 +73,7 @@ export function setupLinting(projectPath, userChoices, framework = "vite") {
   // Write Prettier configuration
   fs.writeFileSync(
     path.join(projectPath, ".prettierrc"),
-    JSON.stringify(prettierConfig, null, 2)
+    JSON.stringify(prettierConfig, null, 2),
   );
 
   // For Next.js, update package.json with additional devDependencies

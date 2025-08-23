@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+
 import { PromptFlow } from "../prompts/prompt-flow.js";
 
 // Create minimal doubles for renderer and navigator behavior used by PromptFlow
@@ -13,8 +14,7 @@ function createNavigatorDouble() {
   const history = [];
   return {
     recordStep: (name) => history.push(name),
-    getPreviousStep: () =>
-      history.length ? history[history.length - 1] : null,
+    getPreviousStep: () => (history.length ? history[history.length - 1] : null),
     goBack: () => {
       // mimic real StepNavigator.goBack
       // set current to last, then pop it

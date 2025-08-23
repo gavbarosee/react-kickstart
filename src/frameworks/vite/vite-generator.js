@@ -1,13 +1,11 @@
 import fs from "fs-extra";
 import path from "path";
-import { BaseGenerator } from "../../generators/base-generator.js";
+
 import { createConfigurationBuilder } from "../../config/index.js";
-import {
-  createSourceFiles,
-  createHtmlFile,
-} from "../../lib/file-generation/index.js";
-import { setupStyling } from "../../lib/styling/index.js";
+import { BaseGenerator } from "../../generators/base-generator.js";
+import { createSourceFiles, createHtmlFile } from "../../lib/file-generation/index.js";
 import { setupRouting } from "../../lib/routing/index.js";
+import { setupStyling } from "../../lib/styling/index.js";
 import { CORE_UTILS } from "../../utils/index.js";
 
 /**
@@ -26,7 +24,7 @@ export class ViteGenerator extends BaseGenerator {
     return this.configBuilder.generatePackageJson(
       projectPath,
       projectName,
-      userChoices
+      userChoices,
     );
   }
 
@@ -35,17 +33,13 @@ export class ViteGenerator extends BaseGenerator {
    */
   async createFrameworkConfiguration(projectPath, userChoices) {
     // Generate Vite config
-    const viteConfig = this.configBuilder.generateViteConfig(
-      projectPath,
-      userChoices
-    );
+    const viteConfig = this.configBuilder.generateViteConfig(projectPath, userChoices);
 
     // Generate additional configs (TypeScript, Tailwind, Testing, etc.)
-    const additionalConfigs =
-      await this.configBuilder.generateAdditionalConfigs(
-        projectPath,
-        userChoices
-      );
+    const additionalConfigs = await this.configBuilder.generateAdditionalConfigs(
+      projectPath,
+      userChoices,
+    );
 
     return { viteConfig, ...additionalConfigs };
   }

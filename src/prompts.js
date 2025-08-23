@@ -8,8 +8,7 @@ export async function promptUser(options = {}) {
   const packageManagers = await PROCESS_UTILS.detectPackageManagers({
     verbose,
   });
-  const defaultPackageManager =
-    PROCESS_UTILS.getDefaultPackageManager(packageManagers);
+  const defaultPackageManager = PROCESS_UTILS.getDefaultPackageManager(packageManagers);
 
   // Create and run the prompt flow
   const promptFlow = new PromptFlow(packageManagers, defaultPackageManager);

@@ -51,9 +51,7 @@ class FeatureValidator {
       if (result.success) {
         console.log(`   ✅ All expected features present`);
       } else {
-        console.log(
-          `   ❌ Missing features: ${result.missingFeatures.join(", ")}`
-        );
+        console.log(`   ❌ Missing features: ${result.missingFeatures.join(", ")}`);
       }
     }
 
@@ -65,14 +63,8 @@ class FeatureValidator {
     console.log("=".repeat(50));
 
     // Test both frameworks with defaults to see what's actually implemented
-    const projectA = await this.generateTestProject(
-      "feature-test-vite",
-      "vite"
-    );
-    const projectB = await this.generateTestProject(
-      "feature-test-nextjs",
-      "nextjs"
-    );
+    const projectA = await this.generateTestProject("feature-test-vite", "vite");
+    const projectB = await this.generateTestProject("feature-test-nextjs", "nextjs");
 
     const viteFeatures = this.analyzeProjectFeatures(projectA.path, "vite");
     const nextjsFeatures = this.analyzeProjectFeatures(projectB.path, "nextjs");
@@ -84,10 +76,8 @@ class FeatureValidator {
     this.printFeatureList(nextjsFeatures);
 
     // Cleanup
-    if (projectA.success)
-      rmSync(projectA.path, { recursive: true, force: true });
-    if (projectB.success)
-      rmSync(projectB.path, { recursive: true, force: true });
+    if (projectA.success) rmSync(projectA.path, { recursive: true, force: true });
+    if (projectB.success) rmSync(projectB.path, { recursive: true, force: true });
   }
 
   async generateTestProject(name, framework) {
@@ -107,7 +97,7 @@ class FeatureValidator {
           cwd: testDirPath,
           stdio: "pipe",
           timeout: 120000,
-        }
+        },
       );
 
       return {
@@ -263,17 +253,13 @@ class FeatureValidator {
 
   printFeatureList(features) {
     console.log(`   📦 Package.json: ${features.hasPackageJson ? "✅" : "❌"}`);
-    console.log(
-      `   📁 Source directory: ${features.hasSourceDir ? "✅" : "❌"}`
-    );
-    console.log(
-      `   🔧 Framework config: ${features.hasFrameworkConfig ? "✅" : "❌"}`
-    );
+    console.log(`   📁 Source directory: ${features.hasSourceDir ? "✅" : "❌"}`);
+    console.log(`   🔧 Framework config: ${features.hasFrameworkConfig ? "✅" : "❌"}`);
     console.log(`   🎨 Tailwind CSS: ${features.hasTailwind ? "✅" : "❌"}`);
     console.log(
       `   📝 TypeScript: ${features.hasTypeScript ? "✅" : "❌"} (JS: ${
         features.hasJavaScript ? "✅" : "❌"
-      })`
+      })`,
     );
     console.log(`   🔍 ESLint: ${features.hasESLint ? "✅" : "❌"}`);
     console.log(`   💅 Prettier: ${features.hasPrettier ? "✅" : "❌"}`);
@@ -310,35 +296,26 @@ class FeatureValidator {
       };
     }
 
-    const actualFeatures = this.analyzeProjectFeatures(
-      project.path,
-      test.framework
-    );
+    const actualFeatures = this.analyzeProjectFeatures(project.path, test.framework);
     const missingFeatures = [];
 
     for (const [feature, expected] of Object.entries(test.expectedFeatures)) {
       if (expected) {
         switch (feature) {
           case "javascript":
-            if (!actualFeatures.hasJavaScript)
-              missingFeatures.push("JavaScript");
+            if (!actualFeatures.hasJavaScript) missingFeatures.push("JavaScript");
             break;
           case "tailwind":
-            if (!actualFeatures.hasTailwind)
-              missingFeatures.push("Tailwind CSS");
+            if (!actualFeatures.hasTailwind) missingFeatures.push("Tailwind CSS");
             break;
           case "eslint":
             if (!actualFeatures.hasESLint) missingFeatures.push("ESLint");
             break;
           case "git":
-            if (!actualFeatures.hasGitRepo)
-              missingFeatures.push("Git repository");
+            if (!actualFeatures.hasGitRepo) missingFeatures.push("Git repository");
             break;
           case "basicStructure":
-            if (
-              !actualFeatures.hasPackageJson ||
-              !actualFeatures.hasSourceDir
-            ) {
+            if (!actualFeatures.hasPackageJson || !actualFeatures.hasSourceDir) {
               missingFeatures.push("Basic project structure");
             }
             break;
@@ -367,17 +344,13 @@ class FeatureValidator {
     console.log(`✅ Successful: ${successful.length}`);
     console.log(`❌ Failed: ${failed.length}`);
     console.log(
-      `📈 Success Rate: ${Math.round(
-        (successful.length / results.length) * 100
-      )}%`
+      `📈 Success Rate: ${Math.round((successful.length / results.length) * 100)}%`,
     );
 
     if (failed.length > 0) {
       console.log("\n❌ FAILED TESTS:");
       failed.forEach((test) => {
-        console.log(
-          `   ${test.testName}: Missing ${test.missingFeatures.join(", ")}`
-        );
+        console.log(`   ${test.testName}: Missing ${test.missingFeatures.join(", ")}`);
       });
     }
 

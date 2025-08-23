@@ -1,10 +1,11 @@
-import { execa } from "execa";
 import chalk from "chalk";
+import { execa } from "execa";
 import open from "open";
 import ora from "ora";
 import path from "path";
-import { getFrameworkDocumentation } from "../ui/completion.js";
+
 import { createErrorHandler, ERROR_TYPES } from "../../errors/index.js";
+import { getFrameworkDocumentation } from "../ui/completion.js";
 
 let devProcess = null;
 let isShuttingDown = false;
@@ -37,7 +38,7 @@ function cleanupDevServer() {
               }
             } catch (killError) {
               console.error(
-                chalk.red(`Unable to terminate process: ${killError.message}`)
+                chalk.red(`Unable to terminate process: ${killError.message}`),
               );
             }
           }
@@ -109,12 +110,10 @@ async function checkServerAndOpenBrowser(devUrl) {
       } catch (err) {
         console.log(
           chalk.yellow(
-            `\nCouldn't open your default browser. It might not be installed or properly configured.`
-          )
+            `\nCouldn't open your default browser. It might not be installed or properly configured.`,
+          ),
         );
-        console.log(
-          chalk.cyan(`Please visit ${devUrl} manually in your browser.`)
-        );
+        console.log(chalk.cyan(`Please visit ${devUrl} manually in your browser.`));
       }
 
       return true;
@@ -127,9 +126,7 @@ async function checkServerAndOpenBrowser(devUrl) {
   }
 
   console.log(
-    chalk.yellow(
-      `\nServer didn't respond in time. You may need to manually open:`
-    )
+    chalk.yellow(`\nServer didn't respond in time. You may need to manually open:`),
   );
   console.log(chalk.bold.underline(`${devUrl}`));
   return false;
@@ -164,12 +161,8 @@ export async function startProject(projectPath, userChoices) {
       const [cmd, ...args] = devCommand.split(" ");
 
       spinner.succeed(`Development server starting at ${chalk.cyan(devUrl)}`);
-      console.log(
-        `\n${chalk.cyan(">")} ${chalk.dim(`${cmd} ${args.join(" ")}`)}`
-      );
-      console.log(
-        chalk.yellow("\nPress Ctrl+C to stop the development server\n")
-      );
+      console.log(`\n${chalk.cyan(">")} ${chalk.dim(`${cmd} ${args.join(" ")}`)}`);
+      console.log(chalk.yellow("\nPress Ctrl+C to stop the development server\n"));
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -221,23 +214,18 @@ export async function startProject(projectPath, userChoices) {
         spinner.fail(`Failed to start development server`);
 
         // Show manual start instructions
-        const pmRun =
-          userChoices.packageManager === "yarn" ? "yarn" : "npm run";
+        const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
         const devCommand = false ? "npm start" : `${pmRun} dev`;
 
-        userReporter.formatError(
-          "Development Server Failed",
-          error.message || error,
-          [
-            `cd ${path.basename(projectPath || ".")}`,
-            devCommand,
-            "Check that all dependencies are installed",
-            "Ensure the port is not already in use",
-          ]
-        );
+        userReporter.formatError("Development Server Failed", error.message || error, [
+          `cd ${path.basename(projectPath || ".")}`,
+          devCommand,
+          "Check that all dependencies are installed",
+          "Ensure the port is not already in use",
+        ]);
 
         return null;
       },
-    }
+    },
   );
 }

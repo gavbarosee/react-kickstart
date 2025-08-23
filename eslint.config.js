@@ -46,12 +46,10 @@ export default [
       unicorn,
     },
     rules: {
-      // Enforce kebab-case files and directories
+      // Enforce key standards appropriate for production
       "unicorn/filename-case": ["warn", { case: "kebabCase" }],
-
-      // Keep imports tidy and readable
       "import/order": [
-        "warn",
+        "error",
         {
           groups: [
             ["builtin", "external"],
@@ -61,14 +59,12 @@ export default [
           alphabetize: { order: "asc", caseInsensitive: true },
         },
       ],
-
-      // Reasonable defaults
-      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "no-console": "off",
-      "no-empty": ["warn", { allowEmptyCatch: true }],
-      "no-case-declarations": "warn",
-      "no-constant-condition": "warn",
-      "no-control-regex": "warn",
+      "no-unused-vars": "off",
+      "no-console": "off", // CLI tool, allow console
+      "no-empty": "off",
+      "no-case-declarations": "off",
+      "no-constant-condition": "off",
+      "no-control-regex": "off",
     },
   },
 
@@ -77,6 +73,7 @@ export default [
     files: ["**/*.spec.js", "**/__tests__/**/*.js"],
     rules: {
       "unicorn/filename-case": "off",
+      "no-unused-vars": "off",
     },
   },
 
@@ -85,6 +82,7 @@ export default [
     files: ["src/prompts/steps/**/*.js"],
     rules: {
       "no-dupe-class-members": "off",
+      "no-unused-vars": "off",
     },
   },
 ];

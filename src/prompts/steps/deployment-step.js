@@ -1,4 +1,5 @@
 import chalk from "chalk";
+
 import { BaseStep } from "./base-step.js";
 import { UI_UTILS } from "../../utils/index.js";
 
@@ -91,31 +92,22 @@ export class DeploymentStep extends BaseStep {
     if (deploymentSelection === "netlify" && answers.framework === "nextjs") {
       console.log();
       UI_UTILS.log(
-        "Netlify with Next.js: Consider using Vercel for optimal Next.js features and performance."
+        "Netlify with Next.js: Consider using Vercel for optimal Next.js features and performance.",
       );
-    } else if (
-      deploymentSelection === "vercel" &&
-      answers.framework === "vite"
-    ) {
+    } else if (deploymentSelection === "vercel" && answers.framework === "vite") {
       console.log();
       UI_UTILS.log(
-        "Vercel with Vite: Great choice! Vercel has excellent Vite support with zero configuration."
+        "Vercel with Vite: Great choice! Vercel has excellent Vite support with zero configuration.",
       );
-    } else if (
-      deploymentSelection === "netlify" &&
-      answers.framework === "vite"
-    ) {
+    } else if (deploymentSelection === "netlify" && answers.framework === "vite") {
       console.log();
       UI_UTILS.log(
-        "Netlify with Vite: Excellent choice! Netlify has great build optimization for Vite projects."
+        "Netlify with Vite: Excellent choice! Netlify has great build optimization for Vite projects.",
       );
-    } else if (
-      deploymentSelection === "vercel" &&
-      answers.framework === "nextjs"
-    ) {
+    } else if (deploymentSelection === "vercel" && answers.framework === "nextjs") {
       console.log();
       UI_UTILS.log(
-        "Vercel with Next.js: Perfect match! Zero-config deployments with optimal performance."
+        "Vercel with Next.js: Perfect match! Zero-config deployments with optimal performance.",
       );
     }
   }

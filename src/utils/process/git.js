@@ -1,9 +1,10 @@
 import { execa } from "execa";
 import fs from "fs-extra";
-import path from "path";
 import ora from "ora";
-import { UI_UTILS } from "../index.js";
+import path from "path";
+
 import { createErrorHandler, ERROR_TYPES } from "../../errors/index.js";
+import { UI_UTILS } from "../index.js";
 
 export async function initGit(projectPath, userChoices) {
   const errorHandler = createErrorHandler();
@@ -36,13 +37,7 @@ export async function initGit(projectPath, userChoices) {
       // framework-specific gitignore patterns
       const frameworkIgnores = {
         vite: ["# Vite build output", "/dist/", "*.local", ""],
-        nextjs: [
-          "# Next.js build output",
-          "/.next/",
-          "/out/",
-          "next-env.d.ts",
-          "",
-        ],
+        nextjs: ["# Next.js build output", "/.next/", "/out/", "next-env.d.ts", ""],
       };
 
       const gitignoreContent = `# dependencies
@@ -82,10 +77,7 @@ yarn-error.log*
 *.sw?
 `;
 
-      fs.writeFileSync(
-        path.join(projectPath, ".gitignore"),
-        gitignoreContent.trim()
-      );
+      fs.writeFileSync(path.join(projectPath, ".gitignore"), gitignoreContent.trim());
 
       spinner.stop();
 
@@ -100,13 +92,11 @@ yarn-error.log*
           }[framework] || framework;
 
         console.log(
-          `    → Added ${frameworkName}-specific build artifacts to .gitignore`
+          `    → Added ${frameworkName}-specific build artifacts to .gitignore`,
         );
       }
 
-      console.log(
-        "    → Added node_modules/ and environment files to .gitignore"
-      );
+      console.log("    → Added node_modules/ and environment files to .gitignore");
       console.log();
 
       return true;
@@ -117,6 +107,6 @@ yarn-error.log*
         spinner.fail("Failed to initialize git repository");
         return false; // Continue without git
       },
-    }
+    },
   );
 }

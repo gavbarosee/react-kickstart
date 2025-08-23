@@ -1,6 +1,7 @@
-import chalk from "chalk";
 import boxen from "boxen";
+import chalk from "chalk";
 import inquirer from "inquirer";
+
 import { createUIRenderer } from "../../templates/index.js";
 import { validateUserChoices } from "../core/validation.js";
 
@@ -29,8 +30,7 @@ function getRoutingDescriptor(routing) {
 }
 
 export function generateSummary(projectPath, projectName, userChoices) {
-  const getStatusSymbol = (value) =>
-    value ? chalk.green("✓") : chalk.red("✗");
+  const getStatusSymbol = (value) => (value ? chalk.green("✓") : chalk.red("✗"));
 
   // Validate user choices to get warnings
   const validation = validateUserChoices(userChoices);
@@ -52,16 +52,12 @@ export function generateSummary(projectPath, projectName, userChoices) {
     formatItem("📁", "Location", chalk.cyan(projectPath)),
 
     formatSectionHeader("Build Configuration"),
-    formatItem(
-      "📦",
-      "Package Manager",
-      chalk.green(userChoices.packageManager)
-    ),
+    formatItem("📦", "Package Manager", chalk.green(userChoices.packageManager)),
     formatItem(
       "🚀",
       "Framework",
       chalk.yellow(userChoices.framework),
-      getFrameworkDescriptor(userChoices.framework)
+      getFrameworkDescriptor(userChoices.framework),
     ),
 
     userChoices.framework !== "nextjs" &&
@@ -71,7 +67,7 @@ export function generateSummary(projectPath, projectName, userChoices) {
           "🔄",
           "Routing",
           chalk.yellow(userChoices.routing),
-          getRoutingDescriptor(userChoices.routing)
+          getRoutingDescriptor(userChoices.routing),
         )
       : "",
 
@@ -86,32 +82,26 @@ export function generateSummary(projectPath, projectName, userChoices) {
       "🧹",
       "Linting",
       getStatusSymbol(userChoices.linting),
-      userChoices.linting ? "ESLint + Prettier" : ""
+      userChoices.linting ? "ESLint + Prettier" : "",
     ),
     formatItem(
       "🎨",
       "Styling",
       chalk.magenta(userChoices.styling),
-      getStylingDescriptor(userChoices.styling)
+      getStylingDescriptor(userChoices.styling),
     ),
 
     formatSectionHeader("Project Tools"),
     formatItem("🔄", "Git Repository", getStatusSymbol(userChoices.initGit)),
     userChoices.openEditor
       ? formatItem("📝", "Editor", chalk.cyan(userChoices.editor))
-      : formatItem(
-          "📝",
-          "Open in Editor",
-          getStatusSymbol(userChoices.openEditor)
-        ),
+      : formatItem("📝", "Open in Editor", getStatusSymbol(userChoices.openEditor)),
 
     // Add warnings section if there are any
     validation.warnings && validation.warnings.length > 0
       ? formatSectionHeader("Configuration Recommendations")
       : "",
-    ...(validation.warnings || []).map((warning) =>
-      chalk.yellow(`  ${warning}`)
-    ),
+    ...(validation.warnings || []).map((warning) => chalk.yellow(`  ${warning}`)),
 
     // action hint at the bottom
     "",

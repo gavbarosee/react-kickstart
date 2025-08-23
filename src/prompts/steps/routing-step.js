@@ -1,4 +1,5 @@
 import chalk from "chalk";
+
 import { BaseStep } from "./base-step.js";
 
 export class RoutingStep extends BaseStep {
@@ -17,8 +18,7 @@ export class RoutingStep extends BaseStep {
     return [
       {
         name:
-          chalk.blue("React Router") +
-          chalk.gray(" - Popular, comprehensive routing"),
+          chalk.blue("React Router") + chalk.gray(" - Popular, comprehensive routing"),
         value: "react-router",
       },
       {

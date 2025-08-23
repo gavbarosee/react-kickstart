@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { BaseApiSetup } from "./base-api-setup.js";
 
 /**
@@ -15,10 +16,7 @@ export class FetchOnlySetup extends BaseApiSetup {
    */
   createApiClient(directories, userChoices) {
     const extensions = this.getExtensions(userChoices);
-    const clientPath = path.join(
-      directories.config,
-      `api-client.${extensions.js}`
-    );
+    const clientPath = path.join(directories.config, `api-client.${extensions.js}`);
 
     const clientContent = `// API client using native fetch
 const API_BASE_URL = ${this.getApiUrlEnvVar()};
@@ -121,7 +119,7 @@ export default apiClient;
   createTodoService(directories, userChoices, extensions) {
     const todoServicePath = path.join(
       directories.services,
-      `todo-service.${extensions.js}`
+      `todo-service.${extensions.js}`,
     );
 
     const todoContent = `import { apiClient } from '../config/api-client.${extensions.js}';
@@ -207,10 +205,7 @@ export { todoService } from './todo-service.${extensions.js}';
    * Create basic todo hooks without React Query
    */
   createTodoHooks(directories, userChoices, extensions) {
-    const todoHooksPath = path.join(
-      directories.hooks,
-      `use-todos.${extensions.js}`
-    );
+    const todoHooksPath = path.join(directories.hooks, `use-todos.${extensions.js}`);
 
     const todoHooksContent = `import { useState } from 'react';
 import { todoService } from '../services/todo-service.${extensions.js}';

@@ -94,7 +94,7 @@ export class BaseStep {
       this.stepNumber,
       this.totalSteps,
       this.title,
-      this.icon
+      this.icon,
     );
 
     // Get choices and add back option if we can go back

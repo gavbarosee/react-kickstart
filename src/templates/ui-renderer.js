@@ -59,9 +59,7 @@ export class UIRenderer {
 
     const output = [
       "",
-      theme.colors.primary.bold(
-        ` ${stepIcon} STEP ${currentStep} OF ${totalSteps}`
-      ),
+      theme.colors.primary.bold(` ${stepIcon} STEP ${currentStep} OF ${totalSteps}`),
       theme.colors.text(` ${stepTitle}`),
       theme.colors.primary(theme.layout.dividerChar.repeat(40)),
       "",
@@ -79,8 +77,7 @@ export class UIRenderer {
     let output = this.engine.render("header", title);
 
     sections.forEach((section) => {
-      output +=
-        "\n" + this.engine.render("section", section.title, section.icon);
+      output += "\n" + this.engine.render("section", section.title, section.icon);
 
       if (section.items) {
         section.items.forEach((item) => {
@@ -90,7 +87,7 @@ export class UIRenderer {
               item.icon,
               item.label,
               item.value,
-              item.description
+              item.description,
             ) + "\n";
         });
       }
@@ -105,41 +102,33 @@ export class UIRenderer {
    */
   completion(projectName, stats = {}) {
     const theme = this.engine.getTheme();
-    const {
-      packageCount = 0,
-      vulnerabilities = null,
-      buildTime = null,
-    } = stats;
+    const { packageCount = 0, vulnerabilities = null, buildTime = null } = stats;
 
     let output = [
       "",
       theme.colors.success.bold(
-        `${theme.icons.success} Project ${projectName} created successfully!`
+        `${theme.icons.success} Project ${projectName} created successfully!`,
       ),
       "",
     ];
 
     if (packageCount > 0) {
       output.push(
-        theme.colors.info(
-          `${theme.icons.package} ${packageCount} packages installed`
-        )
+        theme.colors.info(`${theme.icons.package} ${packageCount} packages installed`),
       );
     }
 
     if (vulnerabilities && vulnerabilities.length > 0) {
       output.push(
         theme.colors.warning(
-          `${theme.icons.warning} ${vulnerabilities.length} security advisories found`
-        )
+          `${theme.icons.warning} ${vulnerabilities.length} security advisories found`,
+        ),
       );
     }
 
     if (buildTime) {
       output.push(
-        theme.colors.info(
-          `${theme.icons.tools} Setup completed in ${buildTime}ms`
-        )
+        theme.colors.info(`${theme.icons.tools} Setup completed in ${buildTime}ms`),
       );
     }
 
@@ -194,9 +183,7 @@ export class UIRenderer {
       .map((choice, index) => {
         const isSelected = index === selectedIndex;
         const marker = isSelected ? theme.colors.primary("▶") : " ";
-        const text = isSelected
-          ? theme.colors.primary.bold(choice.name)
-          : choice.name;
+        const text = isSelected ? theme.colors.primary.bold(choice.name) : choice.name;
         const desc = choice.description
           ? theme.colors.dim(` - ${choice.description}`)
           : "";
@@ -222,12 +209,9 @@ export class UIRenderer {
     structure.forEach((item, index) => {
       const isLast = index === structure.length - 1;
       const connector = isLast ? "└── " : "├── ";
-      const icon =
-        item.type === "folder" ? theme.icons.folder : theme.icons.file;
+      const icon = item.type === "folder" ? theme.icons.folder : theme.icons.file;
 
-      output += `${indentStr}${theme.colors.dim(connector)}${icon} ${
-        item.name
-      }\n`;
+      output += `${indentStr}${theme.colors.dim(connector)}${icon} ${item.name}\n`;
 
       if (item.children && item.children.length > 0) {
         output += this.projectTree(item.children, {

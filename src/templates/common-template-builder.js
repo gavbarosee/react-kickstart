@@ -28,9 +28,7 @@ export class CommonTemplateBuilder {
         const ext = CORE_UTILS.getComponentExtension(userChoices);
         const imports = this.buildImports(userChoices, [counterComponent]);
         const comment =
-          stateManager === "redux"
-            ? "Redux Toolkit Counter"
-            : "Zustand Counter";
+          stateManager === "redux" ? "Redux Toolkit Counter" : "Zustand Counter";
 
         return this.buildAppComponent({
           imports,
@@ -54,10 +52,7 @@ export class CommonTemplateBuilder {
 export default function ${pageName}Page() {
   return (
     <div${this.buildStylingProps(userChoices.styling, className)}>
-      <h1${this.buildStylingProps(
-        userChoices.styling,
-        "title"
-      )}>${pageName}</h1>
+      <h1${this.buildStylingProps(userChoices.styling, "title")}>${pageName}</h1>
       ${additionalContent}
     </div>
   );
@@ -69,31 +64,19 @@ export default function ${pageName}Page() {
     this.engine.registerTemplate("reduxStore", {
       type: "file",
       render: (options = {}) => {
-        const {
-          userChoices,
-          isNextjs = false,
-          features = ["counter"],
-        } = options;
+        const { userChoices, isNextjs = false, features = ["counter"] } = options;
 
         const imports = this.buildReduxStoreImports(
           features,
           isNextjs,
-          userChoices.typescript
+          userChoices.typescript,
         );
         const reducers = this.buildReducersConfig(features);
 
         if (isNextjs) {
-          return this.buildNextjsStore(
-            imports,
-            reducers,
-            userChoices.typescript
-          );
+          return this.buildNextjsStore(imports, reducers, userChoices.typescript);
         } else {
-          return this.buildStandardStore(
-            imports,
-            reducers,
-            userChoices.typescript
-          );
+          return this.buildStandardStore(imports, reducers, userChoices.typescript);
         }
       },
     });
@@ -139,9 +122,7 @@ export default function ${pageName}Page() {
    * Build imports with conditional TypeScript support
    */
   buildImports(userChoices, additionalImports = []) {
-    const reactImport = userChoices.typescript
-      ? "import React from 'react';\n"
-      : "";
+    const reactImport = userChoices.typescript ? "import React from 'react';\n" : "";
     const additional =
       additionalImports.length > 0
         ? additionalImports
@@ -194,8 +175,7 @@ export default function ${pageName}Page() {
    * Build complete app component with styling variations
    */
   buildAppComponent(config) {
-    const { imports, styling, title, description, children, userChoices } =
-      config;
+    const { imports, styling, title, description, children, userChoices } = config;
 
     if (styling === "tailwind") {
       return `${imports}
@@ -266,7 +246,7 @@ export default App;`;
     features.forEach((feature) => {
       if (isNextjs) {
         imports.push(
-          `import ${feature}Reducer from './features/${feature}/${feature}Slice';`
+          `import ${feature}Reducer from './features/${feature}/${feature}Slice';`,
         );
       } else {
         imports.push(`import ${feature}Reducer from './${feature}Slice';`);
@@ -284,9 +264,7 @@ export default App;`;
    * Build reducers configuration
    */
   buildReducersConfig(features) {
-    return features
-      .map((feature) => `    ${feature}: ${feature}Reducer`)
-      .join(",\n");
+    return features.map((feature) => `    ${feature}: ${feature}Reducer`).join(",\n");
   }
 
   /**
@@ -522,9 +500,7 @@ export default function Layout() {
   );
 }`;
     } else {
-      return `${imports}${
-        userChoices.styling === "css" ? "import './Layout.css';" : ""
-      }
+      return `${imports}${userChoices.styling === "css" ? "import './Layout.css';" : ""}
 
 export default function Layout() {
   return (

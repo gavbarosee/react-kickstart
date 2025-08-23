@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
+
 vi.mock("execa", () => ({ execa: vi.fn(async () => ({ stdout: "1.0.0" })) }));
 vi.mock("inquirer", () => ({
   default: {

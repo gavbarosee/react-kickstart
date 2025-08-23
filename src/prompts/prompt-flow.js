@@ -1,20 +1,18 @@
-import { PromptRenderer } from "./ui/prompt-renderer.js";
 import { StepNavigator } from "./navigation/step-navigator.js";
-
-// Import all step classes
-import { PackageManagerStep } from "./steps/package-manager-step.js";
-import { FrameworkStep } from "./steps/framework-step.js";
-import { NextjsOptionsStep } from "./steps/nextjs-options-step.js";
-import { RoutingStep } from "./steps/routing-step.js";
-import { LanguageStep } from "./steps/language-step.js";
-import { CodeQualityStep } from "./steps/code-quality-step.js";
-import { StylingStep } from "./steps/styling-step.js";
-import { StateManagementStep } from "./steps/state-management-step.js";
 import { ApiStep } from "./steps/api-step.js";
-import { TestingStep } from "./steps/testing-step.js";
-import { GitStep } from "./steps/git-step.js";
+import { CodeQualityStep } from "./steps/code-quality-step.js";
 import { DeploymentStep } from "./steps/deployment-step.js";
 import { EditorStep } from "./steps/editor-step.js";
+import { FrameworkStep } from "./steps/framework-step.js";
+import { GitStep } from "./steps/git-step.js";
+import { LanguageStep } from "./steps/language-step.js";
+import { NextjsOptionsStep } from "./steps/nextjs-options-step.js";
+import { PackageManagerStep } from "./steps/package-manager-step.js";
+import { RoutingStep } from "./steps/routing-step.js";
+import { StateManagementStep } from "./steps/state-management-step.js";
+import { StylingStep } from "./steps/styling-step.js";
+import { TestingStep } from "./steps/testing-step.js";
+import { PromptRenderer } from "./ui/prompt-renderer.js";
 
 /**
  * Main prompt flow controller that orchestrates the entire prompt sequence
@@ -31,7 +29,7 @@ export class PromptFlow {
         this.renderer,
         this.navigator,
         packageManagers,
-        defaultPackageManager
+        defaultPackageManager,
       ),
       framework: new FrameworkStep(this.renderer, this.navigator),
       nextjsOptions: new NextjsOptionsStep(this.renderer, this.navigator),

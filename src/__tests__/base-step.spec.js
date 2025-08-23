@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
+
 import { BaseStep } from "../prompts/steps/base-step.js";
 
 function createRendererStub() {

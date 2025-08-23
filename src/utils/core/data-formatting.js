@@ -120,9 +120,7 @@ export function formatChoiceList(choices, selectedIndex = -1) {
       const isSelected = index === selectedIndex;
       const marker = isSelected ? chalk.green("▶") : " ";
       const text = isSelected ? chalk.bold(choice.name) : choice.name;
-      const desc = choice.description
-        ? chalk.gray(` - ${choice.description}`)
-        : "";
+      const desc = choice.description ? chalk.gray(` - ${choice.description}`) : "";
 
       return `${marker} ${text}${desc}`;
     })

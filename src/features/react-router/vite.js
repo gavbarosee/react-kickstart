@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { CORE_UTILS } from "../../../utils/index.js";
 
 /**
@@ -33,20 +34,14 @@ export function setupViteReactRouter(projectPath, userChoices) {
  * Creates a Home page component
  */
 function createHomePage(pagesDir, ext, userChoices) {
-  const content = `${
-    userChoices.typescript ? "import React from 'react';\n\n" : ""
-  }
+  const content = `${userChoices.typescript ? "import React from 'react';\n\n" : ""}
 export default function HomePage() {
   return (
     <div${userChoices.styling === "tailwind" ? ' className="py-8"' : ""}>
       <h1${
-        userChoices.styling === "tailwind"
-          ? ' className="text-3xl font-bold mb-4"'
-          : ""
+        userChoices.styling === "tailwind" ? ' className="text-3xl font-bold mb-4"' : ""
       }>Home</h1>
-      <p${
-        userChoices.styling === "tailwind" ? ' className="text-gray-600"' : ""
-      }>
+      <p${userChoices.styling === "tailwind" ? ' className="text-gray-600"' : ""}>
         Welcome to your new React project with React Router!
       </p>
     </div>
@@ -61,27 +56,17 @@ export default function HomePage() {
  * Creates an About page component
  */
 function createAboutPage(pagesDir, ext, userChoices) {
-  const content = `${
-    userChoices.typescript ? "import React from 'react';\n\n" : ""
-  }
+  const content = `${userChoices.typescript ? "import React from 'react';\n\n" : ""}
 export default function AboutPage() {
   return (
     <div${userChoices.styling === "tailwind" ? ' className="py-8"' : ""}>
       <h1${
-        userChoices.styling === "tailwind"
-          ? ' className="text-3xl font-bold mb-4"'
-          : ""
+        userChoices.styling === "tailwind" ? ' className="text-3xl font-bold mb-4"' : ""
       }>About</h1>
-      <p${
-        userChoices.styling === "tailwind" ? ' className="text-gray-600"' : ""
-      }>
+      <p${userChoices.styling === "tailwind" ? ' className="text-gray-600"' : ""}>
         This is a simple React application created with React Kickstart CLI.
       </p>
-      <p${
-        userChoices.styling === "tailwind"
-          ? ' className="text-gray-600 mt-2"'
-          : ""
-      }>
+      <p${userChoices.styling === "tailwind" ? ' className="text-gray-600 mt-2"' : ""}>
         It includes React Router for navigation between pages.
       </p>
     </div>
@@ -96,22 +81,16 @@ export default function AboutPage() {
  * Creates a 404 Not Found page component
  */
 function createNotFoundPage(pagesDir, ext, userChoices) {
-  const content = `${
-    userChoices.typescript ? "import React from 'react';\n\n" : ""
-  }
+  const content = `${userChoices.typescript ? "import React from 'react';\n\n" : ""}
 export default function NotFoundPage() {
   return (
-    <div${
-      userChoices.styling === "tailwind" ? ' className="py-8 text-center"' : ""
-    }>
+    <div${userChoices.styling === "tailwind" ? ' className="py-8 text-center"' : ""}>
       <h1${
         userChoices.styling === "tailwind"
           ? ' className="text-3xl font-bold mb-4 text-red-500"'
           : ""
       }>404 - Page Not Found</h1>
-      <p${
-        userChoices.styling === "tailwind" ? ' className="text-gray-600"' : ""
-      }>
+      <p${userChoices.styling === "tailwind" ? ' className="text-gray-600"' : ""}>
         The page you are looking for does not exist.
       </p>
     </div>
@@ -344,7 +323,7 @@ function updateEntryPoint(srcDir, ext, userChoices) {
   if (!content.includes("import App from './App'")) {
     newContent = content.replace(
       /import .* from ["']\.\/App.*["'];/,
-      "import App from './App';"
+      "import App from './App';",
     );
   }
 

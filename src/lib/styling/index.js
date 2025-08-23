@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+
 import { CORE_UTILS } from "../../utils/index.js";
 
 /**
@@ -92,10 +93,7 @@ export function setupTailwind(projectPath, stylingInfo, userChoices) {
     return;
   }
 
-  const cssDir = CORE_UTILS.createProjectDirectory(
-    projectPath,
-    stylingInfo.cssDir
-  );
+  const cssDir = CORE_UTILS.createProjectDirectory(projectPath, stylingInfo.cssDir);
 
   // create the main CSS file with Tailwind directives
   const cssContent = `@tailwind base;
@@ -115,10 +113,7 @@ export function setupTailwind(projectPath, stylingInfo, userChoices) {
  * Sets up basic CSS for a project
  */
 export function setupBasicCss(projectPath, stylingInfo) {
-  const cssDir = CORE_UTILS.createProjectDirectory(
-    projectPath,
-    stylingInfo.cssDir
-  );
+  const cssDir = CORE_UTILS.createProjectDirectory(projectPath, stylingInfo.cssDir);
 
   const mainCssContent = `body {
   margin: 0;
@@ -140,10 +135,7 @@ code {
   text-align: center;
 }
 `;
-  fs.writeFileSync(
-    path.join(cssDir, stylingInfo.mainCssFilename),
-    mainCssContent
-  );
+  fs.writeFileSync(path.join(cssDir, stylingInfo.mainCssFilename), mainCssContent);
 
   if (stylingInfo.usesComponentCss) {
     const componentCssContent = `
@@ -171,7 +163,7 @@ button:hover {
 `;
     fs.writeFileSync(
       path.join(cssDir, stylingInfo.componentCssFilename),
-      componentCssContent
+      componentCssContent,
     );
   }
 }
@@ -187,10 +179,7 @@ export function setupStyledComponents(projectPath, stylingInfo) {
   }
 
   // Create a basic CSS reset file for styled-components projects
-  const cssDir = CORE_UTILS.createProjectDirectory(
-    projectPath,
-    stylingInfo.cssDir
-  );
+  const cssDir = CORE_UTILS.createProjectDirectory(projectPath, stylingInfo.cssDir);
 
   // Create a minimal CSS reset with Tailwind-like styling
   const resetCssContent = `/* CSS Reset and Global Styles for styled-components - Tailwind-inspired */
@@ -247,10 +236,7 @@ button {
 }
 `;
 
-  fs.writeFileSync(
-    path.join(cssDir, stylingInfo.mainCssFilename),
-    resetCssContent
-  );
+  fs.writeFileSync(path.join(cssDir, stylingInfo.mainCssFilename), resetCssContent);
 }
 
 /**
@@ -268,10 +254,7 @@ export default {
   plugins: [],
 }
 `;
-  fs.writeFileSync(
-    path.join(projectPath, "tailwind.config.js"),
-    tailwindConfig
-  );
+  fs.writeFileSync(path.join(projectPath, "tailwind.config.js"), tailwindConfig);
 }
 
 /**
@@ -321,10 +304,7 @@ module.exports = {
   plugins: [],
 }
 `;
-  fs.writeFileSync(
-    path.join(projectPath, "tailwind.config.js"),
-    tailwindConfig
-  );
+  fs.writeFileSync(path.join(projectPath, "tailwind.config.js"), tailwindConfig);
 
   // next.js also uses CommonJS for PostCSS config
   const postcssConfig = `module.exports = {
