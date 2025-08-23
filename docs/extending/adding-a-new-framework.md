@@ -18,16 +18,9 @@ References:
 
 If your framework needs an HTML entry (like Vite), call `createHtmlFile(...)` and `createSourceFiles(...)`. If it manages routing internally (like Next.js), skip HTML and rely on `createSourceFiles(...)` with framework-specific variations.
 
-#### 2) Register the Framework in the Registry
+#### 2) Register the Framework for Selection
 
-- File: `src/frameworks/index.js`
-- Update `registerDefaultGenerators()` or call `register("<name>", YourFrameworkGenerator)` so the factory can instantiate it:
-  - `this.register("rsbuild", RsbuildGenerator)`
-  - `this.register("parcel", ParcelGenerator)`
-
-Also export a small `index.js` in your framework folder to expose metadata (optional but recommended):
-
-- Example: `src/frameworks/vite/index.js` and `src/frameworks/nextjs/index.js`
+This codebase currently selects frameworks via a simple switch in `src/generators/index.js`. Add a case for your new framework and instantiate your generator there.
 
 #### 3) Make It Selectable in the Prompt Flow (Required)
 
@@ -40,14 +33,7 @@ If your framework has special sub-options (like Next.js app/pages router), add a
 
 #### 4) Wire the Generator at Runtime
 
-If the project currently switches by `switch (userChoices.framework)`:
-
-- File: `src/generators/index.js`
-- Either:
-  - Replace the `switch` with the `FrameworkRegistry` factory to decouple from hard-coded cases; or
-  - Add cases for your framework and instantiate your generator.
-
-Reference: `src/frameworks/index.js` already implements a `FrameworkRegistry`. Prefer using it for new frameworks.
+Add a case for your framework in `src/generators/index.js` (where Vite/Next.js are handled) to construct your generator and call `generate(...)`.
 
 #### 5) Add Framework Dependencies and Scripts
 
@@ -134,9 +120,8 @@ QA Automation (must-do):
 ### Minimal Checklist
 
 - Generator: `src/frameworks/<name>/<name>-generator.js`
-- Registry: `src/frameworks/index.js`
 - Prompt choice (optional): `src/prompts/steps/framework-step.js`
-- Runtime switch or registry usage: `src/generators/index.js`
+- Runtime switch: `src/generators/index.js`
 - Dependencies and scripts: `src/config/dependencies.js`, `src/config/dependency-resolver.js`, `src/config/package-json-builder.js`
 - Config writer: `src/config/configuration-builder.js`
 - Content/HTML: `src/lib/file-generation/index.js`, `src/lib/content-generation/*`

@@ -40,7 +40,7 @@ npm run dev   # yarn dev also works
 ```text
 bin/react-kickstart.js -> src/index.js(createApp)
   -> prompts/prompt-flow.run() => answers
-  -> frameworks/index.js (FrameworkRegistry) -> *-generator.generate(...)
+  -> select concrete generator -> *-generator.generate(...)
   -> config/configuration-builder (writes configs)
   -> lib/file-generation + styling/routing/state/api/testing
   -> install deps -> (optional) start dev -> print summary
@@ -64,7 +64,7 @@ bin/react-kickstart.js -> src/index.js(createApp)
 See `../extending/adding-a-new-framework.md` for the complete checklist. In short:
 
 - Implement a `*-generator.js` that extends `BaseGenerator`.
-- Register it in `src/frameworks/index.js`.
+- Add a case in `src/generators/index.js`.
 - Add it to `src/prompts/steps/framework-step.js` choices.
 - Wire dependencies/scripts in `src/config/*` and content in `src/lib/*`.
 - Update QA matrix to include it.

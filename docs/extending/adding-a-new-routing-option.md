@@ -6,7 +6,7 @@ Support alternative routing for Vite (React Router variants) or Next.js routing 
 
 - Vite/React Router:
   - `src/lib/routing/react-router/*`
-  - `src/features/react-router/*`
+  - (features layer not required for routing; use `src/lib/routing/*` directly)
 - Next.js options:
   - `src/frameworks/nextjs/generators/*` (app vs pages router)
 
@@ -18,7 +18,7 @@ Add a module that writes router deps and files (e.g., `vite.js` or new variant) 
 
 2. Register the option
 
-Expose a new choice in the feature layer (`src/features/react-router/index.js`) or Next.js options step.
+Expose a new choice in the prompts (e.g., `src/prompts/steps/routing-step.js`) and wire handling in `src/lib/routing/index.js`.
 
 3. Update content generators
 

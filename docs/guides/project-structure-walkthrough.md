@@ -7,7 +7,7 @@ A quick, visual-first guide to help you understand how this CLI works and where 
 - Run it once locally to see it work:
   - `node bin/react-kickstart.js my-app --yes`
 - Prompts collect answers → a framework generator runs → files/configs are written → deps install → dev server starts → summary prints.
-- Start reading: `src/index.js` → `src/prompts/prompt-flow.js` → `src/frameworks/index.js` → the specific `*-generator.js`.
+- Start reading: `src/index.js` → `src/prompts/prompt-flow.js` → the specific `src/frameworks/*-generator.js`.
 - Configs/scripts come from `src/config/*` (builders/resolver). Files come from `src/lib/*` (file/content/styling/routing/testing).
 - When stuck, search for the keyword you picked in prompts (e.g., "vite"), then follow the calls.
 
@@ -30,12 +30,8 @@ Rendering note: This guide uses low-tech ASCII diagrams that render everywhere.
           │                                │                    └───────────┬────────────┘
           │                                │                                │ answers
           │                                │                                ▼
-          │                                │                 ┌───────────────────────────┐
-          │                                │                 │  frameworks/index.js      │
-          │                                │                 │  (FrameworkRegistry)      │
-          │                                │                 └───────────┬──────────────┘
-          │                                │                             │ getGenerator(framework)
-          │                                │                             ▼
+          │                                │
+          │                                │
           │                                │                 ┌───────────────────────────┐
           │                                │                 │ generators/base-generator │
           │                                │                 │ + concrete generators      │
@@ -123,10 +119,9 @@ bin/react-kickstart.js -> src/index.js(createApp)
 
 ### src/frameworks/
 
-- `index.js`: `FrameworkRegistry` and metadata exports.
 - `vite/` and `nextjs/`: Each has `*-generator.js` plus any framework-specific helpers.
 
-Framework selection and generators: `FrameworkRegistry` maps the chosen framework to a concrete generator that extends `BaseGenerator`.
+Framework selection and generators: selection is handled in `src/generators/index.js` and maps the chosen framework to a concrete generator that extends `BaseGenerator`.
 
 ### src/generators/
 
@@ -218,7 +213,7 @@ node qa-automation/test-runner.js edge 15
 
 ## Mental model (short)
 
-Prompts → FrameworkRegistry → Generator → Config/Files/Features → Install → Start → Summary
+Prompts → Generator (by framework) → Config/Files/Features → Install → Start → Summary
 
 ---
 
@@ -236,7 +231,7 @@ Prompts → FrameworkRegistry → Generator → Config/Files/Features → Instal
 
 - Re-run a sample: `node bin/react-kickstart.js demo --yes` to refresh context.
 - Skim this file’s ASCII overview and the "Where to add or extend things" section.
-- Check supported frameworks: `src/frameworks/index.js` (registry) and `src/prompts/steps/framework-step.js`.
+- Check supported frameworks: `src/prompts/steps/framework-step.js` and cases in `src/generators/index.js`.
 - Review config pipeline: `src/config/configuration-builder.js` and `src/config/package-json-builder.js` (scripts/deps), `src/config/dependency-resolver.js`.
 - Validate with QA: regenerate matrix and run critical/standard/edge suites:
   - `node qa-automation/test-matrix-generator.js`
@@ -257,7 +252,7 @@ Prompts → FrameworkRegistry → Generator → Config/Files/Features → Instal
 
 2. What the code does:
    - `prompts/prompt-flow.js` collects your choices.
-   - `frameworks/index.js` returns `ViteGenerator`.
+   - generator selection returns `ViteGenerator`.
    - `generators/base-generator.js` runs the template sequence:
      - `config/configuration-builder.js` writes `package.json`, `vite.config.ts`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`, `vitest.config.ts`.
      - `lib/file-generation/index.js` creates `index.html`, `src/main.tsx`, `src/App.tsx`.

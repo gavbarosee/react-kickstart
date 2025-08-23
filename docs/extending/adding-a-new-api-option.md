@@ -7,7 +7,6 @@ Extend API client choices (e.g., Fetch, Axios, React Query) by wiring two layers
 - Generators and wiring:
   - `src/lib/api-management/*` — setup logic per API style
   - `src/features/api/index.js` — exposes available API options
-  - `src/lib/index.js` — aggregates library wiring
 
 ## Steps
 
