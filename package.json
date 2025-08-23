@@ -11,9 +11,12 @@
     "start": "node bin/react-kickstart.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage --silent",
+    "lint": "eslint src bin --ext .js,.cjs",
+    "lint:fix": "eslint src bin --ext .js,.cjs --fix",
+    "format": "prettier --write .",
     "qa:critical": "node qa-automation/test-runner.js critical",
     "qa:standard": "node qa-automation/test-runner.js standard",
-    "prepare": "husky"
+    "prepare": "husky install"
   },
   "keywords": [
     "react",
@@ -40,9 +43,15 @@
     "validate-npm-package-name": "^6.0.2"
   },
   "devDependencies": {
-    "vitest": "^1.6.0",
     "@vitest/coverage-v8": "^1.6.0",
-    "husky": "^9.0.11"
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-unicorn": "^54.0.0",
+    "globals": "^15.15.0",
+    "husky": "^9.0.11",
+    "prettier": "^3.6.2",
+    "vitest": "^1.6.0"
   },
   "engines": {
     "node": ">=16"

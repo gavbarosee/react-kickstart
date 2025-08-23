@@ -1,0 +1,12 @@
+node_modules
+coverage
+reports
+qa-automation/reports
+qa-test-projects
+*.log
+
+# Generated/fixture outputs
+/test-*
+/debug-*
+/quick-test/
+/feature-test-*/
