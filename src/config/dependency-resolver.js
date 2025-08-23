@@ -11,6 +11,7 @@ import {
   getAxiosReactQueryDependencies,
   getFetchReactQueryDependencies,
   getTestingDependencies,
+  getJestBabelDependencies,
   getDeploymentDependencies,
   frameworks,
   styling,
@@ -139,6 +140,13 @@ export class DependencyResolver {
    */
   getTestingDependencies(testingChoice) {
     return getTestingDependencies(testingChoice);
+  }
+
+  /**
+   * Get additional Babel-related deps required when using Jest with Vite
+   */
+  getJestBabelDependencies(includeTypescript = false) {
+    return getJestBabelDependencies(includeTypescript);
   }
 
   /**
