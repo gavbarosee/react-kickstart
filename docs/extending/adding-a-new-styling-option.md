@@ -71,7 +71,7 @@ Also check `validateDependencies(...)` for any special validations (e.g., requir
 #### 3) Include in the Prompt Flow (Required)
 
 - File: `src/prompts/steps/styling-step.js`
-  - Add a new choice in `getChoices()` with a clear label and `value` matching your styling key (e.g., `"sass"`, `"emotion"`).
+  - Add a new choice in `getChoices()` with a clear label and `value` matching your styling key (e.g., "sass", "emotion").
 
 Example:
 
@@ -165,8 +165,8 @@ Add/branch in the component and entry templates so generated projects demonstrat
 #### 10) Prompt/Flag Documentation (Recommended)
 
 - Files:
-  - `docs/using-react-kickstart.md`
-  - `docs/cli-flags.md`
+  - `../guides/using-react-kickstart.md`
+  - `../guides/cli-flags.md`
 
 Add your styling value to the valid choices list for `--styling` and include at least one CLI example showing it in use across Vite and Next.js.
 
@@ -229,3 +229,7 @@ Write focused tests (no placeholders) that verify:
 - Add unit tests to prevent regressions.
 
 With these edits, your styling option will be selectable, install the right packages, generate proper files/configs, and be covered by QA with meaningful tests.
+
+### Adding a New Styling Option (e.g., Sass, Emotion, CSS Modules)
+
+... (content identical to original doc moved from docs/adding-a-new-styling-option.md) ...

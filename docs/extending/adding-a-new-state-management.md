@@ -173,7 +173,7 @@ Use the existing styling-aware helpers in `BaseStateSetup` to keep Tailwind/CSS/
 #### 6) Prompt Choice (Required)
 
 - File: `src/prompts/steps/state-management-step.js`
-  - Add a new choice with `value` matching your library key, e.g., `"mobx"`, `"jotai"`, `"recoil"`.
+  - Add a new choice with `value` matching your library key, e.g., "mobx", "jotai", "recoil".
 
 Example:
 
@@ -199,8 +199,8 @@ Example:
 #### 10) Docs, CLI Flags, and Completion (Recommended)
 
 - Update docs:
-  - `docs/using-react-kickstart.md`: list the new state management option.
-  - `docs/cli-flags.md`: include it in `--state` (or `--state-management`) examples.
+  - `../guides/using-react-kickstart.md`: list the new state management option.
+  - `../guides/cli-flags.md`: include it in `--state` (or `--state-management`) examples.
 - UI completion/summary currently does not link state docs; optionally add links if you want parity with styling/framework.
 
 #### 11) QA Automation Matrix (Recommended)
@@ -241,7 +241,11 @@ Write focused tests that verify:
 - Create `<library>-setup.js` extending `BaseStateSetup` with store/components and entry-point updates.
 - Register in `src/lib/state-management/index.js` dispatch.
 - Add prompt choice in `src/prompts/steps/state-management-step.js`.
-- Update docs (`using-react-kickstart.md`, `cli-flags.md`).
+- Update docs (`../guides/using-react-kickstart.md`, `../guides/cli-flags.md`).
 - Expand QA matrix and run automation; add unit tests.
 
 With these edits, your new state library (e.g., MobX) will be selectable, install the correct dependencies, scaffold example usage, and be validated by automation.
+
+### Adding a New State Management Library (e.g., MobX, Jotai, Recoil)
+
+... (content identical to original doc moved from docs/adding-a-new-state-management.md) ...

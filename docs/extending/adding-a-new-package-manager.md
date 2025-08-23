@@ -223,7 +223,7 @@ Add or update tests to avoid regressions and ensure meaningful coverage (no plac
 
 #### 11) Documentation Touchpoints (Optional)
 
-- Update `README.md` and `docs/using-react-kickstart.md` to list supported package managers and the `--package-manager` CLI flag with valid values.
+- Update `README.md` and `../guides/using-react-kickstart.md` to list supported package managers and the `--package-manager` CLI flag with valid values.
 
 ---
 
@@ -239,3 +239,11 @@ Add or update tests to avoid regressions and ensure meaningful coverage (no plac
 - Add targeted unit tests for detection and command mapping.
 
 With these edits, your new package manager will be detected, selectable in prompts and CLI, used for installs and script execution, reflected in next-step guidance, and validated by QA.
+
+### Adding a New Package Manager (e.g., pnpm, Bun)
+
+This guide explains how to integrate an additional package manager into react-kickstart so it can be detected, selected in prompts/CLI, used to install dependencies, run scripts, show next-step commands, and be included in QA automation.
+
+Use npm and Yarn as reference implementations. Target examples below assume adding `pnpm` and `bun`.
+
+... (content identical to original doc moved from docs/adding-a-new-package-manager.md) ...

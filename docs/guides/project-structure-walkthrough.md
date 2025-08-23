@@ -204,15 +204,11 @@ node qa-automation/test-runner.js standard 25
 node qa-automation/test-runner.js edge 15
 ```
 
-### qa-test-projects/
-
-Generated sample outputs captured for inspection during automated runs.
-
 ---
 
 ## Where to add or extend things quickly
 
-- Add a framework: `docs/adding-a-new-framework.md` (full checklist).
+- Add a framework: `../extending/adding-a-new-framework.md` (full checklist).
 - Add a feature: `src/features/*` + helpers in `src/lib/*` and `src/config/*`.
 - Change prompts: `src/prompts/steps/*` and `src/prompts/prompt-flow.js`.
 - Tweak build scripts/deps: `src/config/package-json-builder.js` and `src/config/dependencies.js`.
@@ -228,7 +224,7 @@ Prompts → FrameworkRegistry → Generator → Config/Files/Features → Instal
 
 ## Common tasks (1-minute pointers)
 
-- Add a framework: See `docs/adding-a-new-framework.md`. Then add it to prompts in `src/prompts/steps/framework-step.js` and QA matrix `qa-automation/test-matrix-generator.js`.
+- Add a framework: See `../extending/adding-a-new-framework.md`. Then add it to prompts in `src/prompts/steps/framework-step.js` and QA matrix `qa-automation/test-matrix-generator.js`.
 - Add a feature (e.g., another state manager): Add under `src/features/`, wire deps in `src/config/dependency-resolver.js`, add content in `src/lib/*`, add prompt in `src/prompts/steps/*`.
 - Change default scripts: `src/config/package-json-builder.js` → `getFrameworkScripts()`.
 - Change build output dir: `src/config/package-json-builder.js` → `getBuildDirectory()`.
@@ -239,7 +235,7 @@ Prompts → FrameworkRegistry → Generator → Config/Files/Features → Instal
 ## If you revisit after a while
 
 - Re-run a sample: `node bin/react-kickstart.js demo --yes` to refresh context.
-- Skim this file’s ASCII overview and the "Where to add or extend" section.
+- Skim this file’s ASCII overview and the "Where to add or extend things" section.
 - Check supported frameworks: `src/frameworks/index.js` (registry) and `src/prompts/steps/framework-step.js`.
 - Review config pipeline: `src/config/configuration-builder.js` and `src/config/package-json-builder.js` (scripts/deps), `src/config/dependency-resolver.js`.
 - Validate with QA: regenerate matrix and run critical/standard/edge suites:
@@ -292,9 +288,9 @@ Prompts → FrameworkRegistry → Generator → Config/Files/Features → Instal
 
 - Where are scripts set? → `src/config/package-json-builder.js#getFrameworkScripts()`.
 - Where’s the build output directory defined? → `getBuildDirectory()` in the same file.
-- How do I add a new prompt? → Create a step in `src/prompts/steps/`, wire in `prompt-flow.js`, and handle navigation from the previous step.
+- How do I add a new prompt? → Create a step in `src/prompts/steps/`, wire in `src/prompts/prompt-flow.js`, and handle navigation from the previous step.
 - Generation failed after install—what next? → Re-run with `--yes`, check network/proxy, then review `installDependenciesWithRetry` in `utils/process/package-managers.js` logs.
-- How do I add a new framework? → `docs/adding-a-new-framework.md` and ensure prompt choice + QA matrix update.
+- How do I add a new framework? → `../extending/adding-a-new-framework.md` and ensure prompt choice + QA matrix update.
 
 ---
 

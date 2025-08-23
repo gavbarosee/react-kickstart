@@ -61,7 +61,7 @@ bin/react-kickstart.js -> src/index.js(createApp)
 
 #### Extending (adding a framework)
 
-See `docs/adding-a-new-framework.md` for the complete checklist. In short:
+See `../extending/adding-a-new-framework.md` for the complete checklist. In short:
 
 - Implement a `*-generator.js` that extends `BaseGenerator`.
 - Register it in `src/frameworks/index.js`.
@@ -82,5 +82,5 @@ node qa-automation/test-runner.js edge 15
 
 #### Where to read next
 
-- Project structure tour: `docs/project-structure-walkthrough.md`
-- Adding a framework: `docs/adding-a-new-framework.md`
+- Project structure tour: `./project-structure-walkthrough.md`
+- Adding a framework: `../extending/adding-a-new-framework.md`

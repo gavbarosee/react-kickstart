@@ -160,7 +160,7 @@ More examples and nuances are listed in `./cli-flags.md`.
 
 Use `--skip-install` and `--no-autostart` in CI to generate structure only.
 
-The repository includes a QA automation harness; see `./qa-automation-overview.md` for how to validate multiple configurations.
+The repository includes a QA automation harness; see `../qa/qa-automation-overview.md` for how to validate multiple configurations.
 
 ## Troubleshooting
 
@@ -172,7 +172,7 @@ The repository includes a QA automation harness; see `./qa-automation-overview.m
 
 ## Extending the generator
 
-To add new frameworks or options, see `./adding-a-new-framework.md`. For internals, explore:
+To add new frameworks or options, see `../extending/adding-a-new-framework.md`. For internals, explore:
 
 - `src/frameworks` and `src/lib/*` for stack-specific logic
 - `src/prompts` for interactive flows
