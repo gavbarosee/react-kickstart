@@ -1,3 +1,7 @@
+import chalk from "chalk";
+
+import { keyboardNavManager } from "../keyboard-navigation-manager.js";
+
 /**
  * Base class for all prompt steps
  */
@@ -99,17 +103,25 @@ export class BaseStep {
 
     // Get choices and add back option if we can go back
     const choices = this.getChoices(answers);
+    const canGoBack = this.navigator.canGoBack();
 
-    if (this.navigator.canGoBack()) {
+    if (canGoBack) {
       choices.push(this.renderer.createSeparator());
       choices.push(this.renderer.createBackOption());
     }
 
-    // Prompt user
-    const selection = await this.renderer.promptChoice({
-      message: this.getMessage(),
+    // Add keyboard navigation hint if we can go back
+    let message = this.getMessage();
+    if (canGoBack) {
+      message += chalk.dim("\n  (Press ← or Backspace to go back quickly)");
+    }
+
+    // Prompt user with keyboard navigation support
+    const selection = await this.promptWithKeyboardNavigation({
+      message: message,
       choices: choices,
       default: this.getDefault(answers),
+      canGoBack: canGoBack,
     });
 
     // Process selection
@@ -119,5 +131,45 @@ export class BaseStep {
       selection: result,
       nextStep: this.getNextStep(result, answers),
     };
+  }
+
+  /**
+   * Enhanced prompt with keyboard navigation support
+   */
+  async promptWithKeyboardNavigation(config) {
+    if (!config.canGoBack) {
+      // Use standard prompt if no back navigation is available
+      return await this.renderer.promptChoice(config);
+    }
+
+    return new Promise((resolve, reject) => {
+      let isResolved = false;
+
+      // Activate keyboard navigation with our callback
+      keyboardNavManager.activate(() => {
+        if (!isResolved) {
+          isResolved = true;
+          resolve("BACK_OPTION");
+        }
+      });
+
+      // Run the standard prompt
+      this.renderer
+        .promptChoice(config)
+        .then((selection) => {
+          if (!isResolved) {
+            isResolved = true;
+            keyboardNavManager.deactivate();
+            resolve(selection);
+          }
+        })
+        .catch((error) => {
+          if (!isResolved) {
+            isResolved = true;
+            keyboardNavManager.deactivate();
+            reject(error);
+          }
+        });
+    });
   }
 }
