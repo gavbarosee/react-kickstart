@@ -35,9 +35,6 @@ export class BaseGenerator {
 
     return this.errorHandler.withErrorHandling(
       async () => {
-        // Step 1: Log start
-        this.logGenerationStart(userChoices);
-
         // Step 2: Create base structure
         await this.createBaseStructure(projectPath);
 
@@ -63,13 +60,6 @@ export class BaseGenerator {
         shouldCleanup: true,
       },
     );
-  }
-
-  /**
-   * Step 1: Log generation start
-   */
-  logGenerationStart(userChoices) {
-    UI_UTILS.log(`Creating a ${this.frameworkName} React project...`);
   }
 
   /**
@@ -211,8 +201,6 @@ export class BaseGenerator {
 
     const configPath = path.join(projectPath, "vercel.json");
     await fs.writeFile(configPath, JSON.stringify(vercelConfig, null, 2));
-
-    UI_UTILS.success("Created vercel.json configuration");
   }
 
   /**
@@ -246,8 +234,6 @@ export class BaseGenerator {
 
     const configPath = path.join(projectPath, "netlify.toml");
     await fs.writeFile(configPath, netlifyConfig);
-
-    UI_UTILS.success("Created netlify.toml configuration");
   }
 
   /**
@@ -277,8 +263,6 @@ module.exports = nextConfig;
 
     const configPath = path.join(projectPath, "next.config.js");
     await fs.writeFile(configPath, nextConfig);
-
-    UI_UTILS.success("Created next.config.js for static export");
   }
 
   /**

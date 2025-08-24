@@ -4,7 +4,7 @@ import path from "path";
 
 import { createErrorHandler, ERROR_TYPES } from "./errors/index.js";
 import generateProject from "./generators/index.js";
-import { promptUser, getDefaultChoices, getFrameworkDefaults } from "./prompts.js";
+import { promptUser, getFrameworkDefaults } from "./prompts.js";
 import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "./utils/index.js";
 
 /**
@@ -131,32 +131,21 @@ export async function createApp(projectDirectory, options = {}) {
         }
       }
 
-      // Start project generation
+      // Start project generation with single progress bar
       UI_UTILS.divider();
-      UI_UTILS.initSteps(3);
 
-      // STEP 1: generate project files
-      UI_UTILS.nextStep("Generating project files");
-      console.log();
+      // Start single continuous progress bar
+      UI_UTILS.startProgress("Setting up your project", { size: 30 });
 
-      if (userChoices.styling) {
-        console.log(
-          `Project configured with:\n  ${chalk.magenta("[style]")} ${
-            userChoices.styling
-          } styling`,
-        );
-      }
-
+      // Generate project files
       await generateProject(projectPath, projectName, userChoices);
 
-      // STEP 2: install dependencies (skippable via --skip-install)
+      // Install dependencies (skippable via --skip-install)
       let installResult = { success: true, skipped: false };
       if (options.skipInstall) {
         console.log(chalk.yellow("Skipping dependency installation (--skip-install)."));
         installResult = { success: true, skipped: true };
       } else {
-        UI_UTILS.nextStep("Installing dependencies");
-        UI_UTILS.startProgress("Installing packages", { size: 26 });
         installResult = await errorHandler.withErrorHandling(
           () =>
             PROCESS_UTILS.installDependencies(
@@ -170,8 +159,6 @@ export async function createApp(projectDirectory, options = {}) {
             showRecovery: true,
           },
         );
-        // finalize progress bar
-        UI_UTILS.stopProgress(true);
         if (installResult.skipped) {
           console.log(
             chalk.yellow(
@@ -183,10 +170,7 @@ export async function createApp(projectDirectory, options = {}) {
         }
       }
 
-      // STEP 3: additional setups
-      UI_UTILS.nextStep("Finalizing project setup");
-      console.log();
-
+      // Additional setups
       if (userChoices.initGit) {
         await errorHandler.withErrorHandling(
           () => PROCESS_UTILS.initGit(projectPath, userChoices),
@@ -201,6 +185,8 @@ export async function createApp(projectDirectory, options = {}) {
         );
       }
 
+      // Complete the progress bar
+      UI_UTILS.stopProgress(true);
       console.log(`  [✓] Project successfully set up`);
       console.log();
 
@@ -229,7 +215,7 @@ export async function createApp(projectDirectory, options = {}) {
         if (await fs.pathExists(markerPath)) {
           await fs.remove(markerPath);
         }
-      } catch (_) {}
+      } catch {}
     },
     {
       type: ERROR_TYPES.GENERAL,

@@ -4,11 +4,10 @@ import ora from "ora";
 import path from "path";
 
 import { createErrorHandler, ERROR_TYPES } from "../../errors/index.js";
-import { UI_UTILS } from "../index.js";
 
 export async function initGit(projectPath, userChoices) {
   const errorHandler = createErrorHandler();
-  const { framework, typescript, linting, styling } = userChoices || {};
+  const { framework } = userChoices || {};
 
   errorHandler.setContext({
     projectPath,
@@ -27,7 +26,7 @@ export async function initGit(projectPath, userChoices) {
       // Check if git is available
       try {
         await execa("git", ["--version"]);
-      } catch (err) {
+      } catch {
         spinner.warn("Git is not installed. Skipping git initialization.");
         return false;
       }
@@ -80,24 +79,6 @@ yarn-error.log*
       fs.writeFileSync(path.join(projectPath, ".gitignore"), gitignoreContent.trim());
 
       spinner.stop();
-
-      console.log("  [git] Initializing Git repository");
-      console.log("    → Created .gitignore with framework-specific patterns");
-
-      if (frameworkIgnores[framework]) {
-        const frameworkName =
-          {
-            vite: "Vite",
-            nextjs: "Next.js",
-          }[framework] || framework;
-
-        console.log(
-          `    → Added ${frameworkName}-specific build artifacts to .gitignore`,
-        );
-      }
-
-      console.log("    → Added node_modules/ and environment files to .gitignore");
-      console.log();
 
       return true;
     },

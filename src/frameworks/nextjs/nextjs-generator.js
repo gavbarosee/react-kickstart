@@ -5,7 +5,7 @@ import { createAppRouterStructure } from "./generators/app-router.js";
 import { createPagesRouterStructure } from "./generators/pages-router.js";
 import { createConfigurationBuilder } from "../../config/index.js";
 import { BaseGenerator } from "../../generators/base-generator.js";
-import { UI_UTILS, CORE_UTILS } from "../../utils/index.js";
+import { CORE_UTILS } from "../../utils/index.js";
 
 /**
  * Next.js-specific project generator
@@ -14,14 +14,6 @@ export class NextjsGenerator extends BaseGenerator {
   constructor() {
     super("nextjs");
     this.configBuilder = createConfigurationBuilder("nextjs");
-  }
-
-  /**
-   * Override log message for Next.js
-   */
-  logGenerationStart(userChoices) {
-    const routerType = userChoices.nextRouting || "app";
-    UI_UTILS.log(`Creating a Next.js React project with ${routerType} router...`);
   }
 
   /**

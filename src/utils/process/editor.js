@@ -77,22 +77,6 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
 
       spinner.stop();
 
-      console.log(`  🧰 Setting up ${humanName(selectedEditor)} configuration`);
-      console.log("    → Added .vscode/extensions.json with recommended extensions");
-
-      if (typescript) {
-        console.log("    → Suggested TypeScript and React extensions");
-      }
-
-      if (styling === "tailwind") {
-        console.log("    → Configured settings.json with Tailwind IntelliSense");
-      } else if (styling === "styled-components") {
-        console.log("    → Suggested styled-components syntax highlighting");
-      }
-
-      console.log("    → Added debugging configuration for React");
-      console.log();
-
       const tried = new Set();
       let command = resolveEditorCommand(selectedEditor);
       let args = [projectPath];
