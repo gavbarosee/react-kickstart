@@ -64,8 +64,6 @@ function registerCleanupHandlers() {
 }
 
 async function checkServerAndOpenBrowser(devUrl) {
-  console.log(chalk.cyan(`\nWaiting for development server to start...`));
-
   // function to check if server is responding
   const isServerReady = async () => {
     try {
@@ -102,11 +100,8 @@ async function checkServerAndOpenBrowser(devUrl) {
 
   while (attempts < maxAttempts) {
     if (await isServerReady()) {
-      console.log(chalk.green(`Server is ready! Opening browser...`));
-
       try {
         await open(devUrl);
-        console.log(chalk.green(`Browser opened successfully!`));
       } catch (err) {
         console.log(
           chalk.yellow(
@@ -119,9 +114,8 @@ async function checkServerAndOpenBrowser(devUrl) {
       return true;
     }
 
-    // wait 1 second between attempts and show progress
+    // wait 1 second between attempts (no visual progress)
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    process.stdout.write(".");
     attempts++;
   }
 

@@ -187,7 +187,11 @@ export async function createApp(projectDirectory, options = {}) {
 
       // Complete the progress bar
       UI_UTILS.stopProgress(true);
-      console.log(`  [✓] Project successfully set up`);
+
+      const successIcon = chalk.green("✅");
+      const successText = chalk.bold.white("Project successfully set up");
+      const sparkles = chalk.yellow("✨🎉✨");
+      console.log(`  ${successIcon} ${successText} ${sparkles}`);
       console.log();
 
       UI_UTILS.divider();
@@ -203,6 +207,7 @@ export async function createApp(projectDirectory, options = {}) {
 
       // Only start the project if autostart is enabled
       if (options.autostart !== false && userChoices.autoStart !== false) {
+        console.log(); // Add spacing before server startup
         await errorHandler.withErrorHandling(
           () => PROCESS_UTILS.startProject(projectPath, userChoices),
           { type: ERROR_TYPES.PROCESS },

@@ -209,6 +209,14 @@ let __progressPercent = 0;
 let __progressLabel = "";
 let __progressSize = 24;
 
+// Dynamic status messages that rotate during progress
+const progressMessages = [
+  "Setting up your project",
+  "Creating project structure",
+  "Configuring dependencies",
+  "Adding the finishing touches",
+];
+
 /**
  * Start an inline updating progress bar (single-line, terminal-friendly)
  * @param {string} label - Label to show before the bar
@@ -242,11 +250,22 @@ export function startProgress(label = "", options = {}) {
       __progressPercent = Math.min(95, __progressPercent + step);
     }
 
-    const line = renderProgress(__progressPercent, __progressLabel, {
+    // Rotate through dynamic messages based on progress
+    let currentMessage = __progressLabel;
+    if (__progressPercent > 0) {
+      const messageIndex = Math.floor(
+        (__progressPercent / 100) * progressMessages.length,
+      );
+      const boundedIndex = Math.min(messageIndex, progressMessages.length - 1);
+      currentMessage = progressMessages[boundedIndex];
+    }
+
+    const line = renderProgress(__progressPercent, currentMessage, {
       size: __progressSize,
+      animated: true,
     });
     process.stdout.write(`\r  ${line}`);
-  }, 120);
+  }, 150);
 }
 
 /**
@@ -262,10 +281,30 @@ export function stopProgress(complete = true) {
   if (__progressLabel) {
     const renderProgress = uiRenderer.engine.createRenderer("progressBar");
     const finalPercent = complete ? 100 : __progressPercent;
-    const finalLine = renderProgress(finalPercent, __progressLabel, {
-      size: __progressSize,
-    });
-    process.stdout.write(`\r  ${finalLine}\n\n`);
+
+    if (complete) {
+      // Clear the current line completely first
+      process.stdout.write("\r" + " ".repeat(process.stdout.columns || 80) + "\r");
+
+      // Show completion animation
+      const completionMessage = "Project setup complete";
+      const finalLine = renderProgress(finalPercent, completionMessage, {
+        size: __progressSize,
+        animated: true,
+      });
+      process.stdout.write(`  ${finalLine}\n`);
+
+      const celebration =
+        chalk.yellow("  ✨ ") +
+        chalk.bold.white("Ready to code! ") +
+        chalk.yellow("🚀✨");
+      console.log(celebration);
+    } else {
+      const finalLine = renderProgress(finalPercent, __progressLabel, {
+        size: __progressSize,
+      });
+      process.stdout.write(`\r  ${finalLine}\n\n`);
+    }
   }
 
   __progressPercent = 0;

@@ -309,29 +309,42 @@ function parseVulnerabilities(output, packageManager) {
   const vulnerabilities = [];
 
   try {
-    // Common vulnerability patterns
-    const patterns = [
-      /(\d+) vulnerabilities?/i,
-      /(\d+) moderate/i,
-      /(\d+) high/i,
-      /(\d+) critical/i,
+    // Parse specific severity levels first
+    const severityPatterns = [
+      { pattern: /(\d+) low/i, severity: "low" },
+      { pattern: /(\d+) moderate/i, severity: "moderate" },
+      { pattern: /(\d+) high/i, severity: "high" },
+      { pattern: /(\d+) critical/i, severity: "critical" },
     ];
 
-    patterns.forEach((pattern) => {
+    let totalParsed = 0;
+
+    severityPatterns.forEach(({ pattern, severity }) => {
       const match = output.match(pattern);
       if (match) {
+        const count = parseInt(match[1]);
         vulnerabilities.push({
-          count: parseInt(match[1]),
-          severity: pattern.source.includes("moderate")
-            ? "moderate"
-            : pattern.source.includes("high")
-              ? "high"
-              : pattern.source.includes("critical")
-                ? "critical"
-                : "unknown",
+          count,
+          severity,
         });
+        totalParsed += count;
       }
     });
+
+    // Check for total vulnerabilities and calculate unknown if there's a difference
+    const totalMatch = output.match(/(\d+) vulnerabilities?/i);
+    if (totalMatch) {
+      const totalCount = parseInt(totalMatch[1]);
+      const unknownCount = totalCount - totalParsed;
+
+      // Only add unknown vulnerabilities if there are some unaccounted for
+      if (unknownCount > 0) {
+        vulnerabilities.push({
+          count: unknownCount,
+          severity: "unknown",
+        });
+      }
+    }
   } catch (error) {
     // Ignore parsing errors
   }
