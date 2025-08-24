@@ -29,6 +29,44 @@ function getRoutingDescriptor(routing) {
   return descriptors[routing] || "";
 }
 
+function getStateManagementDescriptor(stateManagement) {
+  const descriptors = {
+    redux: "Predictable state container",
+    zustand: "Lightweight state management",
+    none: "No state management",
+  };
+  return descriptors[stateManagement] || "";
+}
+
+function getApiDescriptor(api) {
+  const descriptors = {
+    "axios-only": "Promise-based HTTP client",
+    "fetch-only": "Native browser fetch API",
+    "axios-react-query": "Axios + React Query for server state",
+    "fetch-react-query": "Fetch + React Query for server state",
+    none: "No API setup",
+  };
+  return descriptors[api] || "";
+}
+
+function getTestingDescriptor(testing) {
+  const descriptors = {
+    vitest: "Fast unit test framework",
+    jest: "JavaScript testing framework",
+    none: "No testing setup",
+  };
+  return descriptors[testing] || "";
+}
+
+function getDeploymentDescriptor(deployment) {
+  const descriptors = {
+    vercel: "Zero-config deployments with Next.js integration",
+    netlify: "Powerful platform with build optimization",
+    none: "No deployment setup",
+  };
+  return descriptors[deployment] || "";
+}
+
 export function generateSummary(projectPath, projectName, userChoices) {
   const getStatusSymbol = (value) => (value ? chalk.green("[✓]") : chalk.red("[x]"));
 
@@ -48,13 +86,13 @@ export function generateSummary(projectPath, projectName, userChoices) {
 
   // create summary content with logical grouping
   const content = [
-    formatItem("[proj]", "Project", chalk.cyan(projectName)),
-    formatItem("[dir]", "Location", chalk.cyan(projectPath)),
+    formatItem("", "Project", chalk.cyan(projectName)),
+    formatItem("", "Location", chalk.cyan(projectPath)),
 
     formatSectionHeader("Build Configuration"),
-    formatItem("[pkg]", "Package Manager", chalk.green(userChoices.packageManager)),
+    formatItem("", "Package Manager", chalk.green(userChoices.packageManager)),
     formatItem(
-      "[fw]",
+      "",
       "Framework",
       chalk.yellow(userChoices.framework),
       getFrameworkDescriptor(userChoices.framework),
@@ -64,7 +102,7 @@ export function generateSummary(projectPath, projectName, userChoices) {
     userChoices.routing &&
     userChoices.routing !== "none"
       ? formatItem(
-          "[router]",
+          "",
           "Routing",
           chalk.yellow(userChoices.routing),
           getRoutingDescriptor(userChoices.routing),
@@ -73,29 +111,68 @@ export function generateSummary(projectPath, projectName, userChoices) {
 
     // conditionally show routing for next.js
     userChoices.framework === "nextjs"
-      ? formatItem("[router]", "Router Type", chalk.blue(userChoices.nextRouting))
+      ? formatItem("", "Router Type", chalk.blue(userChoices.nextRouting))
       : "",
 
     formatSectionHeader("Developer Experience"),
-    formatItem("[lang]", "TypeScript", getStatusSymbol(userChoices.typescript)),
+    formatItem("", "TypeScript", getStatusSymbol(userChoices.typescript)),
     formatItem(
-      "[lint]",
+      "",
       "Linting",
       getStatusSymbol(userChoices.linting),
       userChoices.linting ? "ESLint + Prettier" : "",
     ),
     formatItem(
-      "[style]",
+      "",
       "Styling",
       chalk.magenta(userChoices.styling),
       getStylingDescriptor(userChoices.styling),
     ),
 
+    // State Management
+    userChoices.stateManagement && userChoices.stateManagement !== "none"
+      ? formatItem(
+          "",
+          "State Management",
+          chalk.blue(userChoices.stateManagement),
+          getStateManagementDescriptor(userChoices.stateManagement),
+        )
+      : "",
+
+    // API Setup
+    userChoices.api && userChoices.api !== "none"
+      ? formatItem(
+          "",
+          "API Setup",
+          chalk.green(userChoices.api),
+          getApiDescriptor(userChoices.api),
+        )
+      : "",
+
+    // Testing
+    userChoices.testing && userChoices.testing !== "none"
+      ? formatItem(
+          "",
+          "Testing",
+          chalk.cyan(userChoices.testing),
+          getTestingDescriptor(userChoices.testing),
+        )
+      : "",
+
     formatSectionHeader("Project Tools"),
-    formatItem("[git]", "Git Repository", getStatusSymbol(userChoices.initGit)),
+    // Deployment
+    userChoices.deployment && userChoices.deployment !== "none"
+      ? formatItem(
+          "",
+          "Deployment",
+          chalk.yellow(userChoices.deployment),
+          getDeploymentDescriptor(userChoices.deployment),
+        )
+      : "",
+    formatItem("", "Git Repository", getStatusSymbol(userChoices.initGit)),
     userChoices.openEditor
-      ? formatItem("[edit]", "Editor", chalk.cyan(userChoices.editor))
-      : formatItem("[edit]", "Open in Editor", getStatusSymbol(userChoices.openEditor)),
+      ? formatItem("", "Editor", chalk.cyan(userChoices.editor))
+      : formatItem("", "Open in Editor", getStatusSymbol(userChoices.openEditor)),
 
     // Add warnings section if there are any
     validation.warnings && validation.warnings.length > 0

@@ -84,6 +84,20 @@ export class PromptRenderer {
       );
     }
 
+    if (answers.api) {
+      console.log(`  ${chalk.dim("•")} API Setup: ${chalk.green(answers.api)}`);
+    }
+
+    if (answers.testing) {
+      console.log(`  ${chalk.dim("•")} Testing: ${chalk.blue(answers.testing)}`);
+    }
+
+    if (answers.deployment) {
+      console.log(
+        `  ${chalk.dim("•")} Deployment: ${chalk.yellow(answers.deployment)}`,
+      );
+    }
+
     if (answers.initGit !== undefined) {
       console.log(
         `  ${chalk.dim("•")} Git Init: ${
