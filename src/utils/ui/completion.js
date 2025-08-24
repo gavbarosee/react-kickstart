@@ -123,35 +123,41 @@ export function generateCompletionSummary(
     userChoices.framework,
   );
 
-  // get project size in MB (approximate)
-  let projectSizeText = "N/A";
-  if (packageCount) {
-    // very rough estimate: each package ~200KB on average
-    const approximateSizeMB = Math.round(packageCount * 0.2);
-    projectSizeText = `~${packageCount} packages (${approximateSizeMB}MB)`;
-  }
+  // STEP 1: project success header
+  const techStack = [];
+  techStack.push(userChoices.framework);
+  if (userChoices.typescript) techStack.push("TypeScript");
+  if (userChoices.styling && userChoices.styling !== "css")
+    techStack.push(userChoices.styling);
+  if (userChoices.stateManagement && userChoices.stateManagement !== "none")
+    techStack.push(userChoices.stateManagement);
+  if (userChoices.routing && userChoices.routing !== "none")
+    techStack.push(userChoices.routing);
+  if (userChoices.api && userChoices.api !== "none") techStack.push(userChoices.api);
+  if (userChoices.testing && userChoices.testing !== "none")
+    techStack.push(userChoices.testing);
 
-  // STEP 1: project success header with updated size info
   const successHeader = [
     "",
     chalk.bgGreen(`[✓] Project Successfully Created!`),
     `   ${chalk.cyan("Name:")} ${chalk.bold(projectName)}`,
     `   ${chalk.cyan("Location:")} ${projectPath}`,
-    `   ${chalk.cyan("Size:")} ${projectSizeText}`,
-    `   ${chalk.cyan("Auto-Start:")} ${chalk.green("Yes (in default browser)")}`,
+    `   ${chalk.cyan("Tech Stack:")} ${techStack.join(", ")}`,
+    `   ${chalk.cyan("Package Manager:")} ${userChoices.packageManager}`,
+    `   ${chalk.cyan("Dev Server:")} ${chalk.underline(`http://localhost:${frameworkInfo.port}`)}`,
   ].join("\n");
 
   // STEP 2: next steps with commands
   const commandLines = [];
 
-  commandLines.push(`   ${chalk.bold("1️⃣ ")} Navigate to project folder`);
-  commandLines.push(`      ${chalk.cyan(`$ cd ${projectName}`)}`);
+  commandLines.push(`   ${chalk.bold("1.")} Navigate to project folder`);
+  commandLines.push(`      ${chalk.cyan(`cd ${projectName}`)}`);
   commandLines.push("");
 
   let cmdIndex = 2;
 
   commandLines.push(
-    `   ${chalk.bold(`${cmdIndex}️⃣ `)} Development server starting automatically`,
+    `   ${chalk.bold(`${cmdIndex}.`)} Development server starting automatically`,
   );
   commandLines.push(
     `      ${chalk.gray(
@@ -162,9 +168,9 @@ export function generateCompletionSummary(
   cmdIndex++;
 
   if (commandExamples.dev) {
-    commandLines.push(`   ${chalk.bold(`${cmdIndex}️⃣ `)} Manual server control`);
+    commandLines.push(`   ${chalk.bold(`${cmdIndex}.`)} Manual server control`);
     commandLines.push(
-      `      ${chalk.cyan(`$ ${commandExamples.dev.command}`)} ${chalk.gray(
+      `      ${chalk.cyan(`${commandExamples.dev.command}`)} ${chalk.gray(
         `→ Restart development server if needed`,
       )}`,
     );
@@ -173,9 +179,9 @@ export function generateCompletionSummary(
   }
 
   if (commandExamples.build) {
-    commandLines.push(`   ${chalk.bold(`${cmdIndex}️⃣ `)} Build for production`);
+    commandLines.push(`   ${chalk.bold(`${cmdIndex}.`)} Build for production`);
     commandLines.push(
-      `      ${chalk.cyan(`$ ${commandExamples.build.command}`)} ${chalk.gray(
+      `      ${chalk.cyan(`${commandExamples.build.command}`)} ${chalk.gray(
         `→ ${commandExamples.build.description}`,
       )}`,
     );
@@ -217,46 +223,7 @@ export function generateCompletionSummary(
       : []),
   ].join("\n");
 
-  // STEP 5: security notice (if any)
-  const auditFixCommand =
-    userChoices.packageManager === "yarn" ? "yarn audit fix" : "npm audit fix";
-  const auditCommand =
-    userChoices.packageManager === "yarn" ? "yarn audit" : "npm audit";
-
-  const securitySection =
-    vulnerabilities && vulnerabilities.length > 0
-      ? [
-          "",
-          chalk.bgYellow(
-            `[!] Security Notice: ${vulnerabilities.reduce(
-              (sum, v) => sum + v.count,
-              0,
-            )} vulnerabilities found`,
-          ),
-          ...vulnerabilities.map((vuln) => {
-            const severityColor =
-              {
-                critical: chalk.red.bold,
-                high: chalk.red,
-                moderate: chalk.yellow,
-                low: chalk.blue,
-              }[vuln.severity] || chalk.gray;
-
-            return `   • ${severityColor(vuln.count)} ${severityColor(
-              vuln.severity,
-            )} severity ${vuln.count === 1 ? "vulnerability" : "vulnerabilities"}`;
-          }),
-          "",
-          `   ${chalk.cyan(
-            "Fix now (potential breaking changes):",
-          )} ${chalk.cyan(`$ cd ${projectName} && ${auditFixCommand}`)}`,
-          `   ${chalk.cyan("Learn more:")} ${chalk.cyan(
-            `$ cd ${projectName} && ${auditCommand}`,
-          )}`,
-        ].join("\n")
-      : "";
-
-  return [securitySection, successHeader, nextStepsSection, docsSection]
+  return [successHeader, nextStepsSection, docsSection]
     .filter((section) => section)
     .join("\n");
 }
