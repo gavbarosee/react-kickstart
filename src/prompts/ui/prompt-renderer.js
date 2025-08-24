@@ -16,14 +16,29 @@ export class PromptRenderer {
   showHeader() {
     process.stdout.write("\x1Bc");
     console.log();
-    console.log(
-      chalk.blue(
-        figlet.textSync("React Kickstart", {
-          font: "Standard",
-          horizontalLayout: "full",
-        }),
-      ),
-    );
+
+    // Generate the figlet text
+    const figletText = figlet.textSync("React Kickstart", {
+      font: "3-D",
+      horizontalLayout: "fitted",
+    });
+
+    const lines = figletText.split("\n");
+    const gradientColors = [
+      chalk.rgb(0, 100, 200), // Deep blue
+      chalk.rgb(0, 120, 180), // Steel blue
+      chalk.rgb(0, 140, 160), // Teal blue
+      chalk.rgb(0, 160, 140), // Blue-green
+      chalk.rgb(0, 180, 120), // Emerald
+      chalk.rgb(20, 200, 100), // Green
+    ];
+
+    const coloredLines = lines.map((line, index) => {
+      const colorIndex = index % gradientColors.length;
+      return gradientColors[colorIndex](line);
+    });
+
+    console.log(coloredLines.join("\n"));
     console.log();
     console.log(chalk.cyan("  A modern CLI tool for creating React applications"));
     console.log(chalk.cyan("  ------------------------------------------------"));
