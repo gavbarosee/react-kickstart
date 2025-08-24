@@ -141,7 +141,7 @@ export async function createApp(projectDirectory, options = {}) {
 
       if (userChoices.styling) {
         console.log(
-          `Project configured with:\n  ${chalk.magenta("🎨")} ${
+          `Project configured with:\n  ${chalk.magenta("[style]")} ${
             userChoices.styling
           } styling`,
         );
@@ -175,7 +175,7 @@ export async function createApp(projectDirectory, options = {}) {
         if (installResult.skipped) {
           console.log(
             chalk.yellow(
-              "⚠️ Dependency installation was skipped. Some features may not work properly.",
+              "[!] Dependency installation was skipped. Some features may not work properly.",
             ),
           );
         } else if (!installResult.success) {
@@ -201,7 +201,7 @@ export async function createApp(projectDirectory, options = {}) {
         );
       }
 
-      console.log(`  ✅ Project successfully set up`);
+      console.log(`  [✓] Project successfully set up`);
       console.log();
 
       UI_UTILS.divider();

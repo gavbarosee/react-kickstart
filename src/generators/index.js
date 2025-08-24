@@ -29,14 +29,14 @@ export default async function generateProject(projectPath, projectName, userChoi
 
       // directory structure information
       UI_UTILS.stepSection(
-        "📋",
+        "[i]",
         "Creating project structure:",
         CORE_UTILS.getProjectStructure(userChoices.framework),
       );
 
       // display configuration files information
       UI_UTILS.stepSection(
-        "🛠️",
+        "[tools]",
         "Setting up configuration:",
         CORE_UTILS.getConfigurationFiles(
           userChoices.framework,
@@ -73,7 +73,7 @@ export default async function generateProject(projectPath, projectName, userChoi
       CORE_UTILS.fileGenerationInfo(projectPath);
 
       console.log(
-        `  ✅ Project files successfully generated [${userChoices.framework}]`,
+        `  [✓] Project files successfully generated [${userChoices.framework}]`,
       );
       console.log();
       return true;

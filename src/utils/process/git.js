@@ -81,7 +81,7 @@ yarn-error.log*
 
       spinner.stop();
 
-      console.log("  🔄 Initializing Git repository");
+      console.log("  [git] Initializing Git repository");
       console.log("    → Created .gitignore with framework-specific patterns");
 
       if (frameworkIgnores[framework]) {

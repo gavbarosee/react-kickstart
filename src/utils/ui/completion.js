@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import figures from "figures";
 
 function getReduxInfo() {
   return {
@@ -135,7 +134,7 @@ export function generateCompletionSummary(
   // STEP 1: project success header with updated size info
   const successHeader = [
     "",
-    chalk.bgGreen(`${figures.tick} Project Successfully Created!`),
+    chalk.bgGreen(`[✓] Project Successfully Created!`),
     `   ${chalk.cyan("Name:")} ${chalk.bold(projectName)}`,
     `   ${chalk.cyan("Location:")} ${projectPath}`,
     `   ${chalk.cyan("Size:")} ${projectSizeText}`,
@@ -185,7 +184,7 @@ export function generateCompletionSummary(
 
   const nextStepsSection = [
     "",
-    chalk.bgMagenta(`${figures.pointer} Next Steps:`),
+    chalk.bgMagenta(`[i] Next Steps:`),
     ...commandLines,
   ].join("\n");
 
@@ -195,7 +194,7 @@ export function generateCompletionSummary(
   // STEP 4: documentation links
   const docsSection = [
     "",
-    chalk.bgBlue(`${figures.pointer} Documentation:`),
+    chalk.bgBlue(`[i] Documentation:`),
     `   • ${userChoices.framework}: ${chalk.underline(frameworkInfo.docs)}`,
     `   • ${userChoices.styling}: ${chalk.underline(stylingInfo.docs)}`,
     ...(userChoices.framework !== "nextjs" &&
@@ -229,7 +228,7 @@ export function generateCompletionSummary(
       ? [
           "",
           chalk.bgYellow(
-            `${figures.pointer} Security Notice: ${vulnerabilities.reduce(
+            `[!] Security Notice: ${vulnerabilities.reduce(
               (sum, v) => sum + v.count,
               0,
             )} vulnerabilities found`,

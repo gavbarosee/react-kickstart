@@ -30,7 +30,7 @@ function getRoutingDescriptor(routing) {
 }
 
 export function generateSummary(projectPath, projectName, userChoices) {
-  const getStatusSymbol = (value) => (value ? chalk.green("✓") : chalk.red("✗"));
+  const getStatusSymbol = (value) => (value ? chalk.green("[✓]") : chalk.red("[x]"));
 
   // Validate user choices to get warnings
   const validation = validateUserChoices(userChoices);
@@ -48,13 +48,13 @@ export function generateSummary(projectPath, projectName, userChoices) {
 
   // create summary content with logical grouping
   const content = [
-    formatItem("📋", "Project", chalk.cyan(projectName)),
-    formatItem("📁", "Location", chalk.cyan(projectPath)),
+    formatItem("[proj]", "Project", chalk.cyan(projectName)),
+    formatItem("[dir]", "Location", chalk.cyan(projectPath)),
 
     formatSectionHeader("Build Configuration"),
-    formatItem("📦", "Package Manager", chalk.green(userChoices.packageManager)),
+    formatItem("[pkg]", "Package Manager", chalk.green(userChoices.packageManager)),
     formatItem(
-      "🚀",
+      "[fw]",
       "Framework",
       chalk.yellow(userChoices.framework),
       getFrameworkDescriptor(userChoices.framework),
@@ -64,7 +64,7 @@ export function generateSummary(projectPath, projectName, userChoices) {
     userChoices.routing &&
     userChoices.routing !== "none"
       ? formatItem(
-          "🔄",
+          "[router]",
           "Routing",
           chalk.yellow(userChoices.routing),
           getRoutingDescriptor(userChoices.routing),
@@ -73,29 +73,29 @@ export function generateSummary(projectPath, projectName, userChoices) {
 
     // conditionally show routing for next.js
     userChoices.framework === "nextjs"
-      ? formatItem("🔄", "Router Type", chalk.blue(userChoices.nextRouting))
+      ? formatItem("[router]", "Router Type", chalk.blue(userChoices.nextRouting))
       : "",
 
     formatSectionHeader("Developer Experience"),
-    formatItem("🔤", "TypeScript", getStatusSymbol(userChoices.typescript)),
+    formatItem("[lang]", "TypeScript", getStatusSymbol(userChoices.typescript)),
     formatItem(
-      "🧹",
+      "[lint]",
       "Linting",
       getStatusSymbol(userChoices.linting),
       userChoices.linting ? "ESLint + Prettier" : "",
     ),
     formatItem(
-      "🎨",
+      "[style]",
       "Styling",
       chalk.magenta(userChoices.styling),
       getStylingDescriptor(userChoices.styling),
     ),
 
     formatSectionHeader("Project Tools"),
-    formatItem("🔄", "Git Repository", getStatusSymbol(userChoices.initGit)),
+    formatItem("[git]", "Git Repository", getStatusSymbol(userChoices.initGit)),
     userChoices.openEditor
-      ? formatItem("📝", "Editor", chalk.cyan(userChoices.editor))
-      : formatItem("📝", "Open in Editor", getStatusSymbol(userChoices.openEditor)),
+      ? formatItem("[edit]", "Editor", chalk.cyan(userChoices.editor))
+      : formatItem("[edit]", "Open in Editor", getStatusSymbol(userChoices.openEditor)),
 
     // Add warnings section if there are any
     validation.warnings && validation.warnings.length > 0

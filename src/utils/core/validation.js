@@ -248,7 +248,7 @@ export function validateChoiceCombinations(userChoices) {
   // 1. Styling conflicts: Tailwind + styled-components
   if (userChoices.styling === "styled-components") {
     warnings.push(
-      "⚠️  Using styled-components with component-scoped styles. Consider if you need global styling as well.",
+      "[!] Using styled-components with component-scoped styles. Consider if you need global styling as well.",
     );
   }
 
@@ -256,12 +256,12 @@ export function validateChoiceCombinations(userChoices) {
   if (userChoices.api && userChoices.api.includes("react-query")) {
     if (userChoices.stateManagement === "redux") {
       warnings.push(
-        "⚠️  React Query + Redux detected. React Query handles server state very well - you might not need Redux for server data. Consider using Redux only for client-side state.",
+        "[!] React Query + Redux detected. React Query handles server state very well - you might not need Redux for server data. Consider using Redux only for client-side state.",
       );
     }
     if (userChoices.stateManagement === "zustand") {
       warnings.push(
-        "⚠️  React Query + Zustand detected. React Query handles server state - consider using Zustand primarily for client-side application state.",
+        "[!] React Query + Zustand detected. React Query handles server state - consider using Zustand primarily for client-side application state.",
       );
     }
   }
@@ -269,19 +269,19 @@ export function validateChoiceCombinations(userChoices) {
   // 3. Testing framework + framework optimization warnings
   if (userChoices.testing === "jest" && userChoices.framework === "vite") {
     warnings.push(
-      "⚠️  Using Jest with Vite. Vitest is optimized for Vite and provides better performance and zero-config setup.",
+      "[!] Using Jest with Vite. Vitest is optimized for Vite and provides better performance and zero-config setup.",
     );
   }
   if (userChoices.testing === "vitest" && userChoices.framework === "nextjs") {
     warnings.push(
-      "⚠️  Using Vitest with Next.js. Jest is better integrated with Next.js and has built-in optimizations.",
+      "[!] Using Vitest with Next.js. Jest is better integrated with Next.js and has built-in optimizations.",
     );
   }
 
   // 4. TypeScript + linting combination advice
   if (userChoices.typescript && !userChoices.linting) {
     warnings.push(
-      "⚠️  TypeScript without ESLint detected. ESLint with TypeScript rules helps catch additional issues beyond type checking.",
+      "[!] TypeScript without ESLint detected. ESLint with TypeScript rules helps catch additional issues beyond type checking.",
     );
   }
 
@@ -292,7 +292,7 @@ export function validateChoiceCombinations(userChoices) {
   ) {
     // This is actually handled well by Next.js, so just informational
     warnings.push(
-      "ℹ️  Next.js + styled-components: SSR support is automatically configured.",
+      "[i] Next.js + styled-components: SSR support is automatically configured.",
     );
   }
 
@@ -308,14 +308,14 @@ export function validateChoiceCombinations(userChoices) {
 
   if (complexFeatures >= 5) {
     warnings.push(
-      "ℹ️  You've selected many advanced features. This creates a powerful setup but may increase complexity for beginners.",
+      "[i] You've selected many advanced features. This creates a powerful setup but may increase complexity for beginners.",
     );
   }
 
   // 7. Minimal setup suggestion
   if (complexFeatures <= 2 && !userChoices.typescript) {
     warnings.push(
-      "ℹ️  Simple setup detected. Consider adding TypeScript and ESLint for better development experience.",
+      "[i] Simple setup detected. Consider adding TypeScript and ESLint for better development experience.",
     );
   }
 

@@ -1,6 +1,4 @@
 import chalk from "chalk";
-import figures from "figures";
-import symbols from "log-symbols";
 
 import { createUserErrorReporter } from "../../errors/index.js";
 import { createUIRenderer } from "../../templates/index.js";
@@ -31,7 +29,8 @@ export function initSteps(total) {
  */
 export function nextStep(message) {
   currentStep++;
-  uiRenderer.stepIndicator(currentStep, totalSteps, message, figures.pointer);
+  const theme = uiRenderer.engine.getTheme();
+  uiRenderer.stepIndicator(currentStep, totalSteps, message, theme.icons.step);
 }
 
 /**
@@ -39,7 +38,8 @@ export function nextStep(message) {
  * @param {string} message - Message to display
  */
 export function log(message) {
-  console.log(`${chalk.blue(symbols.info)} ${message}`);
+  const theme = uiRenderer.engine.getTheme();
+  console.log(`${chalk.blue(theme.icons.info)} ${message}`);
 }
 
 /**
@@ -47,7 +47,8 @@ export function log(message) {
  * @param {string} message - Message to display
  */
 export function success(message) {
-  console.log(`${chalk.green(symbols.success)} ${message}`);
+  const theme = uiRenderer.engine.getTheme();
+  console.log(`${chalk.green(theme.icons.success)} ${message}`);
 }
 
 /**
@@ -55,7 +56,8 @@ export function success(message) {
  * @param {string} message - Message to display
  */
 export function warning(message) {
-  console.log(`${chalk.yellow(symbols.warning)} ${message}`);
+  const theme = uiRenderer.engine.getTheme();
+  console.log(`${chalk.yellow(theme.icons.warning)} ${message}`);
 }
 
 /**
@@ -75,7 +77,8 @@ export function error(message) {
  */
 export function debug(message, isVerbose = false) {
   if (isVerbose) {
-    console.log(`${chalk.gray(figures.info)} ${message}`);
+    const theme = uiRenderer.engine.getTheme();
+    console.log(`${chalk.gray(theme.icons.info)} ${message}`);
   }
 }
 
@@ -85,17 +88,18 @@ export function debug(message, isVerbose = false) {
  */
 export function section(title) {
   // Icons for each step category
+  const theme = uiRenderer.engine.getTheme();
   const stepIcons = {
-    "Package Manager": "📦",
-    "Framework Selection": "🚀",
-    "Next.js Options": "▲ ",
-    "Language Options": "🔤",
-    "Code Quality": "✨",
-    "Styling Solution": "🎨",
-    "Git Options": "🔄",
-    "Editor Options": "📝",
+    "Package Manager": theme.icons.package,
+    "Framework Selection": theme.icons.framework,
+    "Next.js Options": theme.icons.rocket,
+    "Language Options": theme.icons.language,
+    "Code Quality": theme.icons.tools,
+    "Styling Solution": theme.icons.styling,
+    "Git Options": theme.icons.git,
+    "Editor Options": theme.icons.editor,
     // default icon if no match
-    default: "•",
+    default: theme.icons.bullet,
   };
 
   // Extract step number if present (e.g., "Step 1/8: Package Manager")
@@ -127,7 +131,8 @@ export function mainHeader(title) {
  * @param {string} title - Sub header title
  */
 export function subHeader(title) {
-  uiRenderer.section(title, figures.play, { width: 40 });
+  const theme = uiRenderer.engine.getTheme();
+  uiRenderer.section(title, theme.icons.arrow, { width: 40 });
 }
 
 /**
@@ -142,7 +147,8 @@ export function divider() {
  * @param {string} text - Bullet text
  */
 export function bullet(text) {
-  uiRenderer.bulletList([text], { indent: 2, bullet: figures.bullet });
+  const theme = uiRenderer.engine.getTheme();
+  uiRenderer.bulletList([text], { indent: 2, bullet: theme.icons.bullet });
 }
 
 /**
@@ -150,7 +156,8 @@ export function bullet(text) {
  * @param {string} message - Framework message
  */
 export function frameworkLog(message) {
-  console.log(`${chalk.blue(figures.star)} ${message}`);
+  const theme = uiRenderer.engine.getTheme();
+  console.log(`${chalk.blue(theme.icons.sparkles)} ${message}`);
 }
 
 /**
@@ -158,7 +165,8 @@ export function frameworkLog(message) {
  * @param {string} message - Styling message
  */
 export function stylingLog(message) {
-  console.log(`${chalk.magenta(figures.play)} ${message}`);
+  const theme = uiRenderer.engine.getTheme();
+  console.log(`${chalk.magenta(theme.icons.styling)} ${message}`);
 }
 
 /**
@@ -179,7 +187,8 @@ export function stepSection(emoji, title, items = []) {
  */
 export function progressBar(percentage, label = "", size = 30) {
   const output = uiRenderer.progressBar(percentage, label, { size });
-  console.log(`  📊 ${output}`);
+  const theme = uiRenderer.engine.getTheme();
+  console.log(`  ${theme.icons.info} ${output}`);
 }
 
 /**
@@ -188,7 +197,10 @@ export function progressBar(percentage, label = "", size = 30) {
  */
 export function fileGenerationInfo(projectPath) {
   // This will be moved to use consolidated filesystem utilities
-  console.log(`  📦 Project files generated at ${chalk.cyan(projectPath)}`);
+  const theme = uiRenderer.engine.getTheme();
+  console.log(
+    `  ${theme.icons.package} Project files generated at ${chalk.cyan(projectPath)}`,
+  );
 }
 
 // Inline progress state
