@@ -1,14 +1,14 @@
 import fs from "fs-extra";
 import path from "path";
 
+import { createDirectoryStructure } from "../builders/files/index.js";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 import { setupApi } from "../features/api/index.js";
 import { setupRedux } from "../features/redux/index.js";
 import { setupZustand } from "../features/zustand/index.js";
-import { createDirectoryStructure } from "../lib/file-generation/index.js";
-import { setupLinting } from "../lib/linting.js";
-import { TestingSetup } from "../lib/testing/index.js";
-import { setupTypeScript } from "../lib/typescript.js";
+import { setupLinting } from "../integrations/linting/linting.js";
+import { TestingSetup } from "../integrations/testing/index.js";
+import { setupTypeScript } from "../integrations/typescript/typescript.js";
 import { UI_UTILS } from "../utils/index.js";
 
 /**

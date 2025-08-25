@@ -1,4 +1,4 @@
-import { createZustandSetup } from "../../lib/state-management/index.js";
+import { createZustandSetup } from "../../integrations/state-management/index.js";
 
 /**
  * Sets up Zustand based on the framework

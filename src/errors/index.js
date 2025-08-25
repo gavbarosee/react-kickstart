@@ -93,6 +93,18 @@ export function classifyError(error) {
     return ERROR_TYPES.VALIDATION;
   }
 
+  // Better detection for command not found errors (dependency issues)
+  if (
+    errorMsg.includes("command not found") ||
+    errorMsg.includes("not recognized as an internal") ||
+    errorMsg.includes("'vite' is not recognized") ||
+    errorMsg.includes("sh: vite: command not found") ||
+    (errorMsg.includes("enoent") && errorMsg.includes("spawn")) ||
+    errorMsg.includes("no such file or directory")
+  ) {
+    return ERROR_TYPES.DEPENDENCY;
+  }
+
   if (
     errorMsg.includes("file") ||
     errorMsg.includes("directory") ||

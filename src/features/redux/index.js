@@ -1,4 +1,4 @@
-import { createReduxSetup } from "../../lib/state-management/index.js";
+import { createReduxSetup } from "../../integrations/state-management/index.js";
 
 /**
  * Sets up Redux Toolkit based on the framework

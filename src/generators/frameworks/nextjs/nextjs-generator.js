@@ -3,9 +3,9 @@ import path from "path";
 
 import { createAppRouterStructure } from "./generators/app-router.js";
 import { createPagesRouterStructure } from "./generators/pages-router.js";
-import { createConfigurationBuilder } from "../../config/index.js";
-import { BaseGenerator } from "../../generators/base-generator.js";
-import { CORE_UTILS } from "../../utils/index.js";
+import { createConfigurationBuilder } from "../../../builders/config/index.js";
+import { CORE_UTILS } from "../../../utils/index.js";
+import { BaseGenerator } from "../../base-generator.js";
 
 /**
  * Next.js-specific project generator

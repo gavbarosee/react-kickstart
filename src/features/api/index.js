@@ -1,4 +1,4 @@
-import { createApiSetup } from "../../lib/api-management/index.js";
+import { createApiSetup } from "../../integrations/api-clients/index.js";
 
 /**
  * Sets up API configuration based on user choice and framework

@@ -1,12 +1,12 @@
 import fs from "fs-extra";
 import path from "path";
 
-import { createConfigurationBuilder } from "../../config/index.js";
-import { BaseGenerator } from "../../generators/base-generator.js";
-import { createSourceFiles, createHtmlFile } from "../../lib/file-generation/index.js";
-import { setupRouting } from "../../lib/routing/index.js";
-import { setupStyling } from "../../lib/styling/index.js";
-import { CORE_UTILS } from "../../utils/index.js";
+import { createConfigurationBuilder } from "../../../builders/config/index.js";
+import { createSourceFiles, createHtmlFile } from "../../../builders/files/index.js";
+import { setupRouting } from "../../../integrations/routing/index.js";
+import { setupStyling } from "../../../integrations/styling/index.js";
+import { CORE_UTILS } from "../../../utils/index.js";
+import { BaseGenerator } from "../../base-generator.js";
 
 /**
  * Vite-specific project generator

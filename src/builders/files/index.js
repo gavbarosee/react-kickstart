@@ -4,7 +4,7 @@ import path from "path";
 
 import { createFileTemplateEngine } from "../../templates/index.js";
 import { CORE_UTILS } from "../../utils/index.js";
-import { createContentGenerator } from "../content-generation/index.js";
+import { createContentGenerator } from "../content/index.js";
 
 /**
  * Creates the source files for a React project

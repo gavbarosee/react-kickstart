@@ -1,9 +1,9 @@
 import fs from "fs-extra";
 import path from "path";
 
-import { createContentGenerator } from "../../../lib/content-generation/index.js";
-import { setupStyling } from "../../../lib/styling/index.js";
-import { CORE_UTILS } from "../../../utils/index.js";
+import { createContentGenerator } from "../../../../builders/content/index.js";
+import { setupStyling } from "../../../../integrations/styling/index.js";
+import { CORE_UTILS } from "../../../../utils/index.js";
 
 export function createPagesRouterStructure(projectPath, projectName, userChoices) {
   const directories = CORE_UTILS.createProjectDirectories(projectPath, {

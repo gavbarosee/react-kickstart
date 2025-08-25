@@ -1,6 +1,6 @@
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
-import { NextjsGenerator } from "../frameworks/nextjs/nextjs-generator.js";
-import { ViteGenerator } from "../frameworks/vite/vite-generator.js";
+import { NextjsGenerator } from "./frameworks/nextjs/nextjs-generator.js";
+import { ViteGenerator } from "./frameworks/vite/vite-generator.js";
 
 export default async function generateProject(projectPath, projectName, userChoices) {
   const errorHandler = createErrorHandler();
