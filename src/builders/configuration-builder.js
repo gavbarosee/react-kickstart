@@ -2,8 +2,8 @@ import fs from "fs-extra";
 import path from "path";
 
 import { PackageJsonBuilder } from "./package-json-builder.js";
-import { createFileTemplateEngine } from "../../templates/index.js";
-import { CORE_UTILS } from "../../utils/index.js";
+import { createFileTemplateEngine } from "../templates/index.js";
+import { CORE_UTILS } from "../utils/index.js";
 
 /**
  * Main configuration builder that orchestrates all configuration file generation

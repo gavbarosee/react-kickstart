@@ -1,8 +1,11 @@
 import fs from "fs-extra";
 import path from "path";
 
-import { createConfigurationBuilder } from "../../../builders/config/index.js";
-import { createSourceFiles, createHtmlFile } from "../../../builders/files/index.js";
+import { createConfigurationBuilder } from "../../../builders/index.js";
+import {
+  createSourceFiles,
+  createHtmlFile,
+} from "../../../integrations/files/index.js";
 import { setupRouting } from "../../../integrations/routing/index.js";
 import { setupStyling } from "../../../integrations/styling/index.js";
 import { CORE_UTILS } from "../../../utils/index.js";

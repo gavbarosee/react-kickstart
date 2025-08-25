@@ -1,12 +1,11 @@
 import fs from "fs-extra";
 import path from "path";
 
-import { createDirectoryStructure } from "../builders/files/index.js";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
-import { setupApi } from "../features/api/index.js";
-import { setupRedux } from "../features/redux/index.js";
-import { setupZustand } from "../features/zustand/index.js";
+import { setupApiManagement } from "../integrations/api-clients/index.js";
+import { createDirectoryStructure } from "../integrations/files/index.js";
 import { setupLinting } from "../integrations/linting/linting.js";
+import { setupStateManagement } from "../integrations/state-management/index.js";
 import { TestingSetup } from "../integrations/testing/index.js";
 import { setupTypeScript } from "../integrations/typescript/typescript.js";
 import { UI_UTILS } from "../utils/index.js";
@@ -121,20 +120,14 @@ export class BaseGenerator {
    * Setup state management (common logic)
    */
   async setupStateManagement(projectPath, userChoices) {
-    if (userChoices.stateManagement === "redux") {
-      setupRedux(projectPath, userChoices, this.frameworkName);
-    } else if (userChoices.stateManagement === "zustand") {
-      setupZustand(projectPath, userChoices, this.frameworkName);
-    }
+    setupStateManagement(projectPath, userChoices, this.frameworkName);
   }
 
   /**
    * Setup API configuration (common logic)
    */
   async setupApi(projectPath, userChoices) {
-    if (userChoices.api && userChoices.api !== "none") {
-      setupApi(projectPath, userChoices, this.frameworkName);
-    }
+    setupApiManagement(projectPath, userChoices, this.frameworkName);
   }
 
   /**

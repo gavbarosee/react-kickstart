@@ -1,9 +1,9 @@
 import fs from "fs-extra";
 import path from "path";
 
-import { createContentGenerator } from "../../../../builders/content/index.js";
 import { setupStyling } from "../../../../integrations/styling/index.js";
 import { CORE_UTILS } from "../../../../utils/index.js";
+import { createContentGenerator } from "../../../content/index.js";
 
 export function createAppRouterStructure(projectPath, projectName, userChoices) {
   const appDir = CORE_UTILS.createProjectDirectory(projectPath, "app");
