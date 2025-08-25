@@ -1,5 +1,5 @@
-import { FileTemplateEngine } from "./file-template-engine.js";
-import { CORE_UTILS } from "../utils/index.js";
+import { FileTemplateEngine } from "../files/file-template-engine.js";
+import { CORE_UTILS } from "../../utils/index.js";
 
 /**
  * Enhanced template builder that addresses common duplication patterns

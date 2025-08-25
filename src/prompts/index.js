@@ -1,5 +1,5 @@
-import { PromptFlow } from "./prompts/prompt-flow.js";
-import { PROCESS_UTILS } from "./utils/index.js";
+import { PromptFlow } from "./prompt-flow.js";
+import { PROCESS_UTILS } from "../utils/index.js";
 
 export async function promptUser(options = {}) {
   const { verbose = false } = options;

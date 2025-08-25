@@ -1,8 +1,8 @@
 import fs from "fs-extra";
 import path from "path";
 
-import { createAppRouterStructure } from "./generators/app-router.js";
-import { createPagesRouterStructure } from "./generators/pages-router.js";
+import { createAppRouterStructure } from "./routers/app-router.js";
+import { createPagesRouterStructure } from "./routers/pages-router.js";
 import { createConfigurationBuilder } from "../../../builders/index.js";
 import { CORE_UTILS } from "../../../utils/index.js";
 import { BaseGenerator } from "../../base-generator.js";

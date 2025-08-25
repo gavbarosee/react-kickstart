@@ -1,8 +1,8 @@
 // Import classes first
-import { TemplateEngine } from "./template-engine.js";
-import { UIRenderer } from "./ui-renderer.js";
-import { FileTemplateEngine } from "./file-template-engine.js";
-import { CommonTemplateBuilder } from "./common-template-builder.js";
+import { TemplateEngine } from "./common/template-engine.js";
+import { UIRenderer } from "./ui/ui-renderer.js";
+import { FileTemplateEngine } from "./files/file-template-engine.js";
+import { CommonTemplateBuilder } from "./common/common-template-builder.js";
 
 // Export template system classes
 export { TemplateEngine, UIRenderer, FileTemplateEngine, CommonTemplateBuilder };
