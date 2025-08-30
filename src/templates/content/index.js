@@ -1,4 +1,4 @@
-// src/shared/content-generation/index.js
+// Content generation factory and exports
 
 import { NextjsAppRouterGenerator } from "./nextjs-app-router-generator.js";
 import { NextjsPagesRouterGenerator } from "./nextjs-pages-router-generator.js";

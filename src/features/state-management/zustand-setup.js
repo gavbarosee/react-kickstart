@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 
 import { BaseStateSetup } from "./base-state-setup.js";
-import { createAppWithCounter } from "../../templates/features/zustand-counter-template.js";
+import { createAppWithCounter } from "../../templates/content/features/zustand-counter-template.js";
 import { createCommonTemplateBuilder } from "../../templates/index.js";
 
 /**

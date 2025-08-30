@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 
 import { setupStyling } from "../../../../features/styling/index.js";
-import { createContentGenerator } from "../../../../templates/generators/index.js";
+import { createContentGenerator } from "../../../../templates/content/index.js";
 import { CORE_UTILS } from "../../../../utils/index.js";
 
 export function createPagesRouterStructure(projectPath, projectName, userChoices) {

@@ -2,8 +2,11 @@ import fs from "fs-extra";
 import path from "path";
 
 import { createConfigurationBuilder } from "../../../builders/index.js";
-import { createSourceFiles, createHtmlFile } from "../../../features/files/index.js";
 import { setupRouting } from "../../../features/routing/index.js";
+import {
+  createSourceFiles,
+  createHtmlFile,
+} from "../../../features/source-files/index.js";
 import { setupStyling } from "../../../features/styling/index.js";
 import { CORE_UTILS } from "../../../utils/index.js";
 import { BaseGenerator } from "../../base-generator.js";

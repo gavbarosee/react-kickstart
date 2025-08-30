@@ -1,8 +1,8 @@
-// src/shared/file-generation.js
+// Source file generation for React projects
 import fs from "fs-extra";
 import path from "path";
 
-import { createContentGenerator } from "../../templates/generators/index.js";
+import { createContentGenerator } from "../../templates/content/index.js";
 import { createFileTemplateEngine } from "../../templates/index.js";
 import { CORE_UTILS } from "../../utils/index.js";
 
