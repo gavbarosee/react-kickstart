@@ -408,9 +408,6 @@ function updateAppComponent(srcDir, ext, userChoices) {
 
   if (!fs.existsSync(appFile)) return;
 
-  // backup the original file
-  fs.copyFileSync(appFile, `${appFile}.bak`);
-
   const content = `${
     userChoices.typescript ? "import React from 'react';\n" : ""
   }import { 

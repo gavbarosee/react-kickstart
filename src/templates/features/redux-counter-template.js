@@ -41,10 +41,6 @@ export function createAppWithCounter(projectPath, userChoices) {
     const templateBuilder = createCommonTemplateBuilder();
     const content = templateBuilder.generateAppWithCounter(userChoices, "redux");
 
-    // backup the original file
-    fs.copyFileSync(appFile, `${appFile}.bak`);
-
-    // write the new App file
     fs.writeFileSync(appFile, content);
   }
 }

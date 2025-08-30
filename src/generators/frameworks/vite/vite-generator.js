@@ -35,10 +35,7 @@ export class ViteGenerator extends BaseGenerator {
    * Create Vite-specific configuration files
    */
   async createFrameworkConfiguration(projectPath, userChoices) {
-    // Generate Vite config
     const viteConfig = this.configBuilder.generateViteConfig(projectPath, userChoices);
-
-    // Generate additional configs (TypeScript, Tailwind, Testing, etc.)
     const additionalConfigs = await this.configBuilder.generateAdditionalConfigs(
       projectPath,
       userChoices,
@@ -51,18 +48,13 @@ export class ViteGenerator extends BaseGenerator {
    * Create project files specific to Vite
    */
   async createProjectFiles(projectPath, projectName, userChoices) {
-    // Create HTML file (Vite needs this)
     createHtmlFile(projectPath, projectName, userChoices, this.frameworkName);
-
-    // Create source files
     createSourceFiles(projectPath, userChoices, this.frameworkName);
 
-    // Setup routing if enabled
     if (this.isFeatureEnabled(userChoices, "routing")) {
       setupRouting(projectPath, userChoices, this.frameworkName);
     }
 
-    // Setup styling
     setupStyling(projectPath, userChoices, this.frameworkName);
   }
 

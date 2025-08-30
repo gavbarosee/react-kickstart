@@ -1,4 +1,3 @@
-// Export error handling classes
 export { ErrorHandler } from "./error-handler.js";
 export { CleanupManager } from "./cleanup-manager.js";
 export { UserErrorReporter } from "./error-reporter.js";
@@ -23,7 +22,6 @@ export const ERROR_SEVERITY = {
   CRITICAL: "critical",
 };
 
-// Import classes for factory functions
 import { CleanupManager } from "./cleanup-manager.js";
 import { ErrorHandler } from "./error-handler.js";
 import { UserErrorReporter } from "./error-reporter.js";

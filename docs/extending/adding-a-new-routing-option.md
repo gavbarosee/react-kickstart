@@ -93,9 +93,6 @@ export default function Layout(){
 
   // Update App to use HashRouter
   const appFile = path.join(directories.src, `App.${ext}`);
-  if (fs.existsSync(appFile)) {
-    fs.copyFileSync(appFile, `${appFile}.bak`);
-  }
   fs.writeFileSync(
     appFile,
     `import { HashRouter, Routes, Route } from 'react-router-dom';

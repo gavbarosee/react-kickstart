@@ -17,13 +17,11 @@ import { CORE_UTILS } from "../../utils/index.js";
 export function createSourceFiles(projectPath, userChoices, framework = "vite") {
   const fileExt = CORE_UTILS.getComponentExtension(userChoices);
 
-  // Determine source directory based on framework
   const srcDir =
     framework === "nextjs" && userChoices.nextRouting === "app"
       ? path.join(projectPath, "app")
       : path.join(projectPath, "src");
 
-  // Ensure the directory exists
   CORE_UTILS.ensureDirectory(srcDir);
 
   // Create entry point file if not using Next.js (which has its own routing)
@@ -31,7 +29,6 @@ export function createSourceFiles(projectPath, userChoices, framework = "vite") 
     createEntryPointFile(srcDir, fileExt, userChoices, framework);
   }
 
-  // Create main component file
   createAppComponent(srcDir, fileExt, userChoices, framework);
 }
 
@@ -45,14 +42,10 @@ export function createSourceFiles(projectPath, userChoices, framework = "vite") 
  * @returns {void}
  */
 function createEntryPointFile(srcDir, fileExt, userChoices, framework) {
-  // Get the appropriate filename based on framework
   const filename = framework === "vite" ? `main.${fileExt}` : `index.${fileExt}`;
-
-  // Generate content using strategy pattern
   const generator = createContentGenerator(framework);
   const content = generator.generateEntryPoint(fileExt, userChoices);
 
-  // Write the file
   fs.writeFileSync(path.join(srcDir, filename), content);
 }
 
@@ -66,13 +59,9 @@ function createEntryPointFile(srcDir, fileExt, userChoices, framework) {
  * @returns {void}
  */
 function createAppComponent(srcDir, fileExt, userChoices, framework) {
-  // Check if this is a Next.js app router component
   const isNextAppRouter = framework === "nextjs" && userChoices.nextRouting === "app";
-
-  // Get routing type for content generator
   const routingType = isNextAppRouter ? "app" : null;
 
-  // Generate content using strategy pattern
   const generator = createContentGenerator(framework, routingType);
   const content = generator.generateAppComponent(
     fileExt,
@@ -80,10 +69,7 @@ function createAppComponent(srcDir, fileExt, userChoices, framework) {
     userChoices,
   );
 
-  // Determine the filename based on the framework
   const filename = isNextAppRouter ? `page.${fileExt}` : `App.${fileExt}`;
-
-  // Write the file
   fs.writeFileSync(path.join(srcDir, filename), content);
 }
 
@@ -102,7 +88,6 @@ export async function createHtmlFile(
   userChoices,
   framework = "vite",
 ) {
-  // Skip for Next.js since it doesn't need a direct HTML file
   if (framework === "nextjs") return;
 
   const fileTemplateEngine = createFileTemplateEngine();

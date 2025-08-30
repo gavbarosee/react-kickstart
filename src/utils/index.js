@@ -6,7 +6,6 @@
 
  */
 
-// Import all utilities from their respective modules
 import * as dataFormatting from "./core/data-formatting.js";
 import * as directoryManagement from "./core/directory-management.js";
 import * as fileExtensions from "./core/file-extensions.js";
@@ -21,26 +20,13 @@ import * as uiLogging from "./ui/logging.js";
 import * as projectSummary from "./ui/project-summary.js";
 import * as summary from "./ui/summary.js";
 
-// ============================================================================
 // CORE_UTILS - Fundamental functions used throughout the application
-// ============================================================================
 export const CORE_UTILS = {
-  // Filesystem utilities
   ...filesystem,
-
-  // Validation utilities
   ...validation,
-
-  // Project analysis utilities
   ...projectAnalysis,
-
-  // Data formatting utilities
   ...dataFormatting,
-
-  // File extension utilities
   ...fileExtensions,
-
-  // Directory management utilities
   ...directoryManagement,
 
   // Convenience aliases
@@ -53,34 +39,20 @@ export const CORE_UTILS = {
   formatItem: dataFormatting.formatSummaryItem,
 };
 
-// ============================================================================
 // PROCESS_UTILS - External command execution and process management
-// ============================================================================
 export const PROCESS_UTILS = {
-  // Package manager utilities
   ...packageManagers,
-
-  // Git utilities
   ...git,
-
-  // Editor utilities
   ...editor,
-
-  // Development server utilities
   ...devServer,
 
   // Convenience aliases
   installDependencies: packageManagers.installDependenciesWithRetry,
 };
 
-// ============================================================================
 // UI_UTILS - User interface and display functions
-// ============================================================================
 export const UI_UTILS = {
-  // Logging and display utilities
   ...uiLogging,
-
-  // Summary and completion utilities
   ...summary,
   ...projectSummary,
 };
