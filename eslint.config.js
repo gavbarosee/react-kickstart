@@ -65,7 +65,7 @@ export default [
           argsIgnorePattern:
             "^(?:_|userChoices|projectPath|projectName|directories|error|err|res|fileExt|stateManager|srcDir|extensions|isDevDependency|options|context|packageManager|isViteWithRouting)$",
           varsIgnorePattern:
-            "^(?:_|userChoices|projectPath|projectName|directories|error|err|res|fileExt|stateManager|srcDir|extensions|isDevDependency|options|context|fs|path|structure|stylingType|packageManager|isViteWithRouting|errorType|isDev|createUIRenderer|CORE_UTILS|packageManager)$",
+            "^(?:_|userChoices|projectPath|projectName|directories|error|err|res|fileExt|stateManager|srcDir|extensions|isDevDependency|options|context|fs|path|structure|stylingType|packageManager|isViteWithRouting|errorType|isDev|createUIRenderer|CORE_UTILS)$",
         },
       ],
       "no-console": "off", // CLI tool, allow console

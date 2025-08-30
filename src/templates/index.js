@@ -23,30 +23,3 @@ export function createCommonTemplateBuilder() {
 export function createTemplateEngine(theme = "default") {
   return new TemplateEngine(theme);
 }
-
-// Export template themes for easy access
-export const THEMES = {
-  DEFAULT: "default",
-  MODERN: "modern",
-  MINIMAL: "minimal",
-};
-
-// Export template types for categorization
-export const TEMPLATE_TYPES = {
-  UI: "ui",
-  FILE: "file",
-  CONFIG: "config",
-  COMPONENT: "component",
-};
-
-// Utility function to get themed output
-export function withTheme(theme, callback) {
-  const renderer = createUIRenderer(theme);
-  return callback(renderer);
-}
-
-// Utility function for quick UI rendering
-export function quickRender(templateName, theme = "default", ...args) {
-  const renderer = createUIRenderer(theme);
-  return renderer.engine.render(templateName, ...args);
-}
