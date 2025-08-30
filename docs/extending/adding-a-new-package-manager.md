@@ -172,7 +172,7 @@ Update audit commands section:
 
 #### 7) `package.json` Build Scripts (Deployment Integration) (Recommended)
 
-- File: `src/config/package-json-builder.js`
+- File: `src/builders/package-json-builder.js`
 
 Update `getBuildCommand(packageManager)` to support additional managers:
 
@@ -234,7 +234,7 @@ Add or update tests to avoid regressions and ensure meaningful coverage (no plac
 - Update install mapping, parse helpers, and retry switching in `src/utils/process/package-managers.js`.
 - Update script mapping in `getPackageManagerCommand(...)` and dev command construction in `src/utils/process/start-project.js`.
 - Update command examples and audit notes in `src/utils/ui/completion.js`.
-- Update build command mapping in `src/config/package-json-builder.js#getBuildCommand`.
+- Update build command mapping in `src/builders/package-json-builder.js#getBuildCommand`.
 - Expand QA matrix in `qa-automation/test-matrix-generator.js` and re-run automation.
 - Add targeted unit tests for detection and command mapping.
 

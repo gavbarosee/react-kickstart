@@ -6,7 +6,7 @@ Use Redux Toolkit and Zustand as reference implementations.
 
 #### 1) Declare Dependencies and Versions (Required)
 
-- File: `src/config/dependencies.js`
+- File: `src/builders/dependencies.js`
   - Add a version block and a getter for your library.
 
 Examples:
@@ -46,7 +46,7 @@ export function getRecoilDependencies() {
 
 #### 2) Wire Dependency Resolution (Required)
 
-- File: `src/config/dependency-resolver.js`
+- File: `src/builders/dependency-resolver.js`
   - Update `getStateManagementDependencies(stateChoice)` to return your new dependencies.
 
 Example:
@@ -76,7 +76,7 @@ If any library needs peer dependencies or optional Babel/SWC toggles, add valida
 
 Implement a new setup class next to Redux/Zustand that extends `BaseStateSetup`.
 
-- Folder: `src/lib/state-management/`
+- Folder: `src/features/state-management/`
 - New file: `<library>-setup.js` (e.g., `mobx-setup.js`)
   - Implement abstract methods from `BaseStateSetup`:
     - `createStoreFiles(directories, userChoices)`
@@ -100,7 +100,7 @@ MobX example (high-level responsibilities):
 
 #### 4) Register the Setup (Required)
 
-- File: `src/lib/state-management/index.js`
+- File: `src/features/state-management/index.js`
   - Export and branch to your new setup when `userChoices.stateManagement` matches.
 
 Example:
@@ -124,8 +124,8 @@ export function setupStateManagement(projectPath, userChoices, framework) {
 If your library needs custom component/store templates:
 
 - Files:
-  - `src/templates/common-template-builder.js` — add generation helpers for store and counter component snippets.
-  - `src/features/<library>/counter-template.js` — optional helper to modify App/Home pages similarly to Redux/Zustand.
+  - `src/templates/engines/common-template-builder.js` — add generation helpers for store and counter component snippets.
+  - `src/templates/content/features/<library>-counter-template.js` — optional helper to modify App/Home pages similarly to Redux/Zustand.
 
 MobX snippets conceptually:
 
@@ -236,10 +236,10 @@ Write focused tests that verify:
 
 #### 13) Minimal Checklist
 
-- Add versions + getter in `src/config/dependencies.js`.
+- Add versions + getter in `src/builders/dependencies.js`.
 - Return deps in `DependencyResolver.getStateManagementDependencies(...)`.
 - Create `<library>-setup.js` extending `BaseStateSetup` with store/components and entry-point updates.
-- Register in `src/lib/state-management/index.js` dispatch.
+- Register in `src/features/state-management/index.js` dispatch.
 - Add prompt choice in `src/prompts/steps/state-management-step.js`.
 - Update docs (`../guides/using-react-kickstart.md`, `../guides/cli-flags.md`).
 - Expand QA matrix and run automation; add unit tests.

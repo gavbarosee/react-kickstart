@@ -174,7 +174,7 @@ The repository includes a QA automation harness; see `../qa/qa-automation-overvi
 
 To add new frameworks or options, see `../extending/adding-a-new-framework.md`. For internals, explore:
 
-- `src/frameworks` and `src/lib/*` for stack-specific logic
+- `src/generators/frameworks` and `src/features/*` for stack-specific logic
 - `src/prompts` for interactive flows
 - `src/generators` for file/content generation
 

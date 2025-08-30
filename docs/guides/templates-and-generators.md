@@ -4,9 +4,9 @@ How the CLI writes files and content for different frameworks and options.
 
 ## Key modules
 
-- `src/templates/*` — reusable templates and template engine
-- `src/lib/content-generation/*` — content generators per framework
-- `src/features/*` — feature wiring that calls generators
+- `src/templates/*` — reusable templates and template engines
+- `src/templates/content/*` — content generators per framework
+- `src/features/*` — feature setup and integration modules
 
 ## Flow
 

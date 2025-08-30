@@ -7,8 +7,8 @@ A quick, visual-first guide to help you understand how this CLI works and where 
 - Run it once locally to see it work:
   - `node bin/react-kickstart.js my-app --yes`
 - Prompts collect answers → a framework generator runs → files/configs are written → deps install → dev server starts → summary prints.
-- Start reading: `src/index.js` → `src/prompts/prompt-flow.js` → the specific `src/frameworks/*-generator.js`.
-- Configs/scripts come from `src/config/*` (builders/resolver). Files come from `src/lib/*` (file/content/styling/routing/testing).
+- Start reading: `src/index.js` → `src/prompts/prompt-flow.js` → the specific `src/generators/frameworks/*-generator.js`.
+- Configs/scripts come from `src/builders/*` (configuration/package-json/dependency management). Files come from `src/features/*` and `src/templates/*` (file generation/content/styling/routing/testing).
 - When stuck, search for the keyword you picked in prompts (e.g., "vite"), then follow the calls.
 
 #### High-level flow
@@ -44,17 +44,17 @@ Rendering note: This guide uses low-tech ASCII diagrams that render everywhere.
           │                                │                       │       │       │
           │                                │                       ▼       ▼       ▼
           │                                │               ┌────────────────┐  ┌─────────────────┐
-          │                                │               │ src/config/    │  │ src/lib/        │
-          │                                │               │ - configuration │  │ - file-generation│
-          │                                │               │ - package-json  │  │ - content-gen    │
-          │                                │               │ - dep-resolver  │  │ - styling        │
-          │                                │               └────────────────┘  │ - routing        │
-          │                                │                                   │ - testing/ts     │
+          │                                │               │ src/builders/  │  │ src/features/   │
+          │                                │               │ - configuration │  │ - api-clients   │
+          │                                │               │ - package-json  │  │ - source-files  │
+          │                                │               │ - dep-resolver  │  │ - styling       │
+          │                                │               └────────────────┘  │ - routing       │
+          │                                │                                   │ - testing/ts    │
           │                                │                                   └─────────┬───────┘
           │                                │                                             │
           │                                │                                 ┌───────────▼───────────┐
-          │                                │                                 │      src/features     │
-          │                                │                                 │ (api, redux, zustand) │
+          │                                │                                 │    src/templates/     │
+          │                                │                                 │ (content generation)  │
           │                                │                                 └──────────────────────┘
           │                                │
           │                                ▼
@@ -117,18 +117,15 @@ bin/react-kickstart.js -> src/index.js(createApp)
   -> install deps -> (optional) start dev -> summary
 ```
 
-### src/frameworks/
-
-- `vite/` and `nextjs/`: Each has `*-generator.js` plus any framework-specific helpers.
-
-Framework selection and generators: selection is handled in `src/generators/index.js` and maps the chosen framework to a concrete generator that extends `BaseGenerator`.
-
 ### src/generators/
 
 - `base-generator.js`: Template Method sequencing for generation.
+- `frameworks/`: Contains `vite/` and `nextjs/` subdirectories, each with `*-generator.js` plus any framework-specific helpers.
 - `index.js`: Chooses the generator (and prints structure/config overviews).
 
-### src/config/
+Framework selection and generators: selection is handled in `src/generators/index.js` and maps the chosen framework to a concrete generator that extends `BaseGenerator`.
+
+### src/builders/
 
 - `configuration-builder.js`: Writes framework + feature configs (vite.config, next.config, tsconfig, testing, tailwind/postcss).
 - `package-json-builder.js`: Builds scripts/deps via `DependencyResolver`.
@@ -136,23 +133,26 @@ Framework selection and generators: selection is handled in `src/generators/inde
 - `dependencies.js`: Version catalog and helper getters.
 - `index.js`: Factory exports for builders/resolvers.
 
-### src/lib/
-
-- `file-generation/`: Creates directories and core files (HTML, entry, App component).
-- `content-generation/`: Strategy objects to generate entry/app content for each framework/router.
-- `routing/`: React Router setup for Vite.
-- `styling/`: CSS, Tailwind, styled-components setup with framework-specific nuances.
-- `state-management/`: Redux, Zustand scaffolding.
-- `api-management/`: Axios/React Query/fetch wiring.
-- `testing/`: Testing setup helpers.
-- `linting.js`, `typescript.js`: Linting and TS support.
-
 ### src/features/
 
-Feature packers that call into `lib/` helpers according to the selected framework.
+Feature modules that handle setup and integration for different aspects of the application:
 
-- `api/`: API client options.
-- `redux/`, `zustand/`: State stores and examples.
+- `api-clients/`: API client setup (Axios, React Query, fetch) with base setup classes.
+- `source-files/`: File generation for core project files (HTML, entry, App component).
+- `routing/`: React Router setup for Vite.
+- `styling/`: CSS, Tailwind, styled-components setup with framework-specific nuances.
+- `state-management/`: Redux, Zustand scaffolding with base setup classes.
+- `testing/`: Testing setup helpers.
+- `linting/`: ESLint and code quality setup.
+- `typescript/`: TypeScript support setup.
+
+### src/templates/
+
+Template engines and content generation for different frameworks and features:
+
+- `engines/`: Core template engines, builders, and rendering infrastructure.
+- `content/`: Framework-specific content generation strategies (Vite, Next.js App/Pages Router).
+- `content/features/`: Feature-specific templates (Redux, Zustand counter examples).
 
 ### src/errors/
 
@@ -161,12 +161,6 @@ Centralized error handling and user-facing recovery guidance.
 - `error-handler.js`: Orchestrates handling and context.
 - `user-error-reporter.js`: Consistent, actionable messages.
 - `cleanup-manager.js`: Safe cleanup of partially generated projects.
-
-### src/templates/
-
-Template engines and reusable content builders for UI and files.
-
-- `template-engine.js`, `file-template-engine.js`, `ui-renderer.js`, `common-template-builder.js`.
 
 ### src/utils/
 
@@ -204,9 +198,9 @@ node qa-automation/test-runner.js edge 15
 ## Where to add or extend things quickly
 
 - Add a framework: `../extending/adding-a-new-framework.md` (full checklist).
-- Add a feature: `src/features/*` + helpers in `src/lib/*` and `src/config/*`.
+- Add a feature: `src/features/*` + helpers in `src/templates/*` and `src/builders/*`.
 - Change prompts: `src/prompts/steps/*` and `src/prompts/prompt-flow.js`.
-- Tweak build scripts/deps: `src/config/package-json-builder.js` and `src/config/dependencies.js`.
+- Tweak build scripts/deps: `src/builders/package-json-builder.js` and `src/builders/dependencies.js`.
 - Change dev server defaults/summary: `src/utils/ui/completion.js` and `src/utils/process/start-project.js`.
 
 ---
@@ -220,10 +214,10 @@ Prompts → Generator (by framework) → Config/Files/Features → Install → S
 ## Common tasks (1-minute pointers)
 
 - Add a framework: See `../extending/adding-a-new-framework.md`. Then add it to prompts in `src/prompts/steps/framework-step.js` and QA matrix `qa-automation/test-matrix-generator.js`.
-- Add a feature (e.g., another state manager): Add under `src/features/`, wire deps in `src/config/dependency-resolver.js`, add content in `src/lib/*`, add prompt in `src/prompts/steps/*`.
-- Change default scripts: `src/config/package-json-builder.js` → `getFrameworkScripts()`.
-- Change build output dir: `src/config/package-json-builder.js` → `getBuildDirectory()`.
-- Update dependency versions: `src/config/dependencies.js`.
+- Add a feature (e.g., another state manager): Add under `src/features/`, wire deps in `src/builders/dependency-resolver.js`, add content in `src/templates/*`, add prompt in `src/prompts/steps/*`.
+- Change default scripts: `src/builders/package-json-builder.js` → `getFrameworkScripts()`.
+- Change build output dir: `src/builders/package-json-builder.js` → `getBuildDirectory()`.
+- Update dependency versions: `src/builders/dependencies.js`.
 
 ---
 
@@ -232,7 +226,7 @@ Prompts → Generator (by framework) → Config/Files/Features → Install → S
 - Re-run a sample: `node bin/react-kickstart.js demo --yes` to refresh context.
 - Skim this file’s ASCII overview and the "Where to add or extend things" section.
 - Check supported frameworks: `src/prompts/steps/framework-step.js` and cases in `src/generators/index.js`.
-- Review config pipeline: `src/config/configuration-builder.js` and `src/config/package-json-builder.js` (scripts/deps), `src/config/dependency-resolver.js`.
+- Review config pipeline: `src/builders/configuration-builder.js` and `src/builders/package-json-builder.js` (scripts/deps), `src/builders/dependency-resolver.js`.
 - Validate with QA: regenerate matrix and run critical/standard/edge suites:
   - `node qa-automation/test-matrix-generator.js`
   - `node qa-automation/test-runner.js critical 10`
@@ -254,10 +248,10 @@ Prompts → Generator (by framework) → Config/Files/Features → Install → S
    - `prompts/prompt-flow.js` collects your choices.
    - generator selection returns `ViteGenerator`.
    - `generators/base-generator.js` runs the template sequence:
-     - `config/configuration-builder.js` writes `package.json`, `vite.config.ts`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`, `vitest.config.ts`.
-     - `lib/file-generation/index.js` creates `index.html`, `src/main.tsx`, `src/App.tsx`.
-     - `lib/styling/index.js` writes `src/index.css` with Tailwind directives.
-     - `features/redux` populates `src/store/*` and example usage.
+     - `builders/configuration-builder.js` writes `package.json`, `vite.config.ts`, `tsconfig.json`, `tailwind.config.js`, `postcss.config.js`, `vitest.config.ts`.
+   - `features/source-files/file-generator.js` creates `index.html`, `src/main.tsx`, `src/App.tsx`.
+   - `features/styling/index.js` writes `src/index.css` with Tailwind directives.
+   - `features/state-management/redux-setup.js` populates `src/store/*` and example usage.
    - `utils/process/package-managers.js` installs deps.
    - `utils/process/start-project.js` starts dev server at `http://localhost:5173`.
 
@@ -281,8 +275,8 @@ Prompts → Generator (by framework) → Config/Files/Features → Install → S
 
 ## Mini-FAQ
 
-- Where are scripts set? → `src/config/package-json-builder.js#getFrameworkScripts()`.
-- Where’s the build output directory defined? → `getBuildDirectory()` in the same file.
+- Where are scripts set? → `src/builders/package-json-builder.js#getFrameworkScripts()`.
+- Where's the build output directory defined? → `getBuildDirectory()` in the same file.
 - How do I add a new prompt? → Create a step in `src/prompts/steps/`, wire in `src/prompts/prompt-flow.js`, and handle navigation from the previous step.
 - Generation failed after install—what next? → Re-run with `--yes`, check network/proxy, then review `installDependenciesWithRetry` in `utils/process/package-managers.js` logs.
 - How do I add a new framework? → `../extending/adding-a-new-framework.md` and ensure prompt choice + QA matrix update.

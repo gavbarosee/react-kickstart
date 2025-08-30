@@ -5,14 +5,14 @@ Extend API client choices (e.g., Fetch, Axios, React Query) by wiring two layers
 ## Where to plug in
 
 - Generators and wiring:
-  - `src/lib/api-management/*` — setup logic per API style
-  - `src/features/api/index.js` — exposes available API options
+  - `src/features/api-clients/*` — setup logic per API style
+  - `src/features/api-clients/index.js` — exposes available API options
 
 ## Steps
 
 1. Create a setup module
 
-Create `src/lib/api-management/<your-api>-setup.js` exporting functions to write deps, scripts, and boilerplate.
+Create `src/features/api-clients/<your-api>-setup.js` exporting functions to write deps, scripts, and boilerplate.
 
 ```js
 export function applyYourApiSetup(context) {
@@ -22,11 +22,11 @@ export function applyYourApiSetup(context) {
 
 2. Export in the API management index
 
-Update `src/lib/api-management/index.js` to export your setup.
+Update `src/features/api-clients/index.js` to export your setup.
 
 3. Register the option in the feature layer
 
-Update `src/features/api/index.js` to include a new option with an `id`, `label`, and handler that calls your setup.
+Update `src/features/api-clients/index.js` to include a new option with an `id`, `label`, and handler that calls your setup.
 
 4. Ensure templates
 
@@ -43,7 +43,7 @@ Goal: Add `ky` as `ky-only` and optionally `ky-react-query` variants, aligned wi
 
 ### 1) Implementation: setup classes
 
-Create `src/lib/api-management/ky-only-setup.js`:
+Create `src/features/api-clients/ky-only-setup.js`:
 
 ```js
 import fs from "fs-extra";
@@ -85,7 +85,7 @@ export async function getHealth(){
 }
 ```
 
-Optionally, `src/lib/api-management/ky-react-query-setup.js`:
+Optionally, `src/features/api-clients/ky-react-query-setup.js`:
 
 ```js
 import fs from "fs-extra";
@@ -135,7 +135,7 @@ export function useHealth(){
 
 ### 2) Register in the factory
 
-Update `src/lib/api-management/index.js`:
+Update `src/features/api-clients/index.js`:
 
 ```js
 import { KyOnlySetup } from "./ky-only-setup.js";
@@ -154,7 +154,7 @@ export function createApiSetup(apiType, framework) {
 
 ### 3) Expose in the feature selection
 
-Add choices in `src/features/api/index.js` or the relevant step so users can pick `ky-only` or `ky-react-query`.
+Add choices in `src/features/api-clients/index.js` or the relevant step so users can pick `ky-only` or `ky-react-query`.
 
 ### 4) Verify
 

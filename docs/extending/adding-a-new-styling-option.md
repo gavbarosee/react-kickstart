@@ -6,7 +6,7 @@ Use Tailwind, styled-components, and plain CSS as reference implementations.
 
 #### 1) Declare Dependencies and Versions (Required)
 
-- File: `src/config/dependencies.js`
+- File: `src/builders/dependencies.js`
   - Extend the `styling` export with your libraries and versions.
   - Add a getter function that returns the dependency map for your option.
 
@@ -46,7 +46,7 @@ export function getEmotionDependencies() {
 
 #### 2) Wire Dependency Resolution (Required)
 
-- File: `src/config/dependency-resolver.js`
+- File: `src/builders/dependency-resolver.js`
   - Update `getStylingDependencies(stylingChoice)` to handle your new option and return the correct dependency map. Consider framework-specific placement hints (devDependencies vs dependencies).
 
 Example:
@@ -84,7 +84,7 @@ Example:
 
 #### 4) Implement Styling Setup (Files and Config) (Required)
 
-- File: `src/lib/styling/index.js`
+- File: `src/features/styling/index.js`
   - Update `setupStyling(...)` to branch for your styling value.
   - Extend `getStylingInfo(framework, userChoices)` if your option changes file names, directories, or PostCSS usage per framework.
   - Implement a setup function that writes any required files and configs.
@@ -102,7 +102,7 @@ If PostCSS is needed (e.g., for plugins), adopt the same pattern as Tailwind’s
 
 #### 5) Update Framework Config Where Needed (Recommended)
 
-- File: `src/config/configuration-builder.js`
+- File: `src/builders/configuration-builder.js`
   - Vite: If your styling requires Babel plugin configuration (like styled-components or emotion), add it to the React plugin config branch in `generateViteConfig(...)`.
   - Next.js: If the styling needs SWC flags (e.g., `compiler.emotion = true`), add to `generateNextjsConfig(...)`.
 
@@ -124,7 +124,7 @@ module.exports = {
 
 #### 6) Package.json Dependency Placement (Recommended)
 
-- File: `src/config/package-json-builder.js`
+- File: `src/builders/package-json-builder.js`
   - Method: `addStylingDependencies(userChoices)` determines where styling deps land.
   - For Tailwind, dev vs prod placement is framework-dependent. For your option, decide:
     - Preprocessors (Sass/Less): devDependencies are common.
@@ -135,9 +135,9 @@ If needed, adjust placement rules by extending that method.
 #### 7) Source Templates and Example Code (Recommended)
 
 - Files:
-  - `src/templates/common-template-builder.js`
-  - `src/templates/file-template-engine.js`
-  - `src/lib/file-generation/index.js`
+  - `src/templates/engines/common-template-builder.js`
+  - `src/templates/engines/file-template-engine.js`
+  - `src/features/source-files/file-generator.js`
 
 Add/branch in the component and entry templates so generated projects demonstrate your styling option idiomatically:
 
@@ -191,7 +191,7 @@ Write focused tests (no placeholders) that verify:
 
 - `DependencyResolver.getStylingDependencies(...)` returns the right packages.
 - `PackageJsonBuilder.addStylingDependencies(...)` places deps correctly.
-- `lib/styling/index.js` creates expected files and configs for the styling option.
+- `features/styling/index.js` creates expected files and configs for the styling option.
 - Vite/Next configs include required compiler/babel flags when applicable.
 - Templates render expected imports/usages for the styling option.
 
@@ -217,12 +217,12 @@ Write focused tests (no placeholders) that verify:
 
 ### Minimal Checklist
 
-- Add versions + getter in `src/config/dependencies.js`.
+- Add versions + getter in `src/builders/dependencies.js`.
 - Handle in `DependencyResolver.getStylingDependencies(...)` (+ validations as needed).
 - Add prompt choice in `src/prompts/steps/styling-step.js` and allow-list in `src/utils/core/validation.js`.
-- Implement setup in `src/lib/styling/index.js` (files, PostCSS, framework nuances).
-- Add Vite/Next compiler changes in `src/config/configuration-builder.js` if required.
-- Ensure `package.json` placement in `src/config/package-json-builder.js` is correct.
+- Implement setup in `src/features/styling/index.js` (files, PostCSS, framework nuances).
+- Add Vite/Next compiler changes in `src/builders/configuration-builder.js` if required.
+- Ensure `package.json` placement in `src/builders/package-json-builder.js` is correct.
 - Update templates to showcase the styling option idiomatically.
 - Extend completion docs and summary labels.
 - Expand QA matrix and run automation.

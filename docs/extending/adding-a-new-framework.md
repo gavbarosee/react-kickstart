@@ -4,7 +4,7 @@ This guide explains all extension points to fully integrate another framework in
 
 #### 1) Create a Framework Generator
 
-- Location: `src/frameworks/<your-framework>/`
+- Location: `src/generators/frameworks/<your-framework>/`
 - Add: `your-framework-generator.js` that extends `BaseGenerator` and implements:
   - `createPackageConfiguration(projectPath, projectName, userChoices)`
   - `createFrameworkConfiguration(projectPath, userChoices)`
@@ -13,8 +13,8 @@ This guide explains all extension points to fully integrate another framework in
 
 References:
 
-- `src/frameworks/vite/vite-generator.js`
-- `src/frameworks/nextjs/nextjs-generator.js`
+- `src/generators/frameworks/vite/vite-generator.js`
+- `src/generators/frameworks/nextjs/nextjs-generator.js`
 
 If your framework needs an HTML entry (like Vite), call `createHtmlFile(...)` and `createSourceFiles(...)`. If it manages routing internally (like Next.js), skip HTML and rely on `createSourceFiles(...)` with framework-specific variations.
 
@@ -38,9 +38,9 @@ Add a case for your framework in `src/generators/index.js` (where Vite/Next.js a
 #### 5) Add Framework Dependencies and Scripts
 
 - Files:
-  - `src/config/dependencies.js` — extend `export const frameworks = { ... }` with your framework’s packages and versions.
-  - `src/config/dependency-resolver.js` — update `getFrameworkDependencies()` to return your deps keyed by framework name.
-  - `src/config/package-json-builder.js`
+  - `src/builders/dependencies.js` — extend `export const frameworks = { ... }` with your framework's packages and versions.
+  - `src/builders/dependency-resolver.js` — update `getFrameworkDependencies()` to return your deps keyed by framework name.
+  - `src/builders/package-json-builder.js`
     - `getFrameworkScripts()` — add `dev/build/start/preview` scripts as applicable.
     - `getBuildDirectory()` — return your framework’s default build output directory.
     - The builder already delegates to `DependencyResolver` for dependency placement; adjust if your framework needs special handling (e.g., devDependencies vs dependencies).
@@ -51,7 +51,7 @@ Notes:
 
 #### 6) Generate Framework Config Files
 
-- File: `src/config/configuration-builder.js`
+- File: `src/builders/configuration-builder.js`
   - Add a case to `generateFrameworkConfig(...)` for your framework and write its config file(s).
   - If you need TypeScript/Testing/Tailwind/PostCSS configs, reuse existing helpers (`generateTypeScriptConfig`, `generateTestingConfig`, etc.) or create variants when necessary.
 
@@ -59,7 +59,7 @@ If your framework needs JSX/React-specific transforms or Babel/SWC config, gener
 
 #### 7) Create Source and HTML Files
 
-- File: `src/lib/file-generation/index.js`
+- File: `src/features/source-files/file-generator.js`
   - `createSourceFiles(...)` and `createHtmlFile(...)` already accept a `framework` argument.
   - If your framework needs a different entry filename or directory layout, add a branch where needed (e.g., compute entry filename for `createEntryPointFile`).
 
@@ -67,15 +67,15 @@ If your framework has its own router/pages system, mirror the Next.js logic by s
 
 #### 8) Content Generators for App/Entry Files
 
-- Files in `src/lib/content-generation/`
-  - If entry/app file contents differ (import paths, root rendering, strict mode), add a new generator class and branch in `createContentGenerator(framework, routingType)` in `src/lib/content-generation/index.js`.
+- Files in `src/templates/content/`
+  - If entry/app file contents differ (import paths, root rendering, strict mode), add a new generator class and branch in `createContentGenerator(framework, routingType)` in `src/templates/content/index.js`.
   - Use `ViteContentGenerator` and `Nextjs*RouterGenerator` as references.
 
 #### 9) Routing and Styling Hooks
 
-- Routing hooks: `src/lib/routing/index.js` and `src/lib/routing/react-router/`
+- Routing hooks: `src/features/routing/index.js` and `src/features/routing/react-router/`
   - Add a branch if your framework needs different router setup (e.g., separate template or mount point).
-- Styling hooks: `src/lib/styling/index.js`
+- Styling hooks: `src/features/styling/index.js`
   - `getStylingInfo(framework, userChoices)` may need a branch for CSS file locations/names or PostCSS/Tailwind config differences.
 
 #### 10) Directory Structure and Project Info
@@ -119,13 +119,13 @@ QA Automation (must-do):
 
 ### Minimal Checklist
 
-- Generator: `src/frameworks/<name>/<name>-generator.js`
+- Generator: `src/generators/frameworks/<name>/<name>-generator.js`
 - Prompt choice (optional): `src/prompts/steps/framework-step.js`
 - Runtime switch: `src/generators/index.js`
-- Dependencies and scripts: `src/config/dependencies.js`, `src/config/dependency-resolver.js`, `src/config/package-json-builder.js`
-- Config writer: `src/config/configuration-builder.js`
-- Content/HTML: `src/lib/file-generation/index.js`, `src/lib/content-generation/*`
-- Routing/Styling: `src/lib/routing/*`, `src/lib/styling/index.js`
+- Dependencies and scripts: `src/builders/dependencies.js`, `src/builders/dependency-resolver.js`, `src/builders/package-json-builder.js`
+- Config writer: `src/builders/configuration-builder.js`
+- Content/HTML: `src/features/source-files/file-generator.js`, `src/templates/content/*`
+- Routing/Styling: `src/features/routing/*`, `src/features/styling/index.js`
 - Directory structure and info: `src/utils/core/directory-management.js`, `src/utils/core/project-analysis.js`
 - Completion docs/ports: `src/utils/ui/completion.js`
 

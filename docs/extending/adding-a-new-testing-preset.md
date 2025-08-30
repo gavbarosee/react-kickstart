@@ -5,10 +5,10 @@ Add alternatives or enhancements to the default Vitest setup.
 ## Where to plug in
 
 - Testing wiring:
-  - `src/lib/testing/testing-setup.js`
-  - `src/lib/testing/index.js`
+  - `src/features/testing/testing-setup.js`
+  - `src/features/testing/index.js`
 - Templates:
-  - `src/templates/testing/*` (example component tests in JS/TS)
+  - `src/templates/engines/*` (example component tests in JS/TS)
 
 ## Steps
 
@@ -18,11 +18,11 @@ Implement a function in `testing-setup.js` that adds dependencies, scripts, and 
 
 2. Export and expose
 
-Expose the new preset from `src/lib/testing/index.js` and ensure the feature selection (prompts) includes it.
+Expose the new preset from `src/features/testing/index.js` and ensure the feature selection (prompts) includes it.
 
 3. Provide templates
 
-Add example tests/config stubs under `src/templates/testing/` if needed.
+Add example tests/config stubs under `src/templates/engines/` if needed.
 
 ## Verification
 
@@ -47,7 +47,7 @@ choices.push({
 
 ### 2) Add preset handler
 
-Create `src/lib/testing/playwright-ct-setup.js`:
+Create `src/features/testing/playwright-ct-setup.js`:
 
 ```js
 import fs from "fs-extra";
@@ -104,7 +104,7 @@ test('renders', async ({ mount }) => {
 
 ### 3) Export and invoke during generation
 
-Update `src/lib/testing/index.js`:
+Update `src/features/testing/index.js`:
 
 ```js
 export * from "./testing-setup.js";
@@ -114,7 +114,7 @@ export { applyPlaywrightCT } from "./playwright-ct-setup.js";
 Where you orchestrate testing setup during project generation, call:
 
 ```js
-import { applyPlaywrightCT } from "../lib/testing/index.js";
+import { applyPlaywrightCT } from "../features/testing/index.js";
 
 if (answers.testing === "playwright-ct") {
   await applyPlaywrightCT(projectPath, answers);

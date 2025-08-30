@@ -5,10 +5,10 @@ Support alternative routing for Vite (React Router variants) or Next.js routing 
 ## Where to plug in
 
 - Vite/React Router:
-  - `src/lib/routing/react-router/*`
-  - (features layer not required for routing; use `src/lib/routing/*` directly)
+  - `src/features/routing/react-router/*`
+  - (routing is handled in the features layer)
 - Next.js options:
-  - `src/frameworks/nextjs/generators/*` (app vs pages router)
+  - `src/generators/frameworks/nextjs/routers/*` (app vs pages router)
 
 ## Steps
 
@@ -18,7 +18,7 @@ Add a module that writes router deps and files (e.g., `vite.js` or new variant) 
 
 2. Register the option
 
-Expose a new choice in the prompts (e.g., `src/prompts/steps/routing-step.js`) and wire handling in `src/lib/routing/index.js`.
+Expose a new choice in the prompts (e.g., `src/prompts/steps/routing-step.js`) and wire handling in `src/features/routing/index.js`.
 
 3. Update content generators
 
@@ -48,7 +48,7 @@ Update `src/prompts/steps/routing-step.js` to add a choice:
 
 ### 2) Implement setup code
 
-Create `src/lib/routing/react-router-hash/vite.js`:
+Create `src/features/routing/react-router-hash/vite.js`:
 
 ```js
 import fs from "fs-extra";
@@ -122,7 +122,7 @@ export default function App(){
 
 ### 3) Wire it into the router setup switch
 
-Update `src/lib/routing/index.js`:
+Update `src/features/routing/index.js`:
 
 ```js
 import { setupReactRouter } from "./react-router/index.js";
