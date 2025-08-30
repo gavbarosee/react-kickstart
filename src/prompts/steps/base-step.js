@@ -1,6 +1,6 @@
 import chalk from "chalk";
 
-import { keyboardNavManager } from "../keyboard-navigation-manager.js";
+import { keyboardNavManager } from "../navigation/navigation-manager.js";
 
 /**
  * Base class for all prompt steps

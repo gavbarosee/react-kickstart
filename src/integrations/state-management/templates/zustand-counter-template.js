@@ -1,8 +1,8 @@
 import fs from "fs-extra";
 import path from "path";
 
-import { createCommonTemplateBuilder } from "../../templates/index.js";
-import { CORE_UTILS } from "../../utils/index.js";
+import { createCommonTemplateBuilder } from "../../../templates/index.js";
+import { CORE_UTILS } from "../../../utils/index.js";
 
 /**
  * Creates a replacement App component that includes the Counter

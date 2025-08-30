@@ -5,7 +5,7 @@ import path from "path";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 import generateProject from "../generators/index.js";
 import { promptUser, getFrameworkDefaults } from "../prompts/index.js";
-import { keyboardNavManager } from "../prompts/keyboard-navigation-manager.js";
+import { keyboardNavManager } from "../prompts/navigation/navigation-manager.js";
 import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "../utils/index.js";
 
 /**
