@@ -1,8 +1,8 @@
 import fs from "fs-extra";
 import path from "path";
 
-import { createCommonTemplateBuilder } from "../../../templates/index.js";
-import { CORE_UTILS } from "../../../utils/index.js";
+import { createCommonTemplateBuilder } from "../index.js";
+import { CORE_UTILS } from "../../utils/index.js";
 
 /**
  * Creates a replacement App component that includes the Counter
@@ -11,16 +11,16 @@ import { CORE_UTILS } from "../../../utils/index.js";
  * @returns {void}
  */
 export function createAppWithCounter(projectPath, userChoices) {
-  if (userChoices.stateManagement !== "redux") return;
+  if (userChoices.stateManagement !== "zustand") return;
 
   const ext = CORE_UTILS.getComponentExtension(userChoices);
 
   // Handle Next.js framework
   if (userChoices.framework === "nextjs") {
     if (userChoices.nextRouting === "app") {
-      addReduxCounterToNextjsAppPage(projectPath, userChoices);
+      addZustandCounterToNextjsAppPage(projectPath, userChoices);
     } else {
-      addReduxCounterToNextjsPagesIndex(projectPath, userChoices);
+      addZustandCounterToNextjsPagesIndex(projectPath, userChoices);
     }
     return;
   }
@@ -30,8 +30,8 @@ export function createAppWithCounter(projectPath, userChoices) {
 
   // Check if routing is enabled
   if (userChoices.routing && userChoices.routing !== "none") {
-    // If routing is enabled, add Redux counter to HomePage instead of replacing App
-    addReduxCounterToHomePage(projectPath, userChoices);
+    // If routing is enabled, add Zustand counter to HomePage instead of replacing App
+    addZustandCounterToHomePage(projectPath, userChoices);
   } else {
     // If no routing, replace App component as before
     const appFile = path.join(srcDir, `App.${ext}`);
@@ -39,7 +39,7 @@ export function createAppWithCounter(projectPath, userChoices) {
 
     // Generate App component using CommonTemplateBuilder
     const templateBuilder = createCommonTemplateBuilder();
-    const content = templateBuilder.generateAppWithCounter(userChoices, "redux");
+    const content = templateBuilder.generateAppWithCounter(userChoices, "zustand");
 
     // backup the original file
     fs.copyFileSync(appFile, `${appFile}.bak`);
@@ -50,12 +50,12 @@ export function createAppWithCounter(projectPath, userChoices) {
 }
 
 /**
- * Adds Redux counter functionality to the HomePage component
+ * Adds Zustand counter functionality to the HomePage component
  * @param {string} projectPath - Project root path
  * @param {Object} userChoices - User configuration options
  * @returns {void}
  */
-function addReduxCounterToHomePage(projectPath, userChoices) {
+function addZustandCounterToHomePage(projectPath, userChoices) {
   const ext = CORE_UTILS.getComponentExtension(userChoices);
   const pagesDir = path.join(projectPath, "src", "pages");
   const homePageFile = path.join(pagesDir, `HomePage.${ext}`);
@@ -64,41 +64,42 @@ function addReduxCounterToHomePage(projectPath, userChoices) {
 
   let content = fs.readFileSync(homePageFile, "utf-8");
 
-  // Add Redux imports
-  const reduxImports = `import { useAppSelector, useAppDispatch } from '../store/hooks';
-import { decrement, increment, incrementByAmount } from '../store/counterSlice';`;
+  // Add Zustand imports
+  const zustandImports = `import { useCounterStore } from '../store/counterStore';`;
 
   // Add the imports after existing imports
   if (userChoices.typescript) {
     content = content.replace(
       /import React from 'react';/,
-      `import React from 'react';\n${reduxImports}`,
+      `import React from 'react';\n${zustandImports}`,
     );
   } else {
     // If no React import, add at the top
     if (content.includes("import")) {
-      content = content.replace(/(import.*?\n)/, `$1${reduxImports}\n`);
+      content = content.replace(/(import.*?\n)/, `$1${zustandImports}\n`);
     } else {
-      content = `${reduxImports}\n\n${content}`;
+      content = `${zustandImports}\n\n${content}`;
     }
   }
 
-  // Add Redux logic to the component
-  const reduxLogic = `  const count = useAppSelector((state) => state.counter.value);
-  const dispatch = useAppDispatch();`;
+  // Add Zustand logic to the component
+  const zustandLogic = `  const { count, increment, decrement, incrementByAmount } = useCounterStore();`;
 
-  // Replace the useState logic with Redux logic
+  // Replace the useState logic with Zustand logic
   if (content.includes("useState")) {
     content = content.replace(
       /import { useState } from 'react';/,
       "import React from 'react';", // Remove useState, keep React if needed
     );
-    content = content.replace(/const \[count, setCount\] = useState\(0\);/, reduxLogic);
+    content = content.replace(
+      /const \[count, setCount\] = useState\(0\);/,
+      zustandLogic,
+    );
   } else {
-    // Add Redux logic after function declaration
+    // Add Zustand logic after function declaration
     content = content.replace(
       /(export default function HomePage\(\) {\s*)/,
-      `$1${reduxLogic}\n`,
+      `$1${zustandLogic}\n`,
     );
   }
 
@@ -107,10 +108,10 @@ import { decrement, increment, incrementByAmount } from '../store/counterSlice';
     content.includes("setCount") || content.includes("count is");
 
   if (hasExistingCounter) {
-    // Update existing button onClick handlers for Redux
+    // Update existing button onClick handlers for Zustand
     content = content.replace(
       /onClick={\(\) => setCount\(\(count\) => count \+ 1\)}/g,
-      "onClick={() => dispatch(increment())}",
+      "onClick={increment}",
     );
 
     // Add decrement and increment by amount buttons if using styled-components
@@ -118,13 +119,13 @@ import { decrement, increment, incrementByAmount } from '../store/counterSlice';
       content = content.replace(
         /(<div>\s*<InteractiveButton[^>]*>[\s\S]*?<\/InteractiveButton>\s*<\/div>)/,
         `<div>
-          <InteractiveButton onClick={() => dispatch(decrement())}>
+          <InteractiveButton onClick={decrement}>
             -
           </InteractiveButton>
-          <InteractiveButton onClick={() => dispatch(increment())}>
+          <InteractiveButton onClick={increment}>
             count is {count}
           </InteractiveButton>
-          <InteractiveButton onClick={() => dispatch(incrementByAmount(5))}>
+          <InteractiveButton onClick={() => incrementByAmount(5)}>
             +5
           </InteractiveButton>
         </div>`,
@@ -135,19 +136,19 @@ import { decrement, increment, incrementByAmount } from '../store/counterSlice';
         `<div className="flex gap-2">
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => dispatch(decrement())}
+            onClick={decrement}
           >
             -
           </button>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => dispatch(increment())}
+            onClick={increment}
           >
             count is {count}
           </button>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => dispatch(incrementByAmount(5))}
+            onClick={() => incrementByAmount(5)}
           >
             +5
           </button>
@@ -158,15 +159,15 @@ import { decrement, increment, incrementByAmount } from '../store/counterSlice';
       content = content.replace(
         /(<div>\s*<button[^>]*>[\s\S]*?<\/button>\s*<\/div>)/,
         `<div>
-          <button onClick={() => dispatch(decrement())}>-</button>
-          <button onClick={() => dispatch(increment())}>count is {count}</button>
-          <button onClick={() => dispatch(incrementByAmount(5))}>+5</button>
+          <button onClick={decrement}>-</button>
+          <button onClick={increment}>count is {count}</button>
+          <button onClick={() => incrementByAmount(5)}>+5</button>
         </div>`,
       );
     }
   } else {
-    // No existing counter, add a new Redux counter section
-    const counterSection = createReduxCounterSection(userChoices);
+    // No existing counter, add a new Zustand counter section
+    const counterSection = createZustandCounterSection(userChoices);
 
     // Add the counter after the welcome message
     content = content.replace(
@@ -180,12 +181,12 @@ import { decrement, increment, incrementByAmount } from '../store/counterSlice';
 }
 
 /**
- * Adds Redux counter functionality to Next.js App Router page component
+ * Adds Zustand counter functionality to Next.js App Router page component
  * @param {string} projectPath - Project root path
  * @param {Object} userChoices - User configuration options
  * @returns {void}
  */
-function addReduxCounterToNextjsAppPage(projectPath, userChoices) {
+function addZustandCounterToNextjsAppPage(projectPath, userChoices) {
   const ext = CORE_UTILS.getComponentExtension(userChoices);
   const pageFile = path.join(projectPath, "app", `page.${ext}`);
 
@@ -193,29 +194,28 @@ function addReduxCounterToNextjsAppPage(projectPath, userChoices) {
 
   let content = fs.readFileSync(pageFile, "utf-8");
 
-  // Add Redux imports after 'use client' directive if it exists
-  const reduxImports = `import { useAppSelector, useAppDispatch } from '../lib/hooks';\nimport { decrement, increment, incrementByAmount } from '../lib/features/counter/counterSlice';`;
+  // Add Zustand imports after 'use client' directive if it exists
+  const zustandImports = `import { useCounterStore } from '../lib/counterStore';`;
 
   // Find the position to insert imports
   if (content.includes("'use client'")) {
-    content = content.replace(/('use client';?\s*)/, `$1\n${reduxImports}\n`);
+    content = content.replace(/('use client';?\s*)/, `$1\n${zustandImports}\n`);
   } else {
     // Add 'use client' directive and imports at the top
-    content = `'use client';\n\n${reduxImports}\n\n${content}`;
+    content = `'use client';\n\n${zustandImports}\n\n${content}`;
   }
 
-  // Add Redux logic to the component
-  const reduxLogic = `  const count = useAppSelector((state) => state.counter.value);
-  const dispatch = useAppDispatch();`;
+  // Add Zustand logic to the component
+  const zustandLogic = `  const { count, increment, decrement, incrementByAmount } = useCounterStore();`;
 
-  // Replace the component function to include Redux logic - more flexible regex
+  // Replace the component function to include Zustand logic - more flexible regex
   content = content.replace(
     /(export default function Home\(\)\s*{)/,
-    `$1\n${reduxLogic}\n`,
+    `$1\n${zustandLogic}\n`,
   );
 
-  // Add Redux counter section to the component
-  const counterSection = createReduxCounterSection(userChoices);
+  // Add Zustand counter section to the component
+  const counterSection = createZustandCounterSection(userChoices);
 
   // Add the counter section before the closing tag - simpler insertion
   if (userChoices.styling === "styled-components") {
@@ -232,12 +232,12 @@ function addReduxCounterToNextjsAppPage(projectPath, userChoices) {
 }
 
 /**
- * Adds Redux counter functionality to Next.js Pages Router index page
+ * Adds Zustand counter functionality to Next.js Pages Router index page
  * @param {string} projectPath - Project root path
  * @param {Object} userChoices - User configuration options
  * @returns {void}
  */
-function addReduxCounterToNextjsPagesIndex(projectPath, userChoices) {
+function addZustandCounterToNextjsPagesIndex(projectPath, userChoices) {
   const ext = CORE_UTILS.getComponentExtension(userChoices);
   const indexFile = path.join(projectPath, "pages", `index.${ext}`);
 
@@ -245,8 +245,8 @@ function addReduxCounterToNextjsPagesIndex(projectPath, userChoices) {
 
   let content = fs.readFileSync(indexFile, "utf-8");
 
-  // Add Redux imports at the top (Pages Router doesn't need 'use client')
-  const reduxImports = `import { useAppSelector, useAppDispatch } from '../lib/hooks';\nimport { decrement, increment, incrementByAmount } from '../lib/features/counter/counterSlice';`;
+  // Add Zustand imports at the top (Pages Router doesn't need 'use client')
+  const zustandImports = `import { useCounterStore } from '../lib/counterStore';`;
 
   // Find where to insert imports
   if (content.includes("import")) {
@@ -255,35 +255,34 @@ function addReduxCounterToNextjsPagesIndex(projectPath, userChoices) {
     const endOfLastImport = content.indexOf("\n", lastImportIndex);
     content =
       content.slice(0, endOfLastImport + 1) +
-      reduxImports +
+      zustandImports +
       "\n" +
       content.slice(endOfLastImport + 1);
   } else {
     // Add at the top if no imports exist
-    content = reduxImports + "\n\n" + content;
+    content = zustandImports + "\n\n" + content;
   }
 
-  // Add Redux logic to the component
-  const reduxLogic = `  const count = useAppSelector((state) => state.counter.value);
-  const dispatch = useAppDispatch();`;
+  // Add Zustand logic to the component
+  const zustandLogic = `  const { count, increment, decrement, incrementByAmount } = useCounterStore();`;
 
-  // Replace the component function to include Redux logic - more flexible regex
+  // Replace the component function to include Zustand logic - more flexible regex
   content = content.replace(
     /(export default function Home\(\)\s*{)/,
-    `$1\n${reduxLogic}\n`,
+    `$1\n${zustandLogic}\n`,
   );
 
-  // Add Redux counter section to the component
-  const counterSection = createReduxCounterSection(userChoices);
+  // Add Zustand counter section to the component
+  const counterSection = createZustandCounterSection(userChoices);
 
-  // Add the counter section before the closing tag of the main/Container
+  // Add the counter section before the closing tag - simpler insertion
   if (userChoices.styling === "styled-components") {
-    content = content.replace(/(<\/Container>)/, `      ${counterSection}\n    $1`);
+    content = content.replace(/<\/Container>/, `${counterSection}\n    </Container>`);
   } else if (userChoices.styling === "tailwind") {
-    content = content.replace(/(<\/main>)/, `      ${counterSection}\n    $1`);
+    content = content.replace(/<\/main>/, `${counterSection}\n    </main>`);
   } else {
     // CSS styling
-    content = content.replace(/(<\/main>)/, `      ${counterSection}\n    $1`);
+    content = content.replace(/<\/main>/, `${counterSection}\n    </main>`);
   }
 
   // Write the updated content
@@ -291,30 +290,30 @@ function addReduxCounterToNextjsPagesIndex(projectPath, userChoices) {
 }
 
 /**
- * Creates a Redux counter section based on the styling choice
+ * Creates a Zustand counter section based on the styling choice
  * @param {Object} userChoices - User configuration options
  * @returns {string} - Counter section HTML/JSX
  */
-function createReduxCounterSection(userChoices) {
+function createZustandCounterSection(userChoices) {
   if (userChoices.styling === "tailwind") {
     return `<div className="mt-6">
-        <p className="text-gray-600 mb-4">Redux Counter Demo:</p>
+        <p className="text-gray-600 mb-4">Zustand Counter Demo:</p>
         <div className="flex gap-2">
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => dispatch(decrement())}
+            onClick={decrement}
           >
             -
           </button>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => dispatch(increment())}
+            onClick={increment}
           >
             count is {count}
           </button>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => dispatch(incrementByAmount(5))}
+            onClick={() => incrementByAmount(5)}
           >
             +5
           </button>
@@ -322,15 +321,15 @@ function createReduxCounterSection(userChoices) {
       </div>`;
   } else if (userChoices.styling === "styled-components") {
     return `<CounterSection>
-        <CounterDescription>Redux Counter Demo:</CounterDescription>
+        <CounterDescription>Zustand Counter Demo:</CounterDescription>
         <div>
-          <InteractiveButton onClick={() => dispatch(decrement())}>
+          <InteractiveButton onClick={decrement}>
             -
           </InteractiveButton>
-          <InteractiveButton onClick={() => dispatch(increment())}>
+          <InteractiveButton onClick={increment}>
             count is {count}
           </InteractiveButton>
-          <InteractiveButton onClick={() => dispatch(incrementByAmount(5))}>
+          <InteractiveButton onClick={() => incrementByAmount(5)}>
             +5
           </InteractiveButton>
         </div>
@@ -338,11 +337,11 @@ function createReduxCounterSection(userChoices) {
   } else {
     // CSS styling
     return `<div className="counter-section">
-        <p>Redux Counter Demo:</p>
+        <p>Zustand Counter Demo:</p>
         <div>
-          <button onClick={() => dispatch(decrement())}>-</button>
-          <button onClick={() => dispatch(increment())}>count is {count}</button>
-          <button onClick={() => dispatch(incrementByAmount(5))}>+5</button>
+          <button onClick={decrement}>-</button>
+          <button onClick={increment}>count is {count}</button>
+          <button onClick={() => incrementByAmount(5)}>+5</button>
         </div>
       </div>`;
   }

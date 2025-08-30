@@ -2,12 +2,12 @@ import fs from "fs-extra";
 import path from "path";
 
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
-import { setupApiManagement } from "../integrations/api-clients/index.js";
-import { createDirectoryStructure } from "../integrations/files/index.js";
-import { setupLinting } from "../integrations/linting/linting.js";
-import { setupStateManagement } from "../integrations/state-management/index.js";
-import { TestingSetup } from "../integrations/testing/index.js";
-import { setupTypeScript } from "../integrations/typescript/typescript.js";
+import { setupApiManagement } from "../features/api-clients/index.js";
+import { createDirectoryStructure } from "../features/files/index.js";
+import { setupLinting } from "../features/linting/linting.js";
+import { setupStateManagement } from "../features/state-management/index.js";
+import { TestingSetup } from "../features/testing/index.js";
+import { setupTypeScript } from "../features/typescript/typescript.js";
 import { UI_UTILS } from "../utils/index.js";
 
 /**

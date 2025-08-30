@@ -1,4 +1,4 @@
-import { TemplateEngine } from "../common/template-engine.js";
+import { TemplateEngine } from "./template-engine.js";
 import fs from "fs-extra";
 import path from "path";
 

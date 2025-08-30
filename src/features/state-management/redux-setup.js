@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 
 import { BaseStateSetup } from "./base-state-setup.js";
-import { createAppWithCounter } from "./templates/redux-counter-template.js";
+import { createAppWithCounter } from "../../templates/features/redux-counter-template.js";
 import { createCommonTemplateBuilder } from "../../templates/index.js";
 import { CORE_UTILS } from "../../utils/index.js";
 

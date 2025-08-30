@@ -2,11 +2,11 @@ import chalk from "chalk";
 import fs from "fs-extra";
 import path from "path";
 
-import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
-import generateProject from "../generators/index.js";
-import { promptUser, getFrameworkDefaults } from "../prompts/index.js";
-import { keyboardNavManager } from "../prompts/navigation/navigation-manager.js";
-import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "../utils/index.js";
+import { createErrorHandler, ERROR_TYPES } from "./errors/index.js";
+import generateProject from "./generators/index.js";
+import { promptUser, getFrameworkDefaults } from "./prompts/index.js";
+import { keyboardNavManager } from "./prompts/navigation/navigation-manager.js";
+import { CORE_UTILS, UI_UTILS, PROCESS_UTILS } from "./utils/index.js";
 
 /**
  * Build userChoices object from CLI options when --yes flag is used

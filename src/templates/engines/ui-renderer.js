@@ -1,4 +1,4 @@
-import { TemplateEngine } from "../common/template-engine.js";
+import { TemplateEngine } from "./template-engine.js";
 
 /**
  * Specialized UI renderer for console output

@@ -5,7 +5,7 @@ import { readFile } from "fs/promises";
 import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 
-import { createApp } from "../src/cli/index.js";
+import { createApp } from "../src/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

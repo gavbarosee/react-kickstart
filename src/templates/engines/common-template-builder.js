@@ -1,4 +1,4 @@
-import { FileTemplateEngine } from "../files/file-template-engine.js";
+import { FileTemplateEngine } from "./file-template-engine.js";
 import { CORE_UTILS } from "../../utils/index.js";
 
 /**
