@@ -16,7 +16,7 @@ Each step file handles a specific aspect of project configuration, presenting ch
 - `api-step.js` - API client setup options
 - `testing-step.js` - Testing framework selection
 - `routing-step.js` - Routing library choice (Vite only)
-- `nextjs-options-step.js` - Next.js specific options
+- `nextjs-routing-step.js` - Next.js routing options (app/pages router)
 - `package-manager-step.js` - Package manager selection
 - `code-quality-step.js` - Linting and formatting options
 - `git-step.js` - Git initialization choice

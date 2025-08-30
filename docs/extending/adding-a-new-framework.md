@@ -67,8 +67,8 @@ If your framework has its own router/pages system, mirror the Next.js logic by s
 
 #### 8) Content Generators for App/Entry Files
 
-- Files in `src/templates/content/`
-  - If entry/app file contents differ (import paths, root rendering, strict mode), add a new generator class and branch in `createContentGenerator(framework, routingType)` in `src/templates/content/index.js`.
+- Files in `src/templates/frameworks/`
+  - If entry/app file contents differ (import paths, root rendering, strict mode), add a new generator class and branch in `createContentGenerator(framework, routingType)` in `src/templates/frameworks/index.js`.
   - Use `ViteContentGenerator` and `Nextjs*RouterGenerator` as references.
 
 #### 9) Routing and Styling Hooks
@@ -124,9 +124,9 @@ QA Automation (must-do):
 - Runtime switch: `src/generators/index.js`
 - Dependencies and scripts: `src/builders/dependencies.js`, `src/builders/dependency-resolver.js`, `src/builders/package-json-builder.js`
 - Config writer: `src/builders/configuration-builder.js`
-- Content/HTML: `src/features/source-files/file-generator.js`, `src/templates/content/*`
+- Content/HTML: `src/features/project-files/file-generator.js`, `src/templates/frameworks/*`
 - Routing/Styling: `src/features/routing/*`, `src/features/styling/index.js`
 - Directory structure and info: `src/utils/core/directory-management.js`, `src/utils/core/project-analysis.js`
-- Completion docs/ports: `src/utils/ui/completion.js`
+- Completion docs/ports: `src/utils/ui/project-summary.js`
 
 With these edits, your framework will be fully selectable (if added to prompts), generate correct files, install the right dependencies, and run with accurate dev/build commands.

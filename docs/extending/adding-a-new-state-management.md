@@ -125,7 +125,7 @@ If your library needs custom component/store templates:
 
 - Files:
   - `src/templates/engines/common-template-builder.js` — add generation helpers for store and counter component snippets.
-  - `src/templates/content/features/<library>-counter-template.js` — optional helper to modify App/Home pages similarly to Redux/Zustand.
+  - `src/templates/features/<library>-counter-template.js` — optional helper to modify App/Home pages similarly to Redux/Zustand.
 
 MobX snippets conceptually:
 

@@ -138,7 +138,7 @@ Framework selection and generators: selection is handled in `src/generators/inde
 Feature modules that handle setup and integration for different aspects of the application:
 
 - `api-clients/`: API client setup (Axios, React Query, fetch) with base setup classes.
-- `source-files/`: File generation for core project files (HTML, entry, App component).
+- `project-files/`: File generation for core project files (HTML, entry, App component).
 - `routing/`: React Router setup for Vite.
 - `styling/`: CSS, Tailwind, styled-components setup with framework-specific nuances.
 - `state-management/`: Redux, Zustand scaffolding with base setup classes.
@@ -151,15 +151,15 @@ Feature modules that handle setup and integration for different aspects of the a
 Template engines and content generation for different frameworks and features:
 
 - `engines/`: Core template engines, builders, and rendering infrastructure.
-- `content/`: Framework-specific content generation strategies (Vite, Next.js App/Pages Router).
-- `content/features/`: Feature-specific templates (Redux, Zustand counter examples).
+- `frameworks/`: Framework-specific content generation strategies (Vite, Next.js App/Pages Router).
+- `features/`: Feature-specific templates (Redux, Zustand counter examples).
 
 ### src/errors/
 
 Centralized error handling and user-facing recovery guidance.
 
 - `error-handler.js`: Orchestrates handling and context.
-- `user-error-reporter.js`: Consistent, actionable messages.
+- `error-reporter.js`: Consistent, actionable messages.
 - `cleanup-manager.js`: Safe cleanup of partially generated projects.
 
 ### src/utils/
@@ -201,7 +201,7 @@ node qa-automation/test-runner.js edge 15
 - Add a feature: `src/features/*` + helpers in `src/templates/*` and `src/builders/*`.
 - Change prompts: `src/prompts/steps/*` and `src/prompts/prompt-flow.js`.
 - Tweak build scripts/deps: `src/builders/package-json-builder.js` and `src/builders/dependencies.js`.
-- Change dev server defaults/summary: `src/utils/ui/completion.js` and `src/utils/process/start-project.js`.
+- Change dev server defaults/summary: `src/utils/ui/project-summary.js` and `src/utils/process/dev-server.js`.
 
 ---
 

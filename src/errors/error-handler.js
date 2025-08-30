@@ -1,7 +1,7 @@
 import chalk from "chalk";
 
 import { CleanupManager } from "./cleanup-manager.js";
-import { UserErrorReporter } from "./user-error-reporter.js";
+import { UserErrorReporter } from "./error-reporter.js";
 
 /**
  * Centralized error handling system with consistent patterns

@@ -4,7 +4,7 @@ import path from "path";
 import { createErrorHandler, ERROR_TYPES } from "../errors/index.js";
 import { setupApiManagement } from "../features/api-clients/index.js";
 import { setupLinting } from "../features/linting/linting.js";
-import { createDirectoryStructure } from "../features/source-files/index.js";
+import { createDirectoryStructure } from "../features/project-files/index.js";
 import { setupStateManagement } from "../features/state-management/index.js";
 import { TestingSetup } from "../features/testing/index.js";
 import { setupTypeScript } from "../features/typescript/typescript.js";

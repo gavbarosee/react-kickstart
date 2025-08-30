@@ -5,7 +5,7 @@ import ora from "ora";
 import path from "path";
 
 import { createErrorHandler, ERROR_TYPES } from "../../errors/index.js";
-import { getFrameworkDocumentation } from "../ui/completion.js";
+import { getFrameworkDocumentation } from "../ui/project-summary.js";
 
 let devProcess = null;
 let isShuttingDown = false;

@@ -137,7 +137,7 @@ If needed, adjust placement rules by extending that method.
 - Files:
   - `src/templates/engines/common-template-builder.js`
   - `src/templates/engines/file-template-engine.js`
-  - `src/features/source-files/file-generator.js`
+  - `src/features/project-files/file-generator.js`
 
 Add/branch in the component and entry templates so generated projects demonstrate your styling option idiomatically:
 

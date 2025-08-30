@@ -1,7 +1,7 @@
 // Export error handling classes
 export { ErrorHandler } from "./error-handler.js";
 export { CleanupManager } from "./cleanup-manager.js";
-export { UserErrorReporter } from "./user-error-reporter.js";
+export { UserErrorReporter } from "./error-reporter.js";
 
 // Error types constants
 export const ERROR_TYPES = {
@@ -26,7 +26,7 @@ export const ERROR_SEVERITY = {
 // Import classes for factory functions
 import { CleanupManager } from "./cleanup-manager.js";
 import { ErrorHandler } from "./error-handler.js";
-import { UserErrorReporter } from "./user-error-reporter.js";
+import { UserErrorReporter } from "./error-reporter.js";
 
 // Factory function to create error handler
 export function createErrorHandler() {

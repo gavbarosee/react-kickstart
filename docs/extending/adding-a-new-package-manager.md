@@ -141,7 +141,7 @@ if (packageManager === "pnpm") return ["pnpm", script];
 if (packageManager === "bun") return ["bun", "run", script];
 ```
 
-- File: `src/utils/process/start-project.js`
+- File: `src/utils/process/dev-server.js`
 
 The start code builds a `dev` command string from a `pmRun` variable. Update that logic to map:
 
@@ -154,7 +154,7 @@ So dev becomes `"<pmRun> dev"` for all except npm where we already use `npm run`
 
 #### 6) Completion Summary Commands and Security Notes (Recommended)
 
-- File: `src/utils/ui/completion.js`
+- File: `src/utils/ui/project-summary.js`
 
 Update `getCommandExamples(packageManager, framework)` so examples show the correct prefix:
 
@@ -232,8 +232,8 @@ Add or update tests to avoid regressions and ensure meaningful coverage (no plac
 - Add detection helpers: `detectPnpm`, `detectBun` in `src/utils/process/package-managers.js` and include them in `detectPackageManagers(...)`.
 - Extend `formatPackageManagerChoices(...)` and `getDefaultPackageManager(...)` to account for new managers and recommendation order.
 - Update install mapping, parse helpers, and retry switching in `src/utils/process/package-managers.js`.
-- Update script mapping in `getPackageManagerCommand(...)` and dev command construction in `src/utils/process/start-project.js`.
-- Update command examples and audit notes in `src/utils/ui/completion.js`.
+- Update script mapping in `getPackageManagerCommand(...)` and dev command construction in `src/utils/process/dev-server.js`.
+- Update command examples and audit notes in `src/utils/ui/project-summary.js`.
 - Update build command mapping in `src/builders/package-json-builder.js#getBuildCommand`.
 - Expand QA matrix in `qa-automation/test-matrix-generator.js` and re-run automation.
 - Add targeted unit tests for detection and command mapping.

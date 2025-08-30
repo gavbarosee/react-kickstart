@@ -6,7 +6,7 @@ import { EditorStep } from "./steps/editor-step.js";
 import { FrameworkStep } from "./steps/framework-step.js";
 import { GitStep } from "./steps/git-step.js";
 import { LanguageStep } from "./steps/language-step.js";
-import { NextjsOptionsStep } from "./steps/nextjs-options-step.js";
+import { NextjsOptionsStep } from "./steps/nextjs-routing-step.js";
 import { PackageManagerStep } from "./steps/package-manager-step.js";
 import { RoutingStep } from "./steps/routing-step.js";
 import { StateManagementStep } from "./steps/state-management-step.js";

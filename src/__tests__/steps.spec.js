@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { FrameworkStep } from "../prompts/steps/framework-step.js";
 import { LanguageStep } from "../prompts/steps/language-step.js";
-import { NextjsOptionsStep } from "../prompts/steps/nextjs-options-step.js";
+import { NextjsOptionsStep } from "../prompts/steps/nextjs-routing-step.js";
 import { PackageManagerStep } from "../prompts/steps/package-manager-step.js";
 import { RoutingStep } from "../prompts/steps/routing-step.js";
 

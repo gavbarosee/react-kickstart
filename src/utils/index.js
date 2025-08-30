@@ -13,12 +13,12 @@ import * as fileExtensions from "./core/file-extensions.js";
 import * as filesystem from "./core/filesystem.js";
 import * as projectAnalysis from "./core/project-analysis.js";
 import * as validation from "./core/validation.js";
+import * as devServer from "./process/dev-server.js";
 import * as editor from "./process/editor.js";
 import * as git from "./process/git.js";
 import * as packageManagers from "./process/package-managers.js";
-import * as startProject from "./process/start-project.js";
-import * as completion from "./ui/completion.js";
 import * as uiLogging from "./ui/logging.js";
+import * as projectSummary from "./ui/project-summary.js";
 import * as summary from "./ui/summary.js";
 
 // ============================================================================
@@ -67,7 +67,7 @@ export const PROCESS_UTILS = {
   ...editor,
 
   // Development server utilities
-  ...startProject,
+  ...devServer,
 
   // Convenience aliases
   installDependencies: packageManagers.installDependenciesWithRetry,
@@ -82,5 +82,5 @@ export const UI_UTILS = {
 
   // Summary and completion utilities
   ...summary,
-  ...completion,
+  ...projectSummary,
 };

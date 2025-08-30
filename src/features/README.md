@@ -5,7 +5,7 @@ Feature integration and setup modules for React applications.
 ## Structure
 
 - `api-clients/` - API client setup (Axios, React Query, fetch)
-- `source-files/` - File and directory structure creation
+- `project-files/` - File and directory structure creation
 - `linting/` - ESLint and code quality setup
 - `routing/` - React Router integration
 - `state-management/` - Redux and Zustand store setup
