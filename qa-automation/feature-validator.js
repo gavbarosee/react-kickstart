@@ -4,8 +4,9 @@
  */
 
 import { existsSync, readFileSync, mkdirSync, rmSync } from "fs";
-import { join } from "path";
+import { join, resolve, dirname } from "path";
 import { execSync } from "child_process";
+import { fileURLToPath } from "url";
 
 class FeatureValidator {
   constructor(testDir = "qa-test-projects") {
@@ -18,7 +19,7 @@ class FeatureValidator {
 
     const tests = [
       {
-        name: "Vite-Defaults",
+        name: "vite-defaults",
         framework: "vite",
         expectedFeatures: {
           javascript: true,
@@ -29,7 +30,7 @@ class FeatureValidator {
         },
       },
       {
-        name: "NextJS-Defaults",
+        name: "nextjs-defaults",
         framework: "nextjs",
         expectedFeatures: {
           javascript: true,
@@ -91,8 +92,12 @@ class FeatureValidator {
 
     try {
       // Run CLI with defaults
+      const __dirname = dirname(fileURLToPath(import.meta.url));
+      const repoRoot = resolve(__dirname, "..");
+      const cliPath = resolve(repoRoot, "bin/react-kickstart.js");
+
       execSync(
-        `node ../bin/react-kickstart.js ${name} --yes --framework ${framework} --no-autostart`,
+        `node ${cliPath} ${name} --yes --framework ${framework} --no-autostart`,
         {
           cwd: testDirPath,
           stdio: "pipe",
