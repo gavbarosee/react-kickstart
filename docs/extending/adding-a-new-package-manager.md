@@ -2,7 +2,7 @@
 
 This guide explains how to integrate an additional package manager into react-kickstart so it can be detected, selected in prompts/CLI, used to install dependencies, run scripts, show next-step commands, and be included in QA automation.
 
-Use npm and Yarn as reference implementations. Target examples below assume adding `pnpm` and `bun`.
+**Current Status**: The codebase currently supports npm and yarn only. Use these as reference implementations. Target examples below assume adding `pnpm` and `bun`.
 
 #### 1) Detection and Metadata (Required)
 
@@ -10,9 +10,11 @@ Use npm and Yarn as reference implementations. Target examples below assume addi
 - Extend the managers map in `detectPackageManagers(...)` to include your new tool(s):
 
 ```js
+// Current implementation only includes npm and yarn:
 const managers = {
   npm: { available: false, version: null, recommended: false, error: null },
   yarn: { available: false, version: null, recommended: false, error: null },
+  // To add pnpm and bun, extend like this:
   pnpm: { available: false, version: null, recommended: false, error: null },
   bun: { available: false, version: null, recommended: false, error: null },
 };
@@ -196,7 +198,8 @@ The CLI already accepts `--package-manager`. Consider validating that its value 
 Add new managers to `CONFIG_OPTIONS.packageManager`, e.g.:
 
 ```js
-packageManager: ["npm", "yarn", "pnpm", "bun"],
+packageManager: ["npm", "yarn"], // Current implementation
+// To add more: ["npm", "yarn", "pnpm", "bun"],
 ```
 
 Optionally adjust `calculatePriorityScore(...)` to weight commonly used managers higher.
@@ -239,11 +242,3 @@ Add or update tests to avoid regressions and ensure meaningful coverage (no plac
 - Add targeted unit tests for detection and command mapping.
 
 With these edits, your new package manager will be detected, selectable in prompts and CLI, used for installs and script execution, reflected in next-step guidance, and validated by QA.
-
-### Adding a New Package Manager (e.g., pnpm, Bun)
-
-This guide explains how to integrate an additional package manager into react-kickstart so it can be detected, selected in prompts/CLI, used to install dependencies, run scripts, show next-step commands, and be included in QA automation.
-
-Use npm and Yarn as reference implementations. Target examples below assume adding `pnpm` and `bun`.
-
-... (content identical to original doc moved from docs/adding-a-new-package-manager.md) ...

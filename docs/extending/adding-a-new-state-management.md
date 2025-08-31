@@ -245,7 +245,3 @@ Write focused tests that verify:
 - Expand QA matrix and run automation; add unit tests.
 
 With these edits, your new state library (e.g., MobX) will be selectable, install the correct dependencies, scaffold example usage, and be validated by automation.
-
-### Adding a New State Management Library (e.g., MobX, Jotai, Recoil)
-
-... (content identical to original doc moved from docs/adding-a-new-state-management.md) ...

@@ -229,7 +229,3 @@ Write focused tests (no placeholders) that verify:
 - Add unit tests to prevent regressions.
 
 With these edits, your styling option will be selectable, install the right packages, generate proper files/configs, and be covered by QA with meaningful tests.
-
-### Adding a New Styling Option (e.g., Sass, Emotion, CSS Modules)
-
-... (content identical to original doc moved from docs/adding-a-new-styling-option.md) ...

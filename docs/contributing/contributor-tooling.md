@@ -82,10 +82,10 @@ npx husky add .husky/pre-commit "npx lint-staged"
 ### Commit message linting (Commitlint)
 
 - Dev deps include `@commitlint/cli` and `@commitlint/config-conventional`
-- To enforce conventional commits, add a Commitlint config (e.g. `commitlint.config.cjs`) and a Husky `commit-msg` hook:
+- Commitlint config already exists at `commitlint.config.js` with conventional commit rules
+- To add the Husky `commit-msg` hook if not present:
 
 ```bash
-echo "export default { extends: ['@commitlint/config-conventional'] };" > commitlint.config.js
 npx husky add .husky/commit-msg "npx commitlint --edit $1"
 ```
 
