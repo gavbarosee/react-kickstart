@@ -41,6 +41,11 @@ program
   )
   .option("--testing <testing>", "Testing framework (vitest, jest, none)", "none")
   .option(
+    "--deployment <deployment>",
+    "Deployment platform (vercel, netlify, none)",
+    "none",
+  )
+  .option(
     "--routing <routing>",
     "Routing library (react-router, none) - Vite only",
     "none",

@@ -213,6 +213,16 @@ export function validateUserChoices(userChoices) {
     );
   }
 
+  // Validate deployment
+  const validDeployment = ["none", "vercel", "netlify"];
+  if (userChoices.deployment && !validDeployment.includes(userChoices.deployment)) {
+    errors.push(
+      `Invalid deployment option: ${
+        userChoices.deployment
+      }. Must be one of: ${validDeployment.join(", ")}`,
+    );
+  }
+
   // Validate editor
   const validEditors = ["vscode", "cursor"];
   if (userChoices.openEditor && !validEditors.includes(userChoices.editor)) {

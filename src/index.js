@@ -24,6 +24,7 @@ function buildUserChoicesFromOptions(options) {
     stateManagement: options.state || "none",
     api: options.api || "none",
     testing: options.testing || "none",
+    deployment: options.deployment || "none",
     routing: options.routing || (framework === "vite" ? "none" : undefined),
     nextRouting: options.nextRouting || (framework === "nextjs" ? "app" : undefined),
     packageManager: options.packageManager || "npm",
