@@ -230,6 +230,8 @@ export async function createApp(projectDirectory, options = {}) {
         if (await fs.pathExists(markerPath)) {
           await fs.remove(markerPath);
         }
+        // Mark project as completed - no longer needs cleanup on cancellation
+        errorHandler.setContext({ shouldCleanup: false });
       } catch {}
     },
     {

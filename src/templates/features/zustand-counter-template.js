@@ -65,10 +65,36 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
 
   // Add the imports after existing imports
   if (userChoices.typescript) {
-    content = content.replace(
-      /import React from 'react';/,
-      `import React from 'react';\n${zustandImports}`,
-    );
+    // Check if React is already imported to avoid duplicates
+    if (content.includes("import React from 'react';")) {
+      // Find all imports and add Zustand imports after the last one
+      const allImports = content.match(/import.*?from.*?;/g);
+      if (allImports && allImports.length > 0) {
+        const lastImport = allImports[allImports.length - 1];
+        const lastImportIndex = content.lastIndexOf(lastImport);
+        const lastImportEnd = lastImportIndex + lastImport.length;
+        content =
+          content.slice(0, lastImportEnd) +
+          `\n${zustandImports}` +
+          content.slice(lastImportEnd);
+      } else {
+        // Fallback: add after the first React import
+        content = content.replace(
+          /import React from 'react';/,
+          `import React from 'react';\n${zustandImports}`,
+        );
+      }
+    } else {
+      // No React import exists, add both
+      if (content.includes("import")) {
+        content = content.replace(
+          /(import.*?\n)/,
+          `import React from 'react';\n${zustandImports}\n$1`,
+        );
+      } else {
+        content = `import React from 'react';\n${zustandImports}\n\n${content}`;
+      }
+    }
   } else {
     // If no React import, add at the top
     if (content.includes("import")) {
@@ -78,15 +104,78 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
     }
   }
 
+  // Add styled components for counter if using styled-components
+  if (userChoices.styling === "styled-components") {
+    // Add the new styled components after existing ones
+    const styledComponents = `
+const CounterSection = styled.div\`
+  margin-top: 2rem;
+\`;
+
+const CounterDescription = styled.p\`
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+\`;
+
+const CounterContainer = styled.div\`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+\`;
+
+const ButtonRow = styled.div\`
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+\`;
+
+const CountDisplay = styled.span\`
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  padding: 0.5rem 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.25rem;
+  min-width: 80px;
+  text-align: center;
+\`;`;
+
+    // Find the last styled component and add our new ones after it
+    const lastStyledComponentMatch = content.match(
+      /const \w+ = styled\.\w+`[\s\S]*?`;/g,
+    );
+    if (lastStyledComponentMatch && lastStyledComponentMatch.length > 0) {
+      const lastStyledComponent =
+        lastStyledComponentMatch[lastStyledComponentMatch.length - 1];
+      const lastStyledIndex = content.lastIndexOf(lastStyledComponent);
+      const lastStyledEnd = lastStyledIndex + lastStyledComponent.length;
+      content =
+        content.slice(0, lastStyledEnd) +
+        styledComponents +
+        content.slice(lastStyledEnd);
+    }
+  }
+
   // Add Zustand logic to the component
   const zustandLogic = `  const { count, increment, decrement, incrementByAmount } = useCounterStore();`;
 
   // Replace the useState logic with Zustand logic
   if (content.includes("useState")) {
-    content = content.replace(
-      /import { useState } from 'react';/,
-      "import React from 'react';", // Remove useState, keep React if needed
-    );
+    // Remove useState import, but only add React import if it doesn't already exist
+    content = content.replace(/import { useState } from 'react';\n?/, "");
+
+    // Only add React import if it's not already there
+    if (!content.includes("import React from 'react';")) {
+      // Find the first import and add React import before it
+      if (content.includes("import")) {
+        content = content.replace(/(import.*?\n)/, `import React from 'react';\n$1`);
+      } else {
+        content = `import React from 'react';\n\n${content}`;
+      }
+    }
+
     content = content.replace(
       /const \[count, setCount\] = useState\(0\);/,
       zustandLogic,
@@ -114,39 +203,36 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
     if (userChoices.styling === "styled-components") {
       content = content.replace(
         /(<div>\s*<InteractiveButton[^>]*>[\s\S]*?<\/InteractiveButton>\s*<\/div>)/,
-        `<div>
-          <InteractiveButton onClick={decrement}>
-            -
-          </InteractiveButton>
-          <InteractiveButton onClick={increment}>
-            count is {count}
-          </InteractiveButton>
-          <InteractiveButton onClick={() => incrementByAmount(5)}>
-            +5
-          </InteractiveButton>
-        </div>`,
+        `<CounterContainer>
+          <ButtonRow>
+            <InteractiveButton onClick={decrement}>
+              -
+            </InteractiveButton>
+            <CountDisplay>count is {count}</CountDisplay>
+            <InteractiveButton onClick={increment}>
+              +
+            </InteractiveButton>
+          </ButtonRow>
+        </CounterContainer>`,
       );
     } else if (userChoices.styling === "tailwind") {
       content = content.replace(
         /(<div>\s*<button[^>]*>[\s\S]*?<\/button>\s*<\/div>)/,
-        `<div className="flex gap-2">
+        `<div className="flex gap-2 items-center">
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             onClick={decrement}
           >
             -
           </button>
+          <span className="px-4 py-2 bg-gray-100 rounded text-gray-700 font-semibold min-w-20 text-center">
+            count is {count}
+          </span>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             onClick={increment}
           >
-            count is {count}
-          </button>
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => incrementByAmount(5)}
-          >
-            +5
+            +
           </button>
         </div>`,
       );
@@ -154,10 +240,10 @@ function addZustandCounterToHomePage(projectPath, userChoices) {
       // CSS styling
       content = content.replace(
         /(<div>\s*<button[^>]*>[\s\S]*?<\/button>\s*<\/div>)/,
-        `<div>
+        `<div style="display: flex; gap: 0.75rem; align-items: center;">
           <button onClick={decrement}>-</button>
-          <button onClick={increment}>count is {count}</button>
-          <button onClick={() => incrementByAmount(5)}>+5</button>
+          <span style="padding: 0.5rem 1rem; background-color: #f3f4f6; border-radius: 0.25rem; font-weight: 600;">count is {count}</span>
+          <button onClick={increment}>+</button>
         </div>`,
       );
     }
@@ -294,50 +380,47 @@ function createZustandCounterSection(userChoices) {
   if (userChoices.styling === "tailwind") {
     return `<div className="mt-6">
         <p className="text-gray-600 mb-4">Zustand Counter Demo:</p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             onClick={decrement}
           >
             -
           </button>
+          <span className="px-4 py-2 bg-gray-100 rounded text-gray-700 font-semibold min-w-20 text-center">
+            count is {count}
+          </span>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             onClick={increment}
           >
-            count is {count}
-          </button>
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => incrementByAmount(5)}
-          >
-            +5
+            +
           </button>
         </div>
       </div>`;
   } else if (userChoices.styling === "styled-components") {
     return `<CounterSection>
         <CounterDescription>Zustand Counter Demo:</CounterDescription>
-        <div>
-          <InteractiveButton onClick={decrement}>
-            -
-          </InteractiveButton>
-          <InteractiveButton onClick={increment}>
-            count is {count}
-          </InteractiveButton>
-          <InteractiveButton onClick={() => incrementByAmount(5)}>
-            +5
-          </InteractiveButton>
-        </div>
+        <CounterContainer>
+          <ButtonRow>
+            <InteractiveButton onClick={decrement}>
+              -
+            </InteractiveButton>
+            <CountDisplay>count is {count}</CountDisplay>
+            <InteractiveButton onClick={increment}>
+              +
+            </InteractiveButton>
+          </ButtonRow>
+        </CounterContainer>
       </CounterSection>`;
   } else {
     // CSS styling
     return `<div className="counter-section">
         <p>Zustand Counter Demo:</p>
-        <div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
           <button onClick={decrement}>-</button>
-          <button onClick={increment}>count is {count}</button>
-          <button onClick={() => incrementByAmount(5)}>+5</button>
+          <span style="padding: 0.5rem 1rem; background-color: #f3f4f6; border-radius: 0.25rem; font-weight: 600;">count is {count}</span>
+          <button onClick={increment}>+</button>
         </div>
       </div>`;
   }

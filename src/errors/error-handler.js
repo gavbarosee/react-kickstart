@@ -229,8 +229,9 @@ export class ErrorHandler {
       await this.cleanupManager.cleanup(this.context.projectPath, {
         reason: isUserCancelled ? "user_cancelled" : `${reason}_error`,
         verbose: options.verbose,
-        // On user cancellation, force cleanup for newly created empty dirs
-        force: isUserCancelled === true,
+        // Only force cleanup if we explicitly marked shouldCleanup during setup
+        // This prevents deleting completed projects on user cancellation
+        force: isUserCancelled === true && this.context.shouldCleanup === true,
       });
     }
   }

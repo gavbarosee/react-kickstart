@@ -75,7 +75,16 @@ export class BaseStateSetup {
    * Utility: Get styling classes for components
    */
   getStylingClasses(userChoices) {
-    if (userChoices.styling !== "tailwind") {
+    if (userChoices.styling === "styled-components") {
+      return {
+        container: "",
+        title: "",
+        buttonRow: "",
+        count: "",
+        button: (_color) => "",
+        fullButton: "",
+      };
+    } else if (userChoices.styling !== "tailwind") {
       return {
         container: "",
         title: "",
@@ -128,6 +137,106 @@ export class BaseStateSetup {
     const styles = this.getStylingClasses(userChoices);
     const useClientDirective = this.framework === "nextjs" ? "'use client';\n\n" : "";
     const reactImport = userChoices.typescript ? "import React from 'react';\n" : "";
+
+    if (userChoices.styling === "styled-components") {
+      return `${useClientDirective}${reactImport}${imports}
+import styled from 'styled-components';
+
+const CounterContainer = styled.div\`
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  margin: 1rem auto;
+  max-width: 20rem;
+  text-align: center;
+\`;
+
+const CounterTitle = styled.h2\`
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  margin-top: 0;
+\`;
+
+const ButtonRow = styled.div\`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+\`;
+
+const CountDisplay = styled.span\`
+  font-size: 1.5rem;
+  font-weight: bold;
+  min-width: 3rem;
+  display: inline-block;
+\`;
+
+const CounterButton = styled.button\`
+  padding: 0.5rem 1rem;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  
+  &:hover {
+    opacity: 0.9;
+  }
+\`;
+
+const DecrementButton = styled(CounterButton)\`
+  background-color: #ef4444;
+  
+  &:hover {
+    background-color: #dc2626;
+  }
+\`;
+
+const IncrementButton = styled(CounterButton)\`
+  background-color: #3b82f6;
+  
+  &:hover {
+    background-color: #2563eb;
+  }
+\`;
+
+const AddButton = styled(CounterButton)\`
+  background-color: #10b981;
+  width: 100%;
+  margin-top: 0.5rem;
+  
+  &:hover {
+    background-color: #059669;
+  }
+\`;
+
+export function Counter() {
+${storeLogic}
+
+  return (
+    <CounterContainer>
+      <CounterTitle>${title}</CounterTitle>
+      <ButtonRow>
+        <DecrementButton onClick={${this.getDecrementHandler()}}>
+          -
+        </DecrementButton>
+        <CountDisplay>{${this.getCountValue()}}</CountDisplay>
+        <IncrementButton onClick={${this.getIncrementHandler()}}>
+          +
+        </IncrementButton>
+      </ButtonRow>
+      <AddButton onClick={${this.getIncrementByAmountHandler()}}>
+        Add 5
+      </AddButton>
+    </CounterContainer>
+  );
+}
+`;
+    }
 
     return `${useClientDirective}${reactImport}${imports}
   
