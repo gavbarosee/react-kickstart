@@ -17,6 +17,8 @@
     "format:check": "prettier --check .",
     "qa:critical": "node qa-automation/test-runner.js critical",
     "qa:standard": "node qa-automation/test-runner.js standard",
+    "qa:edge": "node qa-automation/test-runner.js edge",
+    "qa:quick": "node qa-automation/test-runner.js critical 5",
     "prepare": "husky"
   },
   "keywords": [

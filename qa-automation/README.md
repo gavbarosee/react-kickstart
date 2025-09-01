@@ -53,7 +53,7 @@ Each test validates that the generated project:
 - **Build System**: Project builds successfully
 - **Scripts**: npm/yarn scripts execute properly
 - **Linting**: ESLint configuration when enabled
-- **Testing**: Test framework setup when enabled
+- **Testing**: Test framework setup when enabled **AND tests pass**
 - **Feature Integration**: All selected features work together
 
 ## No False Positives
@@ -61,9 +61,11 @@ Each test validates that the generated project:
 The test suite is designed to **only pass when features actually work**:
 
 - Tests build the generated project to ensure it compiles
+- **Runs the test suite to ensure all tests pass**
 - Validates all dependencies are properly installed
 - Checks configuration files exist and are valid
 - Verifies feature-specific setup (Redux store, API clients, etc.)
+- Validates Next.js font mocking works correctly
 
 ## Results
 

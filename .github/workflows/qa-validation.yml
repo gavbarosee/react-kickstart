@@ -1,0 +1,113 @@
+name: QA Validation
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  critical-tests:
+    name: Critical QA Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run critical QA tests
+        run: node qa-automation/test-runner.js critical 15
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-test-reports-critical
+          path: qa-automation/reports/
+          retention-days: 7
+
+  comprehensive-tests:
+    name: Comprehensive QA Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Only run on main branch to avoid overwhelming CI
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run comprehensive QA tests
+        run: node qa-automation/test-runner.js standard 50
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qa-test-reports-comprehensive
+          path: qa-automation/reports/
+          retention-days: 30
+
+  test-validation-summary:
+    name: Test Validation Summary
+    runs-on: ubuntu-latest
+    needs: [critical-tests]
+    if: always()
+
+    steps:
+      - name: Download test reports
+        uses: actions/download-artifact@v4
+        with:
+          name: qa-test-reports-critical
+          path: reports/
+
+      - name: Generate summary
+        run: |
+          echo "## 🧪 QA Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Find the latest report
+          LATEST_REPORT=$(ls -t reports/*.json | head -n1)
+
+          if [ -f "$LATEST_REPORT" ]; then
+            # Extract key metrics from JSON report
+            TOTAL=$(jq '.summary.totalTests' "$LATEST_REPORT")
+            SUCCESSFUL=$(jq '.summary.successfulTests' "$LATEST_REPORT")
+            FAILED=$(jq '.summary.failedTests' "$LATEST_REPORT")
+            SUCCESS_RATE=$(jq '.summary.successRate' "$LATEST_REPORT")
+            
+            echo "- **Total Tests**: $TOTAL" >> $GITHUB_STEP_SUMMARY
+            echo "- **Successful**: ✅ $SUCCESSFUL" >> $GITHUB_STEP_SUMMARY
+            echo "- **Failed**: ❌ $FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "- **Success Rate**: $SUCCESS_RATE%" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "$FAILED" -gt 0 ]; then
+              echo "### ❌ Failed Tests" >> $GITHUB_STEP_SUMMARY
+              jq -r '.results[] | select(.success == false) | "- **\(.testName)**: \(.error.message // "Unknown error")"' "$LATEST_REPORT" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "### ✅ All Tests Passed!" >> $GITHUB_STEP_SUMMARY
+              echo "Generated projects are working correctly across all tested configurations." >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "❌ No test reports found" >> $GITHUB_STEP_SUMMARY
+          fi

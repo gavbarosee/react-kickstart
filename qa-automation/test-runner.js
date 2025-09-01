@@ -442,18 +442,31 @@ class TestRunner {
       // Test test script (if testing enabled)
       if (config.testing && config.testing !== "none") {
         try {
-          await this.runWithTimeout("npm run test -- --run", {}, 30000);
+          // For Vitest, use --run flag to avoid watch mode
+          // For Jest, it runs once by default
+          const testCommand =
+            config.testing === "vitest" ? "npm run test -- --run" : "npm test";
+
+          await this.runWithTimeout(testCommand, {}, 45000); // Increased timeout for test execution
           validation.testWorks = true;
+          validation.testsPass = true;
         } catch (error) {
-          if (!error.message.includes("command not found")) {
-            validation.testWorks = true; // Script exists
-          } else {
+          if (error.message.includes("command not found")) {
             validation.issues.push(`Test script missing: ${error.message}`);
+            validation.testWorks = false;
+          } else {
+            // Test script exists but tests are failing
+            validation.testWorks = true; // Script exists
+            validation.testsPass = false; // But tests fail
+            validation.issues.push(`Tests failed: ${error.message.split("\n")[0]}`); // First line of error
           }
         }
       }
 
-      validation.scriptsWork = validation.buildWorks;
+      // Overall validation requires build to work and tests to pass (if testing enabled)
+      validation.scriptsWork =
+        validation.buildWorks &&
+        (config.testing === "none" || validation.testsPass !== false);
     } finally {
       process.chdir(originalCwd);
     }
@@ -577,7 +590,7 @@ class TestRunner {
     return (
       validationResult.projectExists &&
       validationResult.packageJsonExists &&
-      validationResult.buildWorks &&
+      validationResult.scriptsWork && // This now includes both build and test passing
       validationResult.issues.length === 0
     );
   }
