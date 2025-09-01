@@ -18,25 +18,40 @@ export class DeploymentStep extends BaseStep {
   getChoices(answers) {
     const choices = [];
 
-    // Vercel - excellent for Next.js, good for Vite
-    choices.push({
-      name:
-        chalk.blue("Vercel") +
-        (answers.framework === "nextjs" ? chalk.dim(" (Recommended)") : ""),
-      value: "vercel",
-      description: "Zero-config deployments with excellent Next.js integration",
-    });
+    // Reorder choices based on framework to put recommended option first
+    if (answers.framework === "vite") {
+      // Netlify first for Vite (recommended)
+      choices.push({
+        name: chalk.green("Netlify") + chalk.dim(" (Recommended)"),
+        value: "netlify",
+        description: "Powerful platform with great build optimization",
+      });
 
-    // Netlify - great for both frameworks
-    choices.push({
-      name:
-        chalk.green("Netlify") +
-        (answers.framework === "vite" ? chalk.dim(" (Recommended)") : ""),
-      value: "netlify",
-      description: "Powerful platform with great build optimization",
-    });
+      // Vercel second for Vite
+      choices.push({
+        name: chalk.blue("Vercel"),
+        value: "vercel",
+        description: "Zero-config deployments with excellent Next.js integration",
+      });
+    } else {
+      // Vercel first for Next.js and other frameworks (recommended for Next.js)
+      choices.push({
+        name:
+          chalk.blue("Vercel") +
+          (answers.framework === "nextjs" ? chalk.dim(" (Recommended)") : ""),
+        value: "vercel",
+        description: "Zero-config deployments with excellent Next.js integration",
+      });
 
-    // Skip option
+      // Netlify second for non-Vite frameworks
+      choices.push({
+        name: chalk.green("Netlify"),
+        value: "netlify",
+        description: "Powerful platform with great build optimization",
+      });
+    }
+
+    // Skip option always last
     choices.push({
       name: chalk.gray("Skip deployment setup"),
       value: "none",
@@ -56,14 +71,8 @@ export class DeploymentStep extends BaseStep {
       return choices.findIndex((c) => c.value === answers.deployment);
     }
 
-    // Framework-optimized defaults
-    if (answers.framework === "nextjs") {
-      return 0; // Vercel for Next.js
-    } else if (answers.framework === "vite") {
-      return 1; // Netlify for Vite
-    }
-
-    return 0; // Default to Vercel
+    // With the reordered choices, the recommended option is always first (index 0)
+    return 0;
   }
 
   getNextStep(selection, answers) {

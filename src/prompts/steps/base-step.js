@@ -99,11 +99,10 @@ export class BaseStep {
       this.totalSteps,
       this.title,
       this.icon,
-    );
-
-    // Get choices and add back option if we can go back
+    ); // Get choices and calculate default BEFORE modifying choices array
     const choices = this.getChoices(answers);
     const canGoBack = this.navigator.canGoBack();
+    const defaultIndex = this.getDefault(answers);
 
     if (canGoBack) {
       choices.push(this.renderer.createSeparator());
@@ -120,7 +119,7 @@ export class BaseStep {
     const selection = await this.promptWithKeyboardNavigation({
       message: message,
       choices: choices,
-      default: this.getDefault(answers),
+      default: defaultIndex,
       canGoBack: canGoBack,
     });
 
