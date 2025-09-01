@@ -605,6 +605,8 @@ module.exports = createJestConfig(customJestConfig);
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': 'jest-transform-stub',
   },
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}',
@@ -618,11 +620,11 @@ module.exports = createJestConfig(customJestConfig);
 `;
     }
 
-    const configPath = path.join(projectPath, "jest.config.js");
+    const configPath = path.join(projectPath, "jest.config.cjs");
     fs.writeFileSync(configPath, jestConfig);
 
     return {
-      file: "jest.config.js",
+      file: "jest.config.cjs",
       content: jestConfig,
     };
   }
@@ -633,11 +635,51 @@ module.exports = createJestConfig(customJestConfig);
   generateTestSetupFile(projectPath, userChoices) {
     const isTypeScript = userChoices.typescript;
     const fileExt = isTypeScript ? "ts" : "js";
+    const isNextJs = userChoices.framework === "nextjs";
+    const isVitest = userChoices.testing === "vitest";
 
     const setupContent = `import '@testing-library/jest-dom';
 
 // Global test setup
 // Add any global test configuration here
+${
+  isNextJs
+    ? `
+// Mock Next.js fonts for testing
+${isVitest ? "vi" : "jest"}.mock('next/font/google', () => ({
+  Inter: () => ({
+    style: { fontFamily: 'Inter, sans-serif' },
+    className: 'inter-font'
+  }),
+  Roboto: () => ({
+    style: { fontFamily: 'Roboto, sans-serif' },
+    className: 'roboto-font'
+  }),
+  // Add other fonts as needed
+}));
+
+// Mock Next.js router for testing
+${isVitest ? "vi" : "jest"}.mock('next/router', () => ({
+  useRouter: () => ({
+    route: '/',
+    pathname: '/',
+    query: {},
+    asPath: '/',
+    push: ${isVitest ? "vi" : "jest"}.fn(),
+    replace: ${isVitest ? "vi" : "jest"}.fn(),
+    reload: ${isVitest ? "vi" : "jest"}.fn(),
+    back: ${isVitest ? "vi" : "jest"}.fn(),
+    prefetch: ${isVitest ? "vi" : "jest"}.fn(),
+    beforePopState: ${isVitest ? "vi" : "jest"}.fn(),
+    events: {
+      on: ${isVitest ? "vi" : "jest"}.fn(),
+      off: ${isVitest ? "vi" : "jest"}.fn(),
+      emit: ${isVitest ? "vi" : "jest"}.fn(),
+    },
+  }),
+}));`
+    : ""
+}
 `;
 
     // Ensure test directory exists

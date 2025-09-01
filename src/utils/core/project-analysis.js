@@ -247,7 +247,7 @@ export function getConfigurationFiles(
       });
     } else if (testing === "jest") {
       configs.push({
-        label: "jest.config.js",
+        label: "jest.config.cjs",
         description: "Jest testing configuration",
       });
     }

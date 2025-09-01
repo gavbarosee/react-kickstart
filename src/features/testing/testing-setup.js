@@ -58,19 +58,31 @@ export class TestingSetup {
    */
   generateExampleComponentTest(testFrameworkImport, fileExt, isTypeScript) {
     const isNextJs = this.userChoices.framework === "nextjs";
-    const appImportPath = isNextJs ? "../pages/_app" : "../App";
-    const componentName = isNextJs ? "MyApp" : "App";
+    const isNextJsPagesRouter = isNextJs && this.userChoices.nextRouting === "pages";
+    const isNextJsAppRouter = isNextJs && this.userChoices.nextRouting === "app";
+
+    let appImportPath, componentName;
+    if (isNextJsPagesRouter) {
+      appImportPath = "../../pages/_app";
+      componentName = "MyApp";
+    } else if (isNextJsAppRouter) {
+      appImportPath = "../../app/page";
+      componentName = "Page";
+    } else {
+      appImportPath = "../App";
+      componentName = "App";
+    }
     const hasStateManagement =
       this.userChoices.stateManagement && this.userChoices.stateManagement !== "none";
     const stateManagement = this.userChoices.stateManagement;
     const hasRouting = this.userChoices.routing && this.userChoices.routing !== "none";
     const isViteWithRouting = this.userChoices.framework === "vite" && hasRouting;
 
-    return `import { render, screen } from '@testing-library/react';
+    return `import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect } from '${testFrameworkImport}';
 import userEvent from '@testing-library/user-event';
 ${
-  isNextJs
+  isNextJsPagesRouter
     ? `${isTypeScript ? "import { AppProps } from 'next/app';\n" : ""}import MyApp from '${appImportPath}';
 
 // Mock a simple component for testing
@@ -86,7 +98,7 @@ ${
           ? `
 ${
   stateManagement === "redux"
-    ? "import { Provider } from 'react-redux';\nimport { store } from '../store/store';"
+    ? `import { Provider } from 'react-redux';\n${isNextJs ? "import { makeStore } from '../../lib/store';" : "import { store } from '../store/store';"}`
     : ""
 }${stateManagement === "zustand" ? "\n// Zustand store is automatically available" : ""}
 
@@ -94,7 +106,7 @@ ${
 const TestWrapper = ({ children }) => {
   ${
     stateManagement === "redux"
-      ? "return <Provider store={store}>{children}</Provider>;"
+      ? `${isNextJs ? "const store = makeStore();" : ""}\n  return <Provider store={store}>{children}</Provider>;`
       : "return <>{children}</>;"
   }
 };`
@@ -113,19 +125,25 @@ describe('${componentName}', () => {
 
   it('renders without crashing', () => {
     ${
-      isNextJs
+      isNextJsPagesRouter
         ? `render(<MyApp {...mockAppProps} />);
     expect(screen.getByText('Test Component')).toBeInTheDocument();`
-        : hasStateManagement && stateManagement === "redux"
-          ? `renderWithProvider(<${componentName} />);
-    expect(screen.getByText(/react kickstart/i)).toBeInTheDocument();`
-          : `render(<${componentName} />);
+        : isNextJsAppRouter
+          ? `${hasStateManagement && stateManagement === "redux" ? "renderWithProvider" : "render"}(<${componentName} />);
+    expect(screen.getByText(/welcome to next\.js/i)).toBeInTheDocument();`
+          : hasStateManagement && stateManagement === "redux"
+            ? `renderWithProvider(<${componentName} />);
+    expect(screen.getByRole('heading', { name: /home/i })).toBeInTheDocument();`
+            : isViteWithRouting
+              ? `render(<${componentName} />);
+    expect(screen.getByRole('heading', { name: /home/i })).toBeInTheDocument();`
+              : `render(<${componentName} />);
     expect(screen.getByText(/react kickstart/i)).toBeInTheDocument();`
     }
   });
 
   ${
-    !isNextJs
+    !isNextJsPagesRouter
       ? `it('renders main content', () => {
     ${
       hasStateManagement && stateManagement === "redux"
@@ -134,7 +152,13 @@ describe('${componentName}', () => {
     }
     
     // Check for the main heading
-    expect(screen.getByText(/react kickstart/i)).toBeInTheDocument();${
+    ${
+      isNextJsAppRouter
+        ? `expect(screen.getByText(/welcome to next\.js/i)).toBeInTheDocument();`
+        : isViteWithRouting
+          ? `expect(screen.getByRole('heading', { name: /home/i })).toBeInTheDocument();`
+          : `expect(screen.getByText(/react kickstart/i)).toBeInTheDocument();`
+    }${
       hasStateManagement
         ? `
     
@@ -142,7 +166,7 @@ describe('${componentName}', () => {
     ${
       stateManagement === "redux" || stateManagement === "zustand"
         ? `// Counter component should be present
-    expect(screen.getByText(/count/i)).toBeInTheDocument();`
+    expect(screen.getByText(/count is/i)).toBeInTheDocument();`
         : ""
     }`
         : ""
@@ -150,7 +174,9 @@ describe('${componentName}', () => {
   });
 
   ${
-    hasStateManagement && (stateManagement === "redux" || stateManagement === "zustand")
+    hasStateManagement &&
+    (stateManagement === "redux" || stateManagement === "zustand") &&
+    !isNextJsPagesRouter
       ? `it('handles counter interactions', async () => {
     const user = userEvent.setup();
     ${
@@ -159,12 +185,16 @@ describe('${componentName}', () => {
         : `render(<${componentName} />);`
     }
     
-    // Find and click the increment button
-    const incrementButton = screen.getByRole('button', { name: /increment|\\+/i });
-    await user.click(incrementButton);
+    // Find the increment button (+ button)
+    const incrementButton = screen.getByRole('button', { name: '+' });
     
-    // The counter should update (this test may need adjustment based on actual counter implementation)
-    // expect(screen.getByText(/1/)).toBeInTheDocument();
+    // Click the increment button and verify counter updates
+    await act(async () => {
+      await user.click(incrementButton);
+    });
+    
+    // Verify the counter text is updated (should show count is 1)
+    expect(screen.getByText(/count is 1/i)).toBeInTheDocument();
   });`
       : `it('handles basic interactions', async () => {
     const user = userEvent.setup();

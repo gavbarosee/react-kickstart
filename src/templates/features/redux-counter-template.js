@@ -258,9 +258,9 @@ const InteractiveButton = styled.button\`
       // CSS styling
       content = content.replace(
         /(<div>\s*<button[^>]*>[\s\S]*?<\/button>\s*<\/div>)/,
-        `<div style="display: flex; gap: 0.75rem; align-items: center;">
+        `<div style={{display: 'flex', gap: '0.75rem', alignItems: 'center'}}>
           <button onClick={() => dispatch(decrement())}>-</button>
-          <span style="padding: 0.5rem 1rem; background-color: #f3f4f6; border-radius: 0.25rem; font-weight: 600;">count is {count}</span>
+          <span style={{padding: '0.5rem 1rem', backgroundColor: '#f3f4f6', borderRadius: '0.25rem', fontWeight: 600}}>count is {count}</span>
           <button onClick={() => dispatch(increment())}>+</button>
         </div>`,
       );
@@ -611,9 +611,9 @@ function createReduxCounterSection(userChoices) {
     // CSS styling
     return `<div className="counter-section">
         <p>Redux Counter Demo:</p>
-        <div style="display: flex; gap: 0.75rem; align-items: center;">
+        <div style={{display: 'flex', gap: '0.75rem', alignItems: 'center'}}>
           <button onClick={() => dispatch(decrement())}>-</button>
-          <span style="padding: 0.5rem 1rem; background-color: #f3f4f6; border-radius: 0.25rem; font-weight: 600;">count is {count}</span>
+          <span style={{padding: '0.5rem 1rem', backgroundColor: '#f3f4f6', borderRadius: '0.25rem', fontWeight: 600}}>count is {count}</span>
           <button onClick={() => dispatch(increment())}>+</button>
         </div>
       </div>`;

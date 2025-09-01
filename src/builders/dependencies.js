@@ -218,14 +218,21 @@ export const testing = {
   testingLibraryJestDom: "^6.1.5",
   testingLibraryUserEvent: "^14.5.1",
 
-  // Next.js Jest environment
+  // Test environments
+  jsdom: "^23.0.1",
   jestEnvironmentJsdom: "^29.7.0",
+
+  // Jest asset handling
+  identityObjProxy: "^3.0.0",
+  jestTransformStub: "^2.0.0",
 };
 
 export function getVitestDependencies() {
   return {
     vitest: testing.vitest,
     "@vitest/ui": testing.vitestUi,
+    jsdom: testing.jsdom,
+    "@vitejs/plugin-react": frameworks.vite.pluginReact, // Required for Vitest config
     "@testing-library/react": testing.testingLibraryReact,
     "@testing-library/jest-dom": testing.testingLibraryJestDom,
     "@testing-library/user-event": testing.testingLibraryUserEvent,
@@ -236,6 +243,8 @@ export function getJestDependencies() {
   return {
     jest: testing.jest,
     "jest-environment-jsdom": testing.jestEnvironmentJsdom,
+    "identity-obj-proxy": testing.identityObjProxy,
+    "jest-transform-stub": testing.jestTransformStub,
     "@testing-library/react": testing.testingLibraryReact,
     "@testing-library/jest-dom": testing.testingLibraryJestDom,
     "@testing-library/user-event": testing.testingLibraryUserEvent,
