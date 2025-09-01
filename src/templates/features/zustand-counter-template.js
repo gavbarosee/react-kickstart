@@ -432,6 +432,93 @@ function addZustandCounterToNextjsPagesIndex(projectPath, userChoices) {
     content = zustandImports + "\n\n" + content;
   }
 
+  // Add styled components for counter if using styled-components
+  if (userChoices.styling === "styled-components") {
+    // Add the new styled components after existing ones
+    const styledComponents = `
+const CounterSection = styled.div\`
+  margin-top: 2rem;
+\`;
+
+const CounterDescription = styled.p\`
+  font-size: 1rem;
+  color: #6b7280;
+  margin-bottom: 1rem;
+\`;
+
+const CounterContainer = styled.div\`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+\`;
+
+const ButtonRow = styled.div\`
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+\`;
+
+const CountDisplay = styled.span\`
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  padding: 0.5rem 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.25rem;
+  min-width: 80px;
+  text-align: center;
+\`;
+
+const InteractiveButton = styled.button\`
+  background-color: #3b82f6;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+
+  &:active {
+    background-color: #1d4ed8;
+  }
+\`;`;
+
+    // Find the last styled component and add our new ones after it
+    const lastStyledComponentMatch = content.match(
+      /const \w+ = styled\.\w+`[\s\S]*?`;/g,
+    );
+    if (lastStyledComponentMatch && lastStyledComponentMatch.length > 0) {
+      const lastStyledComponent =
+        lastStyledComponentMatch[lastStyledComponentMatch.length - 1];
+      const lastStyledIndex = content.lastIndexOf(lastStyledComponent);
+      const lastStyledEnd = lastStyledIndex + lastStyledComponent.length;
+      content =
+        content.slice(0, lastStyledEnd) +
+        styledComponents +
+        content.slice(lastStyledEnd);
+    } else {
+      // If no styled components exist, add after imports
+      const lastImportMatch = content.match(/import.*?;/g);
+      if (lastImportMatch && lastImportMatch.length > 0) {
+        const lastImport = lastImportMatch[lastImportMatch.length - 1];
+        const lastImportIndex = content.lastIndexOf(lastImport);
+        const lastImportEnd = lastImportIndex + lastImport.length;
+        content =
+          content.slice(0, lastImportEnd) +
+          "\n" +
+          styledComponents +
+          "\n" +
+          content.slice(lastImportEnd);
+      }
+    }
+  }
+
   // Add Zustand logic to the component
   const zustandLogic = `  const { count, increment, decrement, incrementByAmount } = useCounterStore();`;
 
@@ -446,7 +533,7 @@ function addZustandCounterToNextjsPagesIndex(projectPath, userChoices) {
 
   // Add the counter section before the closing tag - simpler insertion
   if (userChoices.styling === "styled-components") {
-    content = content.replace(/<\/Container>/, `${counterSection}\n    </Container>`);
+    content = content.replace(/<\/Main>/, `        ${counterSection}\n      </Main>`);
   } else if (userChoices.styling === "tailwind") {
     content = content.replace(/<\/main>/, `${counterSection}\n    </main>`);
   } else {

@@ -154,6 +154,21 @@ function MyApp({ Component, pageProps }) {
 
 export default MyApp;
 `;
+    } else if (stylingType === "styled-components") {
+      return `import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
+
+function MyApp({ Component, pageProps }) {
+  return (
+    <div className={inter.className}>
+      <Component {...pageProps} />
+    </div>
+  );
+}
+
+export default MyApp;
+`;
     } else {
       return `function MyApp({ Component, pageProps }) {
   return <Component {...pageProps} />;

@@ -553,7 +553,7 @@ const InteractiveButton = styled.button\`
 
   // Add the counter section before the closing tag of the main/Container
   if (userChoices.styling === "styled-components") {
-    content = content.replace(/(<\/Container>)/, `      ${counterSection}\n    $1`);
+    content = content.replace(/(<\/Main>)/, `        ${counterSection}\n      $1`);
   } else if (userChoices.styling === "tailwind") {
     content = content.replace(/(<\/main>)/, `      ${counterSection}\n    $1`);
   } else {
