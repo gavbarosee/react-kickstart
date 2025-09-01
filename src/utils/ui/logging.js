@@ -208,6 +208,8 @@ let __progressInterval = null;
 let __progressPercent = 0;
 let __progressLabel = "";
 let __progressSize = 24;
+let __progressActive = false;
+let __bufferedMessages = [];
 
 // Dynamic status messages that rotate during progress
 const progressMessages = [

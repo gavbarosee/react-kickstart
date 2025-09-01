@@ -109,7 +109,10 @@ const Button = styled.button\`
     const childrenType = fileExt === "tsx" ? `: { children: ReactNode }` : "";
 
     if (stylingType === "tailwind" || stylingType === "css") {
-      return `${typeImport}import './globals.css';
+      return `${typeImport}import { Inter } from 'next/font/google';
+import './globals.css';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: '${projectName}',
@@ -119,13 +122,16 @@ export const metadata = {
 export default function RootLayout({ children }${childrenType}) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }
 `;
     } else if (stylingType === "styled-components") {
-      return `${typeImport}import StyledComponentsRegistry from './styled-components-registry.${fileExt}';
+      return `${typeImport}import { Inter } from 'next/font/google';
+import StyledComponentsRegistry from './styled-components-registry.${fileExt}';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
   title: '${projectName}',
@@ -135,7 +141,7 @@ export const metadata = {
 export default function RootLayout({ children }${childrenType}) {
   return (
     <html lang="en">
-      <body>
+      <body className={inter.className}>
         <StyledComponentsRegistry>
           {children}
         </StyledComponentsRegistry>
@@ -167,48 +173,28 @@ export default function RootLayout({ children }) {
   generateStyledComponentsRegistry(fileExt) {
     if (fileExt === "tsx") {
       return `"use client";
-import React, { useState, type ReactNode } from 'react';
-import { useServerInsertedHTML } from 'next/navigation';
-import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
+import React, { type ReactNode } from 'react';
 
 export default function StyledComponentsRegistry({ children }: { children: ReactNode }) {
-  const [styledComponentsStyleSheet] = useState(() => new ServerStyleSheet());
-
-  useServerInsertedHTML(() => {
-    const styles = styledComponentsStyleSheet.getStyleElement();
-    return <>{styles}</>;
-  });
-
+  // On client side, just return children - styled-components will handle styling
   if (typeof window !== 'undefined') return <>{children}</>;
 
-  return (
-    <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
-      {children}
-    </StyleSheetManager>
-  );
+  // On server side, return children without complex SSR to avoid streaming conflicts
+  // styled-components will still work on the client side
+  return <>{children}</>;
 }
 `;
     } else {
       return `"use client";
 import React from 'react';
-import { useServerInsertedHTML } from 'next/navigation';
-import { ServerStyleSheet, StyleSheetManager } from 'styled-components';
 
 export default function StyledComponentsRegistry({ children }) {
-  const [styledComponentsStyleSheet] = React.useState(() => new ServerStyleSheet());
-
-  useServerInsertedHTML(() => {
-    const styles = styledComponentsStyleSheet.getStyleElement();
-    return <>{styles}</>;
-  });
-
+  // On client side, just return children - styled-components will handle styling
   if (typeof window !== 'undefined') return <>{children}</>;
 
-  return (
-    <StyleSheetManager sheet={styledComponentsStyleSheet.instance}>
-      {children}
-    </StyleSheetManager>
-  );
+  // On server side, return children without complex SSR to avoid streaming conflicts
+  // styled-components will still work on the client side
+  return <>{children}</>;
 }
 `;
     }

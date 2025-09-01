@@ -4,7 +4,7 @@ import path from "path";
 import { BaseStateSetup } from "./base-state-setup.js";
 import { createAppWithCounter } from "../../templates/features/redux-counter-template.js";
 import { createCommonTemplateBuilder } from "../../templates/index.js";
-import { CORE_UTILS } from "../../utils/index.js";
+import { CORE_UTILS, UI_UTILS } from "../../utils/index.js";
 
 /**
  * Redux Toolkit setup implementation
@@ -113,12 +113,104 @@ export class ReduxSetup extends BaseStateSetup {
    * Update entry points for Redux
    */
   updateEntryPoints(projectPath, directories, userChoices) {
-    if (this.framework === "nextjs") {
-      this.createStoreProvider(projectPath, userChoices);
-      this.updateNextjsLayout(projectPath, userChoices);
-    } else {
-      this.updateStandardEntryPoint(directories.src, userChoices);
+    try {
+      if (this.framework === "nextjs") {
+        this.createStoreProvider(projectPath, userChoices);
+        this.updateNextjsLayout(projectPath, userChoices);
+        this.validateNextjsReduxSetup(projectPath, userChoices, true); // Silent during progress
+      } else {
+        this.updateStandardEntryPoint(directories.src, userChoices);
+      }
+    } catch (error) {
+      UI_UTILS.log(
+        `Warning: Redux setup encountered an issue: ${error.message}`,
+        "warn",
+      );
+      UI_UTILS.log(
+        "You may need to manually configure the Redux Provider in your layout file.",
+        "warn",
+      );
     }
+  }
+
+  /**
+   * Validate Next.js Redux setup
+   * @param {string} projectPath - Project path
+   * @param {object} userChoices - User choices
+   * @param {boolean} silent - Whether to suppress console output (default: false)
+   */
+  validateNextjsReduxSetup(projectPath, userChoices, silent = false) {
+    const extensions = this.getExtensions(userChoices);
+
+    // Check if StoreProvider was created
+    const storeProviderPath =
+      userChoices.nextRouting === "app"
+        ? path.join(projectPath, "app", `StoreProvider.${extensions.component}`)
+        : path.join(projectPath, "components", `StoreProvider.${extensions.component}`);
+
+    if (!fs.existsSync(storeProviderPath)) {
+      if (!silent) {
+        UI_UTILS.log(
+          "Warning: StoreProvider component was not created successfully",
+          "warn",
+        );
+      }
+      return false;
+    }
+
+    // Check if layout was updated
+    const layoutPath =
+      userChoices.nextRouting === "app"
+        ? path.join(projectPath, "app", `layout.${extensions.component}`)
+        : path.join(projectPath, "pages", `_app.${extensions.component}`);
+
+    if (fs.existsSync(layoutPath)) {
+      const layoutContent = fs.readFileSync(layoutPath, "utf-8");
+      if (!layoutContent.includes("StoreProvider")) {
+        if (!silent) {
+          UI_UTILS.log(
+            "Warning: Layout file was not updated with StoreProvider",
+            "warn",
+          );
+          UI_UTILS.log(
+            `Please manually add StoreProvider to your ${userChoices.nextRouting === "app" ? "app/layout" : "pages/_app"} file`,
+            "warn",
+          );
+        }
+        return false;
+      }
+    }
+
+    // Check if store files exist
+    const storePath = path.join(projectPath, "lib", `store.${extensions.script}`);
+    const hooksPath = path.join(projectPath, "lib", `hooks.${extensions.script}`);
+    const slicePath = path.join(
+      projectPath,
+      "lib",
+      "features",
+      "counter",
+      `counterSlice.${extensions.script}`,
+    );
+
+    const missingFiles = [];
+    if (!fs.existsSync(storePath)) missingFiles.push("store");
+    if (!fs.existsSync(hooksPath)) missingFiles.push("hooks");
+    if (!fs.existsSync(slicePath)) missingFiles.push("counterSlice");
+
+    if (missingFiles.length > 0) {
+      if (!silent) {
+        UI_UTILS.log(
+          `Warning: Missing Redux files: ${missingFiles.join(", ")}`,
+          "warn",
+        );
+      }
+      return false;
+    }
+
+    if (!silent) {
+      UI_UTILS.log("Redux setup validation completed successfully", "success");
+    }
+    return true;
   }
 
   updateStandardEntryPoint(srcDir, userChoices) {
@@ -171,19 +263,22 @@ export class ReduxSetup extends BaseStateSetup {
   createStoreProvider(projectPath, userChoices) {
     const extensions = this.getExtensions(userChoices);
     let targetDir;
+    let storeImportPath;
 
     if (userChoices.nextRouting === "app") {
       targetDir = path.join(projectPath, "app");
+      storeImportPath = "../lib/store";
     } else {
       // For Pages Router, create StoreProvider directly in components directory
       targetDir = CORE_UTILS.createProjectDirectory(projectPath, "components");
+      storeImportPath = "../lib/store";
     }
 
     const useClientDirective =
       userChoices.nextRouting === "app" ? "'use client';\n\n" : "";
     const content = `${useClientDirective}import { useRef } from 'react';
 import { Provider } from 'react-redux';
-import { makeStore${userChoices.typescript ? ", AppStore" : ""} } from '../lib/store';
+import { makeStore${userChoices.typescript ? ", AppStore" : ""} } from '${storeImportPath}';
 
 export default function StoreProvider({
   children
@@ -230,10 +325,56 @@ export default function StoreProvider({
         }
       }
 
-      content = content.replace(
-        /<body>(.*?){children}<\/body>/s,
-        "<body>$1<StoreProvider>{children}</StoreProvider></body>",
-      );
+      // Handle different layout structures, especially with styled-components
+      let layoutUpdated = false;
+
+      // Check if StyledComponentsRegistry exists (styled-components setup)
+      if (
+        content.includes("StyledComponentsRegistry") &&
+        !content.includes("<StoreProvider>")
+      ) {
+        // Wrap StyledComponentsRegistry with StoreProvider
+        content = content.replace(
+          /<StyledComponentsRegistry>/,
+          "<StoreProvider><StyledComponentsRegistry>",
+        );
+        content = content.replace(
+          /<\/StyledComponentsRegistry>/,
+          "</StyledComponentsRegistry></StoreProvider>",
+        );
+        layoutUpdated = true;
+      } else if (!content.includes("<StoreProvider>")) {
+        // Try multiple patterns for layouts without StyledComponentsRegistry
+        const patterns = [
+          // Pattern 1: <body>...</body> with children inside
+          {
+            search: /<body([^>]*)>([\s\S]*?){children}([\s\S]*?)<\/body>/,
+            replace: "<body$1>$2<StoreProvider>{children}</StoreProvider>$3</body>",
+          },
+          // Pattern 2: Just {children} without body wrapper
+          {
+            search: /(\s*){children}(\s*)/,
+            replace: "$1<StoreProvider>{children}</StoreProvider>$2",
+          },
+        ];
+
+        for (const pattern of patterns) {
+          if (pattern.search.test(content)) {
+            content = content.replace(pattern.search, pattern.replace);
+            layoutUpdated = true;
+            break;
+          }
+        }
+
+        // If no pattern matched, add it manually
+        if (!layoutUpdated) {
+          // Find {children} and wrap it
+          content = content.replace(
+            /{children}/g,
+            "<StoreProvider>{children}</StoreProvider>",
+          );
+        }
+      }
     } else {
       // Pages Router
       const importLine = "import StoreProvider from '../components/StoreProvider';";
