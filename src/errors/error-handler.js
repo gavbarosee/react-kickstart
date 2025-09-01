@@ -398,7 +398,8 @@ export class ErrorHandler {
       this._handlingSignal = true;
       await this.handle(new Error("Process interrupted by user"), {
         type: "user_cancelled",
-        shouldCleanup: true,
+        // Only cleanup if the project is still in setup phase (context.shouldCleanup is true)
+        shouldCleanup: this.context.shouldCleanup === true,
       });
       process.exit(130);
     });
@@ -408,7 +409,8 @@ export class ErrorHandler {
       this._handlingSignal = true;
       await this.handle(new Error("Process terminated"), {
         type: "user_cancelled",
-        shouldCleanup: true,
+        // Only cleanup if the project is still in setup phase (context.shouldCleanup is true)
+        shouldCleanup: this.context.shouldCleanup === true,
       });
       // 143 = 128 + 15 (SIGTERM)
       process.exit(143);

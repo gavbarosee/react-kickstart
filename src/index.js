@@ -215,15 +215,6 @@ export async function createApp(projectDirectory, options = {}) {
       );
       console.log(completionSummary);
 
-      // Only start the project if autostart is enabled
-      if (options.autostart !== false && userChoices.autoStart !== false) {
-        console.log(); // Add spacing before server startup
-        await errorHandler.withErrorHandling(
-          () => PROCESS_UTILS.startProject(projectPath, userChoices),
-          { type: ERROR_TYPES.PROCESS },
-        );
-      }
-
       // Cleanup temporary marker after successful setup to prevent accidental deletions
       try {
         const markerPath = path.join(projectPath, ".react-kickstart.tmp");
@@ -233,6 +224,15 @@ export async function createApp(projectDirectory, options = {}) {
         // Mark project as completed - no longer needs cleanup on cancellation
         errorHandler.setContext({ shouldCleanup: false });
       } catch {}
+
+      // Only start the project if autostart is enabled
+      if (options.autostart !== false && userChoices.autoStart !== false) {
+        console.log(); // Add spacing before server startup
+        await errorHandler.withErrorHandling(
+          () => PROCESS_UTILS.startProject(projectPath, userChoices),
+          { type: ERROR_TYPES.PROCESS },
+        );
+      }
     },
     {
       type: ERROR_TYPES.GENERAL,
