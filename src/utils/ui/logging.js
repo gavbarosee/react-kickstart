@@ -266,7 +266,9 @@ export function startProgress(label = "", options = {}) {
       size: __progressSize,
       animated: true,
     });
-    process.stdout.write(`\r  ${line}`);
+    // Clear the entire line before writing new content to prevent leftover characters
+    const terminalWidth = process.stdout.columns || 80;
+    process.stdout.write(`\r${" ".repeat(terminalWidth)}\r  ${line}`);
   }, 150);
 }
 
@@ -305,7 +307,9 @@ export function stopProgress(complete = true) {
       const finalLine = renderProgress(finalPercent, __progressLabel, {
         size: __progressSize,
       });
-      process.stdout.write(`\r  ${finalLine}\n\n`);
+      // Clear the entire line before writing final content
+      const terminalWidth = process.stdout.columns || 80;
+      process.stdout.write(`\r${" ".repeat(terminalWidth)}\r  ${finalLine}\n\n`);
     }
   }
 
