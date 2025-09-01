@@ -67,7 +67,7 @@ export class ZustandSetup extends BaseStateSetup {
   }
 
   getZustandStoreLogic() {
-    return "  const { count, increment, decrement, incrementByAmount } = useCounterStore();";
+    return "  const { count, increment, decrement } = useCounterStore();";
   }
 
   /**

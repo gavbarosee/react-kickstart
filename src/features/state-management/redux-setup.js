@@ -98,9 +98,9 @@ export class ReduxSetup extends BaseStateSetup {
 
   getReduxImports() {
     if (this.framework === "nextjs") {
-      return "import { useAppSelector, useAppDispatch } from '../lib/hooks';\nimport { decrement, increment, incrementByAmount } from '../lib/features/counter/counterSlice';";
+      return "import { useAppSelector, useAppDispatch } from '../lib/hooks';\nimport { decrement, increment } from '../lib/features/counter/counterSlice';";
     } else {
-      return "import { useAppSelector, useAppDispatch } from '../store/hooks';\nimport { decrement, increment, incrementByAmount } from '../store/counterSlice';";
+      return "import { useAppSelector, useAppDispatch } from '../store/hooks';\nimport { decrement, increment } from '../store/counterSlice';";
     }
   }
 

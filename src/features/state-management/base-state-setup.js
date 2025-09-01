@@ -163,54 +163,33 @@ const ButtonRow = styled.div\`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: 0.75rem;
 \`;
 
 const CountDisplay = styled.span\`
-  font-size: 1.5rem;
-  font-weight: bold;
-  min-width: 3rem;
-  display: inline-block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+  padding: 0.5rem 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.25rem;
+  min-width: 80px;
+  text-align: center;
 \`;
 
 const CounterButton = styled.button\`
-  padding: 0.5rem 1rem;
+  background-color: #2563eb;
   color: white;
-  border: none;
+  font-weight: 700;
+  padding: 0.5rem 1rem;
   border-radius: 0.25rem;
+  border: none;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  
-  &:hover {
-    opacity: 0.9;
-  }
-\`;
+  font-size: 1rem;
+  transition: background-color 0.15s ease-in-out;
 
-const DecrementButton = styled(CounterButton)\`
-  background-color: #ef4444;
-  
   &:hover {
-    background-color: #dc2626;
-  }
-\`;
-
-const IncrementButton = styled(CounterButton)\`
-  background-color: #3b82f6;
-  
-  &:hover {
-    background-color: #2563eb;
-  }
-\`;
-
-const AddButton = styled(CounterButton)\`
-  background-color: #10b981;
-  width: 100%;
-  margin-top: 0.5rem;
-  
-  &:hover {
-    background-color: #059669;
+    background-color: #1d4ed8;
   }
 \`;
 
@@ -221,17 +200,14 @@ ${storeLogic}
     <CounterContainer>
       <CounterTitle>${title}</CounterTitle>
       <ButtonRow>
-        <DecrementButton onClick={${this.getDecrementHandler()}}>
+        <CounterButton onClick={${this.getDecrementHandler()}}>
           -
-        </DecrementButton>
-        <CountDisplay>{${this.getCountValue()}}</CountDisplay>
-        <IncrementButton onClick={${this.getIncrementHandler()}}>
+        </CounterButton>
+        <CountDisplay>count is {${this.getCountValue()}}</CountDisplay>
+        <CounterButton onClick={${this.getIncrementHandler()}}>
           +
-        </IncrementButton>
+        </CounterButton>
       </ButtonRow>
-      <AddButton onClick={${this.getIncrementByAmountHandler()}}>
-        Add 5
-      </AddButton>
     </CounterContainer>
   );
 }
@@ -248,12 +224,12 @@ ${storeLogic}
       <h2${styles.title}>${title}</h2>
       <div${styles.buttonRow}>
         <button
-          ${styles.button("red")}
+          ${styles.button("blue")}
           onClick={${this.getDecrementHandler()}}
         >
           -
         </button>
-        <span${styles.count}>{${this.getCountValue()}}</span>
+        <span${styles.count}>count is {${this.getCountValue()}}</span>
         <button
           ${styles.button("blue")}
           onClick={${this.getIncrementHandler()}}
@@ -261,12 +237,6 @@ ${storeLogic}
           +
         </button>
       </div>
-      <button
-        ${styles.fullButton}
-        onClick={${this.getIncrementByAmountHandler()}}
-      >
-        Add 5
-      </button>
     </div>
   );
 }
