@@ -2,15 +2,34 @@
 . "$(dirname "$0")/_/husky.sh"
 
 # Pre-push validation hook
-# Documentation: docs/guides/pre-push-hooks.md
+# Documentation: docs/development/branch-protection-workflow.md
 # Skip with: SKIP_PREPUSH=1 git push
+
+# Check if we're trying to push to main branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$BRANCH" = "main" ]; then
+  echo ""
+  echo "🚫 PUSH BLOCKED: Direct pushes to 'main' branch are not allowed!"
+  echo ""
+  echo "📋 Please use the following workflow:"
+  echo "   1. Create a feature branch: git checkout -b feature/your-feature-name"
+  echo "   2. Make your changes and commit to the feature branch"
+  echo "   3. Push the feature branch: git push origin feature/your-feature-name"
+  echo "   4. Create a Pull Request via GitHub"
+  echo ""
+  echo "💡 This protects the main branch and ensures all changes go through proper review."
+  echo "📚 See docs/development/branch-protection-workflow.md for details"
+  echo ""
+  exit 1
+fi
 
 if [ "$SKIP_PREPUSH" = "1" ]; then
   echo "Skipping pre-push checks due to SKIP_PREPUSH=1"
   exit 0
 fi
 
-echo "🚀 Running comprehensive pre-push validation..."
+echo "🚀 Running comprehensive pre-push validation for branch: $BRANCH"
 echo ""
 
 # Code Quality Checks

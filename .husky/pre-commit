@@ -1,6 +1,25 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-# Fast checks only
-echo "Running pre-commit checks..."
+# Check if we're on main branch
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$BRANCH" = "main" ]; then
+  echo ""
+  echo "🚫 COMMIT BLOCKED: Direct commits to 'main' branch are not allowed!"
+  echo ""
+  echo "📋 Please use the following workflow:"
+  echo "   1. Create a feature branch: git checkout -b feature/your-feature-name"
+  echo "   2. Make your changes and commit to the feature branch"
+  echo "   3. Push the feature branch: git push origin feature/your-feature-name"
+  echo "   4. Create a Pull Request via GitHub"
+  echo ""
+  echo "💡 This protects the main branch and ensures all changes go through proper review."
+  echo "📚 See docs/development/branch-protection-workflow.md for details"
+  echo ""
+  exit 1
+fi
+
+# Fast checks for feature branches
+echo "Running pre-commit checks on branch: $BRANCH"
 npm test --silent || exit 1
