@@ -5,12 +5,15 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   critical-tests:
     name: Critical QA Tests
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Skip if PR is in draft mode
+    if: github.event.pull_request.draft == false || github.event_name == 'push'
 
     steps:
       - name: Checkout code
@@ -43,8 +46,10 @@ jobs:
     name: Comprehensive QA Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    # Only run on main branch to avoid overwhelming CI
-    if: github.ref == 'refs/heads/main'
+    # Run on PRs to main (before merge) or on main branch pushes
+    if: |
+      (github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
 
     steps:
       - name: Checkout code
