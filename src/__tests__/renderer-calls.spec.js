@@ -3,16 +3,16 @@ import { describe, it, expect, vi } from "vitest";
 import { PromptRenderer } from "../prompts/ui/prompt-renderer.js";
 
 describe("PromptRenderer call order and omissions", () => {
-  it("refreshDisplay calls header then summary, and summary omits undefineds", () => {
+  it("refreshDisplay calls header then summary, and summary omits undefineds", async () => {
     const renderer = new PromptRenderer();
-    const headerSpy = vi.spyOn(renderer, "showHeader");
+    const headerSpy = vi.spyOn(renderer, "showHeader").mockResolvedValue();
     const summarySpy = vi.spyOn(renderer, "showSelectionSummary");
 
     const answers = {
       packageManager: "npm",
       // leave other fields undefined
     };
-    renderer.refreshDisplay(answers);
+    await renderer.refreshDisplay(answers);
 
     expect(headerSpy).toHaveBeenCalledTimes(1);
     expect(summarySpy).toHaveBeenCalledWith(answers);
