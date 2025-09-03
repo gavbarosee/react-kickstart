@@ -71,7 +71,7 @@ node bin/react-kickstart.js my-app \
   --no-autostart
 ```
 
-See detailed flags and more recipes in [`cli-flags.md`](./cli-flags.md).
+See detailed flags and more recipes in [`cli-reference.md`](./cli-reference.md).
 
 ## What the CLI does
 
@@ -116,7 +116,7 @@ npm run dev
 
 ## Project structure and generated content
 
-For a deeper breakdown of files and conventions, see [`project-structure-walkthrough.md`](./project-structure-walkthrough.md) and [`how-it-works.md`](./how-it-works.md).
+For a deeper breakdown of files and conventions, see [`project-structure.md`](../architecture/project-structure.md) and [`how-it-works.md`](../architecture/how-it-works.md).
 
 Highlights you can expect:
 
@@ -157,7 +157,7 @@ node bin/react-kickstart.js app \
   --testing vitest
 ```
 
-More examples and nuances are listed in [`cli-flags.md`](./cli-flags.md).
+More examples and nuances are listed in [`cli-reference.md`](./cli-reference.md).
 
 ## CI and QA
 
@@ -171,7 +171,7 @@ The repository includes a QA automation harness; see [`qa-automation-overview.md
 - Invalid project name: ensure it is a valid npm package name.
 - Dependency installation failed: rerun inside the project with your package manager; check network and registry access.
 - Port already in use: stop the running process or change the dev server port.
-- Unknown/incorrect flag: see [`cli-flags.md`](./cli-flags.md) for exact names and defaults.
+- Unknown/incorrect flag: see [`cli-reference.md`](./cli-reference.md) for exact names and defaults.
 
 ## Extending the generator
 
@@ -185,5 +185,5 @@ To add new frameworks or options, see [`adding-a-new-framework.md`](../extending
 
 1. Generate your app with the desired options
 2. Start the dev server (`npm run dev`)
-3. Explore the generated structure ([`project-structure-walkthrough.md`](./project-structure-walkthrough.md))
+3. Explore the generated structure ([`project-structure.md`](../architecture/project-structure.md))
 4. Customize state, API, styling, and tests to your needs

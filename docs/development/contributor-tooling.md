@@ -127,10 +127,10 @@ Refer to [`qa-automation-overview.md`](../qa/qa-automation-overview.md) for full
 
 ### Docs you may want
 
-- [`how-it-works.md`](../guides/how-it-works.md) — internal architecture overview
-- [`project-structure-walkthrough.md`](../guides/project-structure-walkthrough.md) — files and folders explained
-- [`cli-flags.md`](../guides/cli-flags.md) — non-interactive usage reference
-- [`using-react-kickstart.md`](../guides/using-react-kickstart.md) — end-user guide to the CLI
+- [`how-it-works.md`](../architecture/how-it-works.md) — internal architecture overview
+- [`project-structure.md`](../architecture/project-structure.md) — files and folders explained
+- [`cli-reference.md`](../user-guide/cli-reference.md) — non-interactive usage reference
+- [`getting-started.md`](../user-guide/getting-started.md) — end-user guide to the CLI
 
 ### CI tips
 

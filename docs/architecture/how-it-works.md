@@ -85,5 +85,5 @@ node qa-automation/test-runner.js edge 15
 
 #### Where to read next
 
-- Project structure tour: [`project-structure-walkthrough.md`](./project-structure-walkthrough.md)
+- Project structure tour: [`project-structure.md`](./project-structure.md)
 - Adding a framework: [`adding-a-new-framework.md`](../extending/adding-a-new-framework.md)
