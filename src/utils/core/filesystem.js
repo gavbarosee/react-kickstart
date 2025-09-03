@@ -76,7 +76,7 @@ export function countFilesRecursive(directory) {
           totalSize += stats.size;
         }
       }
-    } catch (error) {
+    } catch {
       // Silently continue if we can't read a directory
     }
   }
@@ -131,7 +131,7 @@ export function countPackages(packageJsonPath) {
 
     // Estimate total packages (including transitive dependencies)
     return Math.round(totalDirectDeps * 5);
-  } catch (error) {
+  } catch {
     return 25; // Default estimate
   }
 }
@@ -144,7 +144,7 @@ export function countPackages(packageJsonPath) {
 export function safeReadJson(filePath) {
   try {
     return fs.readJsonSync(filePath);
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -157,7 +157,7 @@ export function ensureDir(dirPath) {
   try {
     fs.ensureDirSync(dirPath);
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }
@@ -170,7 +170,7 @@ export function ensureDir(dirPath) {
 export function fileExists(filePath) {
   try {
     return fs.existsSync(filePath);
-  } catch (error) {
+  } catch {
     return false;
   }
 }

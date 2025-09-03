@@ -37,7 +37,7 @@ export async function openEditor(projectPath, editor = "vscode", userChoices) {
         try {
           await execa(cmd, ["--version"], { stdio: "ignore" });
           return true;
-        } catch (_) {
+        } catch {
           return false;
         }
       };

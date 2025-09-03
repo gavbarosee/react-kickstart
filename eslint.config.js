@@ -63,9 +63,9 @@ export default [
         "warn",
         {
           argsIgnorePattern:
-            "^(?:_|userChoices|projectPath|projectName|directories|error|err|res|fileExt|stateManager|srcDir|extensions|isDevDependency|options|context|packageManager|isViteWithRouting)$",
+            "^(?:_|userChoices|projectPath|projectName|directories|error|err|res|fileExt|stateManager|srcDir|extensions|isDevDependency|options|context|packageManager|isViteWithRouting|flagTest|verbose|results|packageCount|_?color|typescript|styling|command|shouldCleanup|showRecovery|registerCleanupHandlers|progressActive|bufferedMessages)$",
           varsIgnorePattern:
-            "^(?:_|userChoices|projectPath|projectName|directories|error|err|res|fileExt|stateManager|srcDir|extensions|isDevDependency|options|context|fs|path|structure|stylingType|packageManager|isViteWithRouting|errorType|isDev|createUIRenderer|CORE_UTILS)$",
+            "^(?:_|userChoices|projectPath|projectName|directories|error|err|res|fileExt|stateManager|srcDir|extensions|isDevDependency|options|context|fs|path|structure|stylingType|packageManager|isViteWithRouting|errorType|isDev|createUIRenderer|CORE_UTILS|verbose|results|packageCount|typescript|styling|command|shouldCleanup|showRecovery|registerCleanupHandlers|__progressActive|__bufferedMessages)$",
         },
       ],
       "no-console": "off", // CLI tool, allow console

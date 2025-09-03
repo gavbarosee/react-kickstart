@@ -130,7 +130,7 @@ describe('${componentName}', () => {
     expect(screen.getByText('Test Component')).toBeInTheDocument();`
         : isNextJsAppRouter
           ? `${hasStateManagement && stateManagement === "redux" ? "renderWithProvider" : "render"}(<${componentName} />);
-    expect(screen.getByText(/welcome to next\.js/i)).toBeInTheDocument();`
+    expect(screen.getByText(/welcome to next.js/i)).toBeInTheDocument();`
           : hasStateManagement && stateManagement === "redux"
             ? `renderWithProvider(<${componentName} />);
     expect(screen.getByRole('heading', { name: /home/i })).toBeInTheDocument();`
@@ -154,7 +154,7 @@ describe('${componentName}', () => {
     // Check for the main heading
     ${
       isNextJsAppRouter
-        ? `expect(screen.getByText(/welcome to next\.js/i)).toBeInTheDocument();`
+        ? `expect(screen.getByText(/welcome to next.js/i)).toBeInTheDocument();`
         : isViteWithRouting
           ? `expect(screen.getByRole('heading', { name: /home/i })).toBeInTheDocument();`
           : `expect(screen.getByText(/react kickstart/i)).toBeInTheDocument();`

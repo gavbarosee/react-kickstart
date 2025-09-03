@@ -251,7 +251,7 @@ class FeatureValidator {
         timeout: 60000,
       });
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

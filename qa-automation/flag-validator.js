@@ -6,7 +6,7 @@
  * Focuses on flag-only validation rather than comprehensive combinations
  */
 
-import { execSync, spawn } from "child_process";
+import { spawn } from "child_process";
 import { readFileSync, existsSync, rmSync, mkdirSync, writeFileSync } from "fs";
 import { join, resolve, dirname } from "path";
 import { performance } from "perf_hooks";
@@ -667,7 +667,7 @@ class FlagValidator {
   /**
    * Determine if flag test succeeded
    */
-  computeFlagTestSuccess(validationResult, flagTest) {
+  computeFlagTestSuccess(validationResult, _) {
     return (
       validationResult.projectExists &&
       validationResult.packageJsonExists &&
@@ -908,7 +908,6 @@ class FlagValidator {
  */
 async function main() {
   const args = process.argv.slice(2);
-  const verbose = args.includes("--verbose");
   const noCleanup = args.includes("--no-cleanup");
 
   const validator = new FlagValidator({
@@ -918,7 +917,7 @@ async function main() {
   });
 
   try {
-    const results = await validator.runAllFlagTests();
+    await validator.runAllFlagTests();
     const report = validator.generateReport();
 
     if (!noCleanup) {

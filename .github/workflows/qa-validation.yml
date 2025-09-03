@@ -26,7 +26,10 @@ jobs:
         run: npm ci
 
       - name: Run critical QA tests
-        run: node qa-automation/test-runner.js critical 15
+        run: |
+          cd qa-automation
+          npm install
+          node test-runner.js critical 15
 
       - name: Upload test reports
         if: always()
@@ -57,7 +60,10 @@ jobs:
         run: npm ci
 
       - name: Run comprehensive QA tests
-        run: node qa-automation/test-runner.js standard 50
+        run: |
+          cd qa-automation
+          npm install
+          node test-runner.js standard 50
 
       - name: Upload test reports
         if: always()

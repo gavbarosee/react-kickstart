@@ -30,7 +30,7 @@ function cleanupDevServer() {
           console.log(chalk.yellow("Forcing development server to stop..."));
           try {
             devProcess.kill("SIGKILL");
-          } catch (err) {
+          } catch {
             // last resort attempt by PID
             try {
               if (devProcess.pid) {
@@ -89,7 +89,7 @@ async function checkServerAndOpenBrowser(devUrl) {
           resolve(false);
         });
       });
-    } catch (error) {
+    } catch {
       return false;
     }
   };
@@ -102,7 +102,7 @@ async function checkServerAndOpenBrowser(devUrl) {
     if (await isServerReady()) {
       try {
         await open(devUrl);
-      } catch (err) {
+      } catch {
         console.log(
           chalk.yellow(
             `\nCouldn't open your default browser. It might not be installed or properly configured.`,
@@ -150,7 +150,7 @@ export async function startProject(projectPath, userChoices) {
       const devUrl = `http://localhost:${frameworkInfo.port}`;
 
       const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
-      const devCommand = false ? "npm start" : `${pmRun} dev`;
+      const devCommand = `${pmRun} dev`;
 
       const [cmd, ...args] = devCommand.split(" ");
 
@@ -209,7 +209,7 @@ export async function startProject(projectPath, userChoices) {
 
         // Show manual start instructions
         const pmRun = userChoices.packageManager === "yarn" ? "yarn" : "npm run";
-        const devCommand = false ? "npm start" : `${pmRun} dev`;
+        const devCommand = `${pmRun} dev`;
 
         userReporter.formatError("Development Server Failed", error.message || error, [
           `cd ${path.basename(projectPath || ".")}`,

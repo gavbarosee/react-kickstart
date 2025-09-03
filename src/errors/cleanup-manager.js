@@ -125,7 +125,7 @@ export class CleanupManager {
       const maxAge = maxAgeMinutes * 60 * 1000; // Convert to milliseconds
 
       return now - creationTime <= maxAge;
-    } catch (error) {
+    } catch {
       // If we can't check age, err on the side of caution
       return false;
     }
@@ -172,7 +172,7 @@ export class CleanupManager {
 
       // Evidence of our generated structure
       return (srcExists && publicExists) || appExists || pagesExists;
-    } catch (error) {
+    } catch {
       // If we can't verify, err on the side of caution
       return false;
     }

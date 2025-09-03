@@ -91,6 +91,7 @@ export function validateProjectDirectory(projectDir) {
   }
 
   // Check for dangerous characters
+  // eslint-disable-next-line no-control-regex
   const dangerousChars = /[<>:"|?*\x00-\x1f]/;
   if (dangerousChars.test(normalized)) {
     return {

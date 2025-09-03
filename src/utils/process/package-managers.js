@@ -309,7 +309,7 @@ function parsePackageCount(output, packageManager) {
       const match = output.match(/added (\d+) packages?/);
       return match ? parseInt(match[1]) : 50;
     }
-  } catch (error) {
+  } catch {
     return 50; // Default estimate
   }
 }
@@ -360,7 +360,7 @@ function parseVulnerabilities(output, packageManager) {
         });
       }
     }
-  } catch (error) {
+  } catch {
     // Ignore parsing errors
   }
 
@@ -391,7 +391,7 @@ export async function isPackageManagerAvailable(packageManager) {
   try {
     await execa(command, ["--version"]);
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

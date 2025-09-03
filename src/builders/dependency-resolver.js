@@ -75,12 +75,13 @@ export class DependencyResolver {
    */
   getStylingDependencies(stylingChoice) {
     switch (stylingChoice) {
-      case "tailwind":
+      case "tailwind": {
         // Framework affects whether these are dev or regular dependencies
         const isDevDependency = this.framework !== "nextjs";
         return getTailwindDependencies(isDevDependency);
+      }
 
-      case "styled-components":
+      case "styled-components": {
         const deps = getStyledComponentsDependencies();
 
         // Add babel plugin only for Vite; Next.js uses SWC compiler option
@@ -89,6 +90,7 @@ export class DependencyResolver {
         }
 
         return deps;
+      }
 
       case "css":
       default:
