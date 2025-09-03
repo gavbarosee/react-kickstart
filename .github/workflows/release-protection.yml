@@ -1,0 +1,127 @@
+name: Release Protection
+
+on:
+  push:
+    branches: [main]
+    paths: ["package.json"] # Trigger when version changes
+
+jobs:
+  check-version-change:
+    name: Check for Version Change
+    runs-on: ubuntu-latest
+    outputs:
+      version-changed: ${{ steps.check.outputs.changed }}
+      new-version: ${{ steps.check.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2 # Need previous commit
+
+      - name: Check if version changed
+        id: check
+        run: |
+          # Get current and previous package.json versions
+          CURRENT_VERSION=$(jq -r '.version' package.json)
+          PREVIOUS_VERSION=$(git show HEAD~1:package.json | jq -r '.version')
+
+          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+            echo "🚨 Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No version change detected"
+          fi
+
+  block-auto-publish:
+    name: Block Auto-Publish
+    runs-on: ubuntu-latest
+    needs: check-version-change
+    if: needs.check-version-change.outputs.version-changed == 'true'
+
+    steps:
+      - name: Block automatic publishing
+        run: |
+          echo "🚫 BLOCKING AUTOMATIC PUBLISH"
+          echo ""
+          echo "Version bump detected: ${{ needs.check-version-change.outputs.new-version }}"
+          echo ""
+          echo "⚠️  Before publishing to npm, you MUST:"
+          echo "   1. Run full matrix validation: gh workflow run full-matrix-validation.yml"
+          echo "   2. Wait for ALL 8,640 configurations to pass"
+          echo "   3. Only then manually publish: npm publish"
+          echo ""
+          echo "🔒 This protects users from broken configurations"
+
+          # Create a blocking issue
+          exit 1
+
+  create-release-checklist:
+    name: Create Release Checklist
+    runs-on: ubuntu-latest
+    needs: [check-version-change, block-auto-publish]
+    if: always() && needs.check-version-change.outputs.version-changed == 'true'
+
+    steps:
+      - name: Create release checklist issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ needs.check-version-change.outputs.new-version }}';
+
+            const checklist = `## 🚀 Release Checklist for v${version}
+
+            **⚠️ DO NOT PUBLISH until all items are checked:**
+
+            ### Pre-Release Validation
+            - [ ] **Full Matrix Validation**: Run \`gh workflow run full-matrix-validation.yml\`
+            - [ ] **All 8,640 configurations pass**: Check validation results
+            - [ ] **No failing test combinations**: 100% success rate required
+            - [ ] **Review test artifacts**: Check uploaded reports
+
+            ### Release Preparation  
+            - [ ] **Changelog updated**: Document all changes
+            - [ ] **Documentation updated**: README, guides, etc.
+            - [ ] **Breaking changes noted**: If any breaking changes
+            - [ ] **Migration guide**: If needed for breaking changes
+
+            ### Final Release
+            - [ ] **Create GitHub release**: Tag v${version}
+            - [ ] **Publish to npm**: \`npm publish\`
+            - [ ] **Announce release**: Social media, Discord, etc.
+            - [ ] **Monitor for issues**: Watch for user reports
+
+            ### Post-Release
+            - [ ] **Update examples**: Ensure examples work with new version
+            - [ ] **Update dependencies**: In related projects
+            - [ ] **Close this issue**: After successful release
+
+            ---
+
+            **🔒 Release Protection Active**
+
+            This checklist was automatically created because a version bump was detected.
+            The full matrix validation (8,640 configurations) MUST pass before publishing.
+
+            **Manual Commands:**
+            \`\`\`bash
+            # Run full validation
+            gh workflow run full-matrix-validation.yml
+
+            # After validation passes
+            npm publish
+
+            # Create GitHub release
+            gh release create v${version} --generate-notes
+            \`\`\``;
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚀 Release Checklist: v${version}`,
+              body: checklist,
+              labels: ['release', 'checklist', 'validation-required'],
+              assignees: [context.actor]
+            });

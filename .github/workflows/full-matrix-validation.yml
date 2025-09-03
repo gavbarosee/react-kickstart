@@ -1,0 +1,126 @@
+name: Full Matrix Validation
+
+on:
+  # Trigger before any release
+  push:
+    tags: ["v*"]
+  # Manual trigger for pre-release validation
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: "Type of validation"
+        required: true
+        default: "pre-release"
+        type: choice
+        options:
+          - pre-release
+          - full-matrix
+          - critical-only
+  # Nightly validation
+  schedule:
+    - cron: "0 2 * * *" # 2 AM UTC daily
+
+jobs:
+  full-matrix-validation:
+    name: Full Matrix Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 300 # 5 hours max
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate test matrix
+        run: |
+          cd qa-automation
+          npm install
+          node test-matrix-generator.js
+
+      - name: Run FULL matrix validation
+        run: |
+          cd qa-automation
+          echo "🚀 Starting FULL matrix validation..."
+          echo "⚠️  This will test ALL 8,640 configurations"
+          echo "⏱️  Expected duration: 2-4 hours"
+
+          # Run ALL tests - no limits
+          node test-runner.js critical    # All 4,976 critical
+          node test-runner.js standard    # All 3,360 standard  
+          node test-runner.js edge        # All 304 edge
+
+      - name: Upload full matrix results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-matrix-results-${{ github.run_id }}
+          path: |
+            qa-automation/test-report-*.json
+            qa-automation/reports/
+          retention-days: 30
+
+      - name: Validate results
+        run: |
+          cd qa-automation
+          # Check if any tests failed
+          if grep -q '"failed": [1-9]' test-report-*.json; then
+            echo "❌ FULL MATRIX VALIDATION FAILED"
+            echo "🚫 DO NOT RELEASE - Some configurations are broken"
+            exit 1
+          else
+            echo "✅ FULL MATRIX VALIDATION PASSED"
+            echo "🚀 Safe to release - All 8,640 configurations work"
+          fi
+
+      - name: Create release validation report
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reports = fs.readdirSync('qa-automation').filter(f => f.startsWith('test-report-'));
+
+            let totalTests = 0;
+            let totalPassed = 0;
+            let totalFailed = 0;
+
+            reports.forEach(file => {
+              const report = JSON.parse(fs.readFileSync(`qa-automation/${file}`, 'utf8'));
+              totalTests += report.summary?.total || 0;
+              totalPassed += report.summary?.successful || 0;
+              totalFailed += report.summary?.failed || 0;
+            });
+
+            const successRate = Math.round((totalPassed / totalTests) * 100);
+            const status = totalFailed === 0 ? '✅ SAFE TO RELEASE' : '🚫 DO NOT RELEASE';
+
+            const comment = `## 🔬 Full Matrix Validation Results
+
+            **${status}**
+
+            - 📊 **Total Configurations**: ${totalTests}
+            - ✅ **Passed**: ${totalPassed}
+            - ❌ **Failed**: ${totalFailed}
+            - 📈 **Success Rate**: ${successRate}%
+
+            ${totalFailed === 0 ? 
+              '🎉 **All configurations validated successfully!**\n\n✅ Safe to publish to npm\n✅ Safe to create release\n✅ All user combinations will work' :
+              '⚠️ **Some configurations are broken!**\n\n🚫 Do NOT publish to npm\n🚫 Do NOT create release\n🔧 Fix failing configurations first'
+            }`;
+
+            // Create issue for tracking
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Full Matrix Validation - ${successRate}% Success Rate ${totalFailed === 0 ? '✅' : '❌'}`,
+              body: comment,
+              labels: ['qa', 'validation', totalFailed === 0 ? 'release-ready' : 'release-blocked']
+            });
