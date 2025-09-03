@@ -1,11 +1,38 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Pre-push validation hook
+# Documentation: docs/guides/pre-push-hooks.md
+# Skip with: SKIP_PREPUSH=1 git push
+
 if [ "$SKIP_PREPUSH" = "1" ]; then
   echo "Skipping pre-push checks due to SKIP_PREPUSH=1"
   exit 0
 fi
 
-echo "Running pre-push checks..."
+echo "🚀 Running comprehensive pre-push validation..."
+echo ""
+
+# Code Quality Checks
+echo "📝 Checking code quality..."
+npm run lint || exit 1
+npm run format:check || exit 1
+
+# Unit Tests with Coverage
+echo "🧪 Running unit tests with coverage..."
 npm run test:coverage --silent || exit 1
+
+# Flag Validation Tests
+echo "🎯 Validating all CLI flags..."
+npm run test:flags || exit 1
+
+# Feature Validation Tests  
+echo "🔍 Validating CLI features..."
+npm run test:features || exit 1
+
+# Critical QA Tests
+echo "⚡ Running critical QA configurations..."
 npm run qa:critical || exit 1
+
+echo ""
+echo "✅ All pre-push checks passed! Ready to push 🚀"
