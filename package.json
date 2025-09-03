@@ -29,11 +29,48 @@
     "react",
     "cli",
     "generator",
+    "scaffold",
+    "boilerplate",
+    "create-react-app",
+    "cra-alternative",
+    "react-generator",
     "vite",
-    "nextjs"
+    "vite-react",
+    "nextjs",
+    "next-generator",
+    "typescript",
+    "tailwind",
+    "redux",
+    "react-router",
+    "project-generator",
+    "react-cli",
+    "react-starter",
+    "modern-react",
+    "frontend",
+    "web-development",
+    "app-generator",
+    "javascript",
+    "jsx",
+    "spa",
+    "single-page-app",
+    "build-tool",
+    "developer-tools",
+    "kickstart",
+    "setup"
   ],
-  "author": "Gav Barosee",
+  "author": {
+    "name": "Gav Barosee",
+    "url": "https://github.com/gavbarosee"
+  },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gavbarosee/react-kickstart.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gavbarosee/react-kickstart/issues"
+  },
+  "homepage": "https://github.com/gavbarosee/react-kickstart#readme",
   "dependencies": {
     "boxen": "^8.0.1",
     "chalk": "^5.6.0",
