@@ -1,6 +1,17 @@
 # React Kickstart
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16-brightgreen.svg)](https://nodejs.org/)
+[![GitHub Actions](https://github.com/gavbarosee/react-kickstart/workflows/CI/badge.svg)](https://github.com/gavbarosee/react-kickstart/actions)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/gavbarosee/react-kickstart/pulls)
+
 A modern CLI tool for creating React applications with your preferred framework and stack—then install, build, and optionally start the dev server for you.
+
+> **Ready-to-run projects** • **Zero configuration** • **Thoroughly tested** • **Multiple frameworks**
+
+## Demo
+
+**Coming soon**: Interactive demo GIF showing the CLI in action
 
 ## Quick Start
 
@@ -51,13 +62,28 @@ node bin/react-kickstart.js my-app \
 
 ## Installation
 
-```bash
-# Run directly (recommended)
-node bin/react-kickstart.js my-app
+### Option 1: Run Directly (Recommended)
 
-# Or install globally
+```bash
+# Clone and run
+git clone https://github.com/gavbarosee/react-kickstart.git
+cd react-kickstart
+node bin/react-kickstart.js my-app
+```
+
+### Option 2: NPM Global Install (Coming Soon)
+
+```bash
+# Will be available once published to npm
 npm install -g react-kickstart
 react-kickstart my-app
+```
+
+### Option 3: NPX (Coming Soon)
+
+```bash
+# Will be available once published to npm
+npx react-kickstart my-app
 ```
 
 ## Documentation
@@ -135,6 +161,19 @@ You'll see a helpful error message with clear instructions:
    4. Create a Pull Request via GitHub
 ```
 
+## Author
+
+**React Kickstart** is created and maintained by [Gav Barosee](https://github.com/gavbarosee).
+
+If you use this project or find it helpful, please consider:
+
+- ⭐ Starring the repository
+- 🐛 Reporting issues
+- 🤝 Contributing improvements
+- 📢 Sharing with others
+
 ## License
 
 MIT - see LICENSE file for details.
+
+Copyright (c) 2024 Gav Barosee
