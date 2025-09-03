@@ -128,7 +128,7 @@ You'll see a helpful error message with clear instructions:
 
 ```bash
 🚫 COMMIT BLOCKED: Direct commits to 'main' branch are not allowed!
-📋 Please use the following workflow:
+📋 Pls use the following workflow:
    1. Create a feature branch: git checkout -b feature/your-feature-name
    2. Make your changes and commit to the feature branch
    3. Push the feature branch: git push origin feature/your-feature-name
