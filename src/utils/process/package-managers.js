@@ -81,13 +81,26 @@ export async function detectPackageManagers(options = {}) {
 }
 
 /**
+ * Resolve package manager command for the current platform
+ * @param {string} packageManager - Package manager name
+ * @returns {string} - Platform-specific command
+ */
+function resolvePackageManagerCommand(packageManager) {
+  if (process.platform === "win32") {
+    return packageManager === "npm" ? "npm.cmd" : `${packageManager}.cmd`;
+  }
+  return packageManager;
+}
+
+/**
  * Detect npm package manager
  * @param {Object} managers - Managers object to update
  * @param {boolean} verbose - Verbose logging
  */
 async function detectNpm(managers, verbose) {
+  const npmCommand = resolvePackageManagerCommand("npm");
   try {
-    const { stdout } = await execa("npm", ["--version"]);
+    const { stdout } = await execa(npmCommand, ["--version"]);
     managers.npm.available = true;
     managers.npm.version = stdout.trim();
   } catch (err) {
@@ -104,8 +117,9 @@ async function detectNpm(managers, verbose) {
  * @param {boolean} verbose - Verbose logging
  */
 async function detectYarn(managers, verbose) {
+  const yarnCommand = resolvePackageManagerCommand("yarn");
   try {
-    const { stdout } = await execa("yarn", ["--version"]);
+    const { stdout } = await execa(yarnCommand, ["--version"]);
     managers.yarn.available = true;
     managers.yarn.version = stdout.trim();
   } catch (err) {
@@ -149,7 +163,8 @@ export async function installDependencies(
     const installCommand = packageManager === "yarn" ? "install" : "install";
     const args = packageManager === "yarn" ? [] : ["--prefer-offline"];
 
-    const { stdout, stderr } = await execa(packageManager, [installCommand, ...args], {
+    const command = resolvePackageManagerCommand(packageManager);
+    const { stdout, stderr } = await execa(command, [installCommand, ...args], {
       cwd: projectPath,
       stdio: ["inherit", "pipe", "pipe"],
     });
@@ -359,10 +374,11 @@ function parseVulnerabilities(output, packageManager) {
  * @returns {Array} - Command array [command, ...args]
  */
 export function getPackageManagerCommand(packageManager, script) {
+  const command = resolvePackageManagerCommand(packageManager);
   if (packageManager === "yarn") {
-    return script === "start" ? ["yarn", "start"] : ["yarn", script];
+    return script === "start" ? [command, "start"] : [command, script];
   }
-  return ["npm", "run", script];
+  return [command, "run", script];
 }
 
 /**
@@ -371,8 +387,9 @@ export function getPackageManagerCommand(packageManager, script) {
  * @returns {Promise<boolean>} - Whether package manager is available
  */
 export async function isPackageManagerAvailable(packageManager) {
+  const command = resolvePackageManagerCommand(packageManager);
   try {
-    await execa(packageManager, ["--version"]);
+    await execa(command, ["--version"]);
     return true;
   } catch (error) {
     return false;
