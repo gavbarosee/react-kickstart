@@ -3,9 +3,9 @@
  * This tool helps debug when tests fail by showing what the CLI actually generates
  */
 
+import { execSync } from "child_process";
 import { existsSync, readFileSync, mkdirSync, rmSync } from "fs";
 import { join, resolve, dirname } from "path";
-import { execSync } from "child_process";
 import { fileURLToPath } from "url";
 
 class FeatureValidator {

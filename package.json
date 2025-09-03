@@ -11,14 +11,18 @@
     "start": "node bin/react-kickstart.js",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage --silent",
-    "lint": "eslint src bin --ext .js,.cjs",
-    "lint:fix": "eslint src bin --ext .js,.cjs --fix",
+    "test:flags": "node qa-automation/flag-validator.js",
+    "test:features": "node qa-automation/feature-validator.js",
+    "test:all": "npm run test && npm run test:flags && npm run test:features",
+    "lint": "eslint src bin qa-automation --ext .js,.cjs",
+    "lint:fix": "eslint src bin qa-automation --ext .js,.cjs --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "qa:critical": "node qa-automation/test-runner.js critical",
     "qa:standard": "node qa-automation/test-runner.js standard",
     "qa:edge": "node qa-automation/test-runner.js edge",
     "qa:quick": "node qa-automation/test-runner.js critical 5",
+    "qa:flags": "node qa-automation/flag-validator.js",
     "prepare": "husky"
   },
   "keywords": [
@@ -65,6 +69,10 @@
       "prettier --write"
     ],
     "bin/**/*.{js,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "qa-automation/**/*.{js,cjs}": [
       "eslint --fix",
       "prettier --write"
     ]

@@ -32,8 +32,11 @@ jobs:
       - name: Prettier check
         run: npm run format:check
 
-      - name: Tests
+      - name: Unit Tests
         run: npm run test:coverage
+
+      - name: Flag Validation Tests
+        run: npm run test:flags
 
       - name: Upload coverage report
         if: always()

@@ -11,8 +11,9 @@
     "test:quick": "node test-runner.js critical 5",
     "test:comprehensive": "node test-runner.js critical 50",
     "test:all": "npm run test:critical && npm run test:standard && npm run test:edge",
+    "test:flags": "node flag-validator.js",
     "validate:features": "node feature-validator.js",
-    "cleanup": "rm -rf qa-test-projects/ test-* debug-* reports/",
+    "cleanup": "rm -rf qa-test-projects/ qa-flag-tests/ test-* debug-* reports/",
     "report": "ls -la reports/test-report-*.json | tail -1 | xargs cat | jq '.summary'"
   },
   "keywords": [

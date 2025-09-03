@@ -30,8 +30,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run quick validation tests
+      - name: Run flag validation tests
+        run: npm run test:flags
 
+      - name: Run feature validation tests
+        run: npm run test:features
+
+      - name: Run quick QA tests
         run: |
           cd qa-automation
           npm install
@@ -45,6 +50,7 @@ jobs:
           path: |
             qa-automation/test-report-*.json
             qa-automation/reports/
+            reports/flag-validation-report-*.json
           retention-days: 3
           if-no-files-found: warn
 
@@ -89,6 +95,7 @@ jobs:
           path: |
             qa-automation/test-report-*.json
             qa-automation/reports/
+            reports/flag-validation-report-*.json
           retention-days: 7
           if-no-files-found: warn
 
