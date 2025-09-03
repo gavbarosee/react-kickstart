@@ -93,15 +93,18 @@ export class BaseStep {
     // Refresh display
     await this.renderer.refreshDisplay(answers);
 
-    // Show step header
+    // Get choices and calculate if we can go back BEFORE showing header
+    const choices = this.getChoices(answers);
+    const canGoBack = this.navigator.canGoBack();
+
+    // Show step header with navigation instructions if we can go back
     this.renderer.showStepHeader(
       this.stepNumber,
       this.totalSteps,
       this.title,
       this.icon,
-    ); // Get choices and calculate default BEFORE modifying choices array
-    const choices = this.getChoices(answers);
-    const canGoBack = this.navigator.canGoBack();
+      canGoBack,
+    );
     const defaultIndex = this.getDefault(answers);
 
     if (canGoBack) {
@@ -109,11 +112,8 @@ export class BaseStep {
       choices.push(this.renderer.createBackOption());
     }
 
-    // Add keyboard navigation hint if we can go back
+    // Get the message
     let message = this.getMessage();
-    if (canGoBack) {
-      message += chalk.dim("\n  (Press ← or Backspace to go back quickly)");
-    }
 
     // Prompt user with keyboard navigation support
     const selection = await this.promptWithKeyboardNavigation({

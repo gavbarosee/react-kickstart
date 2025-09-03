@@ -110,11 +110,14 @@ export class ErrorHandler {
       verbose = false,
     } = options;
 
+    // Auto-classify error if type is general or not specified
+    const errorType = type === "general" ? this.classifyError(error) : type;
+
     // Record error for analysis
-    this.recordError(error, type, severity);
+    this.recordError(error, errorType, severity);
 
     try {
-      switch (type) {
+      switch (errorType) {
         case "validation":
           return this.handleValidationError(error, options);
         case "network":
@@ -415,5 +418,93 @@ export class ErrorHandler {
       // 143 = 128 + 15 (SIGTERM)
       process.exit(143);
     });
+  }
+
+  /**
+   * Classify errors automatically based on error properties and message
+   */
+  classifyError(error) {
+    // Check for user cancellation first
+    if (
+      error.code === "USER_CANCELLED" ||
+      (error.message && error.message.includes("User cancelled during prompts"))
+    ) {
+      return "user_cancelled";
+    }
+
+    // Check error message for other patterns
+    const errorMsg = (error.message || String(error)).toLowerCase();
+
+    // Network errors
+    const networkKeywords = [
+      "enotfound",
+      "etimedout",
+      "econnreset",
+      "econnrefused",
+      "network",
+      "timeout",
+      "fetch",
+      "request failed",
+    ];
+    if (networkKeywords.some((keyword) => errorMsg.includes(keyword))) {
+      return "network";
+    }
+
+    // Permission errors
+    if (
+      errorMsg.includes("eacces") ||
+      errorMsg.includes("permission") ||
+      errorMsg.includes("eperm")
+    ) {
+      return "permission";
+    }
+
+    // Dependency errors
+    if (
+      errorMsg.includes("npm") ||
+      errorMsg.includes("yarn") ||
+      errorMsg.includes("package") ||
+      errorMsg.includes("dependency") ||
+      errorMsg.includes("eresolve")
+    ) {
+      return "dependency";
+    }
+
+    // Validation errors
+    if (errorMsg.includes("validation") || errorMsg.includes("invalid")) {
+      return "validation";
+    }
+
+    // Command not found errors (dependency issues)
+    if (
+      errorMsg.includes("command not found") ||
+      errorMsg.includes("not recognized as an internal") ||
+      errorMsg.includes("'vite' is not recognized") ||
+      errorMsg.includes("sh: vite: command not found") ||
+      (errorMsg.includes("enoent") && errorMsg.includes("spawn")) ||
+      errorMsg.includes("no such file or directory")
+    ) {
+      return "dependency";
+    }
+
+    // Filesystem errors
+    if (
+      errorMsg.includes("file") ||
+      errorMsg.includes("directory") ||
+      errorMsg.includes("enoent")
+    ) {
+      return "filesystem";
+    }
+
+    // Process errors
+    if (
+      errorMsg.includes("process") ||
+      errorMsg.includes("spawn") ||
+      errorMsg.includes("exit")
+    ) {
+      return "process";
+    }
+
+    return "general";
   }
 }

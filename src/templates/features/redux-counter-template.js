@@ -107,8 +107,13 @@ import { decrement, increment } from '../store/counterSlice';`;
 
   // Add styled components for counter if using styled-components
   if (userChoices.styling === "styled-components") {
+    // Check if InteractiveButton already exists to avoid duplicates
+    const hasExistingInteractiveButton = content.includes(
+      "const InteractiveButton = styled.button",
+    );
+
     // Add the new styled components after existing ones
-    const styledComponents = `
+    let styledComponents = `
 const CounterSection = styled.div\`
   margin-top: 2rem;
 \`;
@@ -141,7 +146,11 @@ const CountDisplay = styled.span\`
   border-radius: 0.25rem;
   min-width: 80px;
   text-align: center;
-\`;
+\`;`;
+
+    // Only add InteractiveButton if it doesn't already exist
+    if (!hasExistingInteractiveButton) {
+      styledComponents += `
 
 const InteractiveButton = styled.button\`
   background-color: #3b82f6;
@@ -161,6 +170,7 @@ const InteractiveButton = styled.button\`
     background-color: #1d4ed8;
   }
 \`;`;
+    }
 
     // Find the last styled component and add our new ones after it
     const lastStyledComponentMatch = content.match(
@@ -307,8 +317,13 @@ function addReduxCounterToNextjsAppPage(projectPath, userChoices) {
 
   // Add styled components for counter if using styled-components
   if (userChoices.styling === "styled-components") {
+    // Check if InteractiveButton already exists to avoid duplicates
+    const hasExistingInteractiveButton = content.includes(
+      "const InteractiveButton = styled.button",
+    );
+
     // Add the new styled components after existing ones
-    const styledComponents = `
+    let styledComponents = `
 const CounterSection = styled.div\`
   margin-top: 2rem;
 \`;
@@ -341,7 +356,11 @@ const CountDisplay = styled.span\`
   border-radius: 0.25rem;
   min-width: 80px;
   text-align: center;
-\`;
+\`;`;
+
+    // Only add InteractiveButton if it doesn't already exist
+    if (!hasExistingInteractiveButton) {
+      styledComponents += `
 
 const InteractiveButton = styled.button\`
   background-color: #3b82f6;
@@ -361,6 +380,7 @@ const InteractiveButton = styled.button\`
     background-color: #1d4ed8;
   }
 \`;`;
+    }
 
     // Find the last styled component and add our new ones after it
     const lastStyledComponentMatch = content.match(
@@ -453,8 +473,13 @@ function addReduxCounterToNextjsPagesIndex(projectPath, userChoices) {
 
   // Add styled components for counter if using styled-components
   if (userChoices.styling === "styled-components") {
+    // Check if InteractiveButton already exists to avoid duplicates
+    const hasExistingInteractiveButton = content.includes(
+      "const InteractiveButton = styled.button",
+    );
+
     // Add the new styled components after existing ones
-    const styledComponents = `
+    let styledComponents = `
 const CounterSection = styled.div\`
   margin-top: 2rem;
 \`;
@@ -487,7 +512,11 @@ const CountDisplay = styled.span\`
   border-radius: 0.25rem;
   min-width: 80px;
   text-align: center;
-\`;
+\`;`;
+
+    // Only add InteractiveButton if it doesn't already exist
+    if (!hasExistingInteractiveButton) {
+      styledComponents += `
 
 const InteractiveButton = styled.button\`
   background-color: #3b82f6;
@@ -507,6 +536,7 @@ const InteractiveButton = styled.button\`
     background-color: #1d4ed8;
   }
 \`;`;
+    }
 
     // Find the last styled component and add our new ones after it
     const lastStyledComponentMatch = content.match(

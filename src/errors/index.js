@@ -80,6 +80,14 @@ export function isDependencyError(error) {
 
 // Helper to classify errors automatically
 export function classifyError(error) {
+  // Check for user cancellation first
+  if (
+    error.code === "USER_CANCELLED" ||
+    (error.message && error.message.includes("User cancelled during prompts"))
+  ) {
+    return ERROR_TYPES.USER_CANCELLED;
+  }
+
   if (isNetworkError(error)) return ERROR_TYPES.NETWORK;
   if (isPermissionError(error)) return ERROR_TYPES.PERMISSION;
   if (isDependencyError(error)) return ERROR_TYPES.DEPENDENCY;

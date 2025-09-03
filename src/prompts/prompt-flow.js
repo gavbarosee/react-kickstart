@@ -99,12 +99,13 @@ export class PromptFlow {
           message.toLowerCase().includes("sigint")
         ) {
           // Re-throw a normalized cancellation signal for the global handler
+          // Don't log this as an error since it's intentional user action
           const cancelError = new Error("User cancelled during prompts");
           cancelError.code = "USER_CANCELLED";
           throw cancelError;
         }
 
-        // Other errors: log minimally and rethrow
+        // Other errors: log minimally and rethrow (but not for user cancellations)
         console.error("Error in prompt step:", message);
         throw error;
       }

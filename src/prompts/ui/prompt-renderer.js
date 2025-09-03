@@ -8,10 +8,11 @@ import inquirer from "inquirer";
 export class PromptRenderer {
   constructor() {
     this.answers = {};
+    this.hasShownAnimation = false;
   }
 
   /**
-   * Clears terminal and shows the main header with beautiful animation
+   * Clears terminal and shows the main header (animated first time, static after)
    */
   async showHeader() {
     process.stdout.write("\x1Bc");
@@ -33,13 +34,31 @@ export class PromptRenderer {
       chalk.rgb(20, 200, 100), // Green
     ];
 
-    // Animate the logo reveal from left to right
-    await this.animateLogoReveal(lines, gradientColors);
+    if (!this.hasShownAnimation) {
+      // Show animation on first run
+      await this.animateLogoReveal(lines, gradientColors);
+      this.hasShownAnimation = true;
+    } else {
+      // Show static logo for subsequent displays
+      this.showStaticLogo(lines, gradientColors);
+    }
 
     console.log();
     console.log(chalk.cyan("  A modern CLI tool for creating React applications"));
     console.log(chalk.cyan("  ------------------------------------------------"));
     console.log();
+  }
+
+  /**
+   * Shows the static logo instantly (no animation)
+   */
+  showStaticLogo(lines, gradientColors) {
+    const coloredLines = lines.map((line, index) => {
+      const colorIndex = index % gradientColors.length;
+      return gradientColors[colorIndex](line);
+    });
+
+    console.log(coloredLines.join("\n"));
   }
 
   /**
@@ -206,11 +225,20 @@ export class PromptRenderer {
   /**
    * Shows step header with progress indicator
    */
-  showStepHeader(stepNumber, totalSteps, title, icon = "•") {
+  showStepHeader(
+    stepNumber,
+    totalSteps,
+    title,
+    icon = "•",
+    showNavInstructions = false,
+  ) {
     console.log();
     console.log(chalk.bold.cyan(` ${icon} STEP ${stepNumber} OF ${totalSteps}`));
     console.log(chalk.bold.white(` ${title}`));
     console.log(chalk.cyan("━".repeat(40)));
+    if (showNavInstructions) {
+      console.log(chalk.dim("(Use ↑↓ to navigate, ← or Backspace to go back)"));
+    }
     console.log();
   }
 
@@ -254,7 +282,7 @@ export class PromptRenderer {
    */
   createBackOption() {
     return {
-      name: chalk.yellow("← Back to previous step"),
+      name: chalk.rgb(255, 140, 105)("← Back to previous step"),
       value: "BACK_OPTION",
     };
   }

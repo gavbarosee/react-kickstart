@@ -17,7 +17,7 @@ export class FrameworkStep extends BaseStep {
   getChoices(answers) {
     return [
       {
-        name: chalk.yellow("Vite") + " - Fast dev server, optimized builds",
+        name: chalk.magenta("Vite") + " - Fast dev server, optimized builds",
         value: "vite",
       },
       {
