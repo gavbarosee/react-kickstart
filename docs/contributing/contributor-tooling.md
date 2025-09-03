@@ -116,7 +116,7 @@ Located in `qa-automation/`:
   - `npm run qa:critical` → fast structural checks for critical combos
   - `npm run qa:standard` → broader coverage
 
-Refer to `docs/qa-automation-overview.md` for full details and usage examples.
+Refer to [`qa-automation-overview.md`](../qa/qa-automation-overview.md) for full details and usage examples.
 
 ### Conventions
 
@@ -127,10 +127,10 @@ Refer to `docs/qa-automation-overview.md` for full details and usage examples.
 
 ### Docs you may want
 
-- `docs/how-it-works.md` — internal architecture overview
-- `docs/project-structure-walkthrough.md` — files and folders explained
-- `docs/cli-flags.md` — non-interactive usage reference
-- `docs/using-react-kickstart.md` — end-user guide to the CLI
+- [`how-it-works.md`](../guides/how-it-works.md) — internal architecture overview
+- [`project-structure-walkthrough.md`](../guides/project-structure-walkthrough.md) — files and folders explained
+- [`cli-flags.md`](../guides/cli-flags.md) — non-interactive usage reference
+- [`using-react-kickstart.md`](../guides/using-react-kickstart.md) — end-user guide to the CLI
 
 ### CI tips
 

@@ -197,7 +197,7 @@ node qa-automation/test-runner.js edge 15
 
 ## Where to add or extend things quickly
 
-- Add a framework: `../extending/adding-a-new-framework.md` (full checklist).
+- Add a framework: [`adding-a-new-framework.md`](../extending/adding-a-new-framework.md) (full checklist).
 - Add a feature: `src/features/*` + helpers in `src/templates/*` and `src/builders/*`.
 - Change prompts: `src/prompts/steps/*` and `src/prompts/prompt-flow.js`.
 - Tweak build scripts/deps: `src/builders/package-json-builder.js` and `src/builders/dependencies.js`.
@@ -213,7 +213,7 @@ Prompts → Generator (by framework) → Config/Files/Features → Install → S
 
 ## Common tasks (1-minute pointers)
 
-- Add a framework: See `../extending/adding-a-new-framework.md`. Then add it to prompts in `src/prompts/steps/framework-step.js` and QA matrix `qa-automation/test-matrix-generator.js`.
+- Add a framework: See [`adding-a-new-framework.md`](../extending/adding-a-new-framework.md). Then add it to prompts in `src/prompts/steps/framework-step.js` and QA matrix `qa-automation/test-matrix-generator.js`.
 - Add a feature (e.g., another state manager): Add under `src/features/`, wire deps in `src/builders/dependency-resolver.js`, add content in `src/templates/*`, add prompt in `src/prompts/steps/*`.
 - Change default scripts: `src/builders/package-json-builder.js` → `getFrameworkScripts()`.
 - Change build output dir: `src/builders/package-json-builder.js` → `getBuildDirectory()`.
@@ -279,7 +279,7 @@ Prompts → Generator (by framework) → Config/Files/Features → Install → S
 - Where's the build output directory defined? → `getBuildDirectory()` in the same file.
 - How do I add a new prompt? → Create a step in `src/prompts/steps/`, wire in `src/prompts/prompt-flow.js`, and handle navigation from the previous step.
 - Generation failed after install—what next? → Re-run with `--yes`, check network/proxy, then review `installDependenciesWithRetry` in `utils/process/package-managers.js` logs.
-- How do I add a new framework? → `../extending/adding-a-new-framework.md` and ensure prompt choice + QA matrix update.
+- How do I add a new framework? → [`adding-a-new-framework.md`](../extending/adding-a-new-framework.md) and ensure prompt choice + QA matrix update.
 
 ---
 

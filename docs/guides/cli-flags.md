@@ -32,6 +32,7 @@ node bin/react-kickstart.js my-app \
 | `--state <state>`                  | —     | `redux` · `zustand` · `none`                                                     | `none`                                        | all          | State management                                                  |
 | `--api <api>`                      | —     | `axios-react-query` · `axios-only` · `fetch-react-query` · `fetch-only` · `none` | `none`                                        | all          | API client/integration                                            |
 | `--testing <testing>`              | —     | `vitest` · `jest` · `none`                                                       | `none`                                        | all          | Test framework                                                    |
+| `--deployment <deployment>`        | —     | `vercel` · `netlify` · `none`                                                    | `none`                                        | all          | Deployment platform setup                                         |
 | `--routing <routing>`              | —     | `react-router` · `none`                                                          | `none`                                        | Vite only    | React Router toggle for Vite projects                             |
 | `--next-routing <routing>`         | —     | `app` · `pages`                                                                  | `app`                                         | Next.js only | Router mode for Next.js                                           |
 | `--package-manager <pm>`           | —     | `npm` · `yarn`                                                                   | `npm`                                         | all          | Package manager                                                   |
@@ -52,7 +53,7 @@ node bin/react-kickstart.js app --yes --framework vite --no-typescript --styling
 - Next.js + TS + styled-components + app router + Jest:
 
 ```bash
-node bin/react-kickstart.js app --yes --framework nextjs --typescript --styling styled-components --next-routing app --testing jest
+node bin/react-kickstart.js app --yes --framework nextjs --typescript --styling styled-components --next-routing app --testing jest --deployment vercel
 ```
 
 - Vite + Tailwind + Zustand + Fetch-only + Vitest (no git, no summary):

@@ -19,6 +19,7 @@ A fast, opinionated CLI to scaffold React apps with your preferred framework and
 - API options: Axios, React Query integrations, or Fetch-only.
 - Testing: Vitest or Jest for both frameworks (recommended: Vitest for Vite, Jest for Next.js), with example tests.
   - Note: When using Jest with Vite, a minimal `babel.config.json` is generated and `babel-jest` + Babel presets are added to enable JSX/TS transforms.
+- Deployment: Vercel or Netlify setup with optimized build scripts and configuration.
 - Linting, Git init, editor open, and deployment scripts support.
 - QA automation to validate numerous combinations (critical, standard, edge).
 
@@ -57,6 +58,7 @@ bin/react-kickstart.js -> src/index.js(createApp)
 - State: `redux`, `zustand`, `none`
 - API: `axios-react-query`, `axios-only`, `fetch-react-query`, `fetch-only`, `none`
 - Testing: `vitest`, `jest`, `none`
+- Deployment: `vercel`, `netlify`, `none`
 - Package manager: `npm`, `yarn`
 - Linting: true/false; Git init: true/false; Open editor: Cursor or VS Code
 
@@ -83,5 +85,5 @@ node qa-automation/test-runner.js edge 15
 
 #### Where to read next
 
-- Project structure tour: `./project-structure-walkthrough.md`
-- Adding a framework: `../extending/adding-a-new-framework.md`
+- Project structure tour: [`project-structure-walkthrough.md`](./project-structure-walkthrough.md)
+- Adding a framework: [`adding-a-new-framework.md`](../extending/adding-a-new-framework.md)

@@ -4,7 +4,7 @@ This guide shows how to install, run, and customize `react-kickstart` to generat
 
 ### Prerequisites
 
-- Node.js 16 or newer
+- Node.js >= 16
 - macOS, Linux, or Windows with a POSIX shell
 - Git (optional but recommended)
 
@@ -49,6 +49,7 @@ You will choose:
 - **API layer**: axios/react-query, axios-only, fetch/react-query, fetch-only, or none
 - **routing**: React Router (Vite) or Next.js router mode (app/pages)
 - **testing**: Vitest, Jest, or none
+- **deployment**: Vercel, Netlify, or none
 - **package manager**: npm or yarn
 
 ### Flags-only mode (no prompts)
@@ -65,11 +66,12 @@ node bin/react-kickstart.js my-app \
   --state redux \
   --api axios-react-query \
   --testing vitest \
+  --deployment netlify \
   --package-manager npm \
   --no-autostart
 ```
 
-See detailed flags and more recipes in `./cli-flags.md`.
+See detailed flags and more recipes in [`cli-flags.md`](./cli-flags.md).
 
 ## What the CLI does
 
@@ -114,7 +116,7 @@ npm run dev
 
 ## Project structure and generated content
 
-For a deeper breakdown of files and conventions, see `./project-structure-walkthrough.md` and `./how-it-works.md`.
+For a deeper breakdown of files and conventions, see [`project-structure-walkthrough.md`](./project-structure-walkthrough.md) and [`how-it-works.md`](./how-it-works.md).
 
 Highlights you can expect:
 
@@ -123,6 +125,7 @@ Highlights you can expect:
 - Optional API setup (axios/fetch with or without react-query)
 - Optional routing (React Router for Vite or Next.js app/pages router)
 - Optional testing setup (Vitest or Jest) with example tests
+- Optional deployment setup (Vercel or Netlify) with build scripts
 - ESLint and Prettier (unless `--no-linting`)
 - Git repository initialized (unless `--no-git`)
 
@@ -154,13 +157,13 @@ node bin/react-kickstart.js app \
   --testing vitest
 ```
 
-More examples and nuances are listed in `./cli-flags.md`.
+More examples and nuances are listed in [`cli-flags.md`](./cli-flags.md).
 
 ## CI and QA
 
 Use `--skip-install` and `--no-autostart` in CI to generate structure only.
 
-The repository includes a QA automation harness; see `../qa/qa-automation-overview.md` for how to validate multiple configurations.
+The repository includes a QA automation harness; see [`qa-automation-overview.md`](../qa/qa-automation-overview.md) for how to validate multiple configurations.
 
 ## Troubleshooting
 
@@ -168,11 +171,11 @@ The repository includes a QA automation harness; see `../qa/qa-automation-overvi
 - Invalid project name: ensure it is a valid npm package name.
 - Dependency installation failed: rerun inside the project with your package manager; check network and registry access.
 - Port already in use: stop the running process or change the dev server port.
-- Unknown/incorrect flag: see `./cli-flags.md` for exact names and defaults.
+- Unknown/incorrect flag: see [`cli-flags.md`](./cli-flags.md) for exact names and defaults.
 
 ## Extending the generator
 
-To add new frameworks or options, see `../extending/adding-a-new-framework.md`. For internals, explore:
+To add new frameworks or options, see [`adding-a-new-framework.md`](../extending/adding-a-new-framework.md). For internals, explore:
 
 - `src/generators/frameworks` and `src/features/*` for stack-specific logic
 - `src/prompts` for interactive flows
@@ -182,5 +185,5 @@ To add new frameworks or options, see `../extending/adding-a-new-framework.md`. 
 
 1. Generate your app with the desired options
 2. Start the dev server (`npm run dev`)
-3. Explore the generated structure (`./project-structure-walkthrough.md`)
+3. Explore the generated structure ([`project-structure-walkthrough.md`](./project-structure-walkthrough.md))
 4. Customize state, API, styling, and tests to your needs
