@@ -91,7 +91,7 @@ export class BaseStep {
    */
   async execute(answers) {
     // Refresh display
-    this.renderer.refreshDisplay(answers);
+    await this.renderer.refreshDisplay(answers);
 
     // Show step header
     this.renderer.showStepHeader(

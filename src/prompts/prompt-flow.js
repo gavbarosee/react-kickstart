@@ -111,7 +111,7 @@ export class PromptFlow {
     }
 
     // Show completion message
-    this.renderer.refreshDisplay(this.answers);
+    await this.renderer.refreshDisplay(this.answers);
     this.renderer.showCompletion();
 
     return this.answers;

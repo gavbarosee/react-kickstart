@@ -11,15 +11,15 @@ export class PromptRenderer {
   }
 
   /**
-   * Clears terminal and shows the main header
+   * Clears terminal and shows the main header with beautiful animation
    */
-  showHeader() {
+  async showHeader() {
     process.stdout.write("\x1Bc");
     console.log();
 
     // Generate the figlet text
     const figletText = figlet.textSync("React Kickstart", {
-      font: "3-D",
+      font: "Small Slant",
       horizontalLayout: "fitted",
     });
 
@@ -33,16 +33,75 @@ export class PromptRenderer {
       chalk.rgb(20, 200, 100), // Green
     ];
 
-    const coloredLines = lines.map((line, index) => {
-      const colorIndex = index % gradientColors.length;
-      return gradientColors[colorIndex](line);
-    });
+    // Animate the logo reveal from left to right
+    await this.animateLogoReveal(lines, gradientColors);
 
-    console.log(coloredLines.join("\n"));
     console.log();
     console.log(chalk.cyan("  A modern CLI tool for creating React applications"));
     console.log(chalk.cyan("  ------------------------------------------------"));
     console.log();
+  }
+
+  /**
+   * Animates the logo reveal from left to right with beautiful timing
+   */
+  async animateLogoReveal(lines, gradientColors) {
+    const maxWidth = Math.max(...lines.map((line) => line.length));
+    const animationSpeed = 8; // milliseconds per character (faster!)
+    const lineDelay = 20; // milliseconds between starting each line (faster!)
+
+    // Create placeholder for the logo
+    const logoLines = lines.length;
+    for (let i = 0; i < logoLines; i++) {
+      console.log();
+    }
+
+    // Move cursor back to start of logo
+    process.stdout.write(`\x1b[${logoLines}A`);
+
+    // Animate each line with a slight delay
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      const line = lines[lineIndex];
+      const colorIndex = lineIndex % gradientColors.length;
+      const color = gradientColors[colorIndex];
+
+      // Start this line's animation after a delay
+      setTimeout(async () => {
+        await this.animateLineReveal(line, color, lineIndex, logoLines);
+      }, lineIndex * lineDelay);
+    }
+
+    // Wait for all animations to complete
+    const totalAnimationTime =
+      (lines.length - 1) * lineDelay + maxWidth * animationSpeed + 100;
+    await new Promise((resolve) => setTimeout(resolve, totalAnimationTime));
+  }
+
+  /**
+   * Animates a single line revealing from left to right
+   */
+  async animateLineReveal(line, color, lineIndex, totalLines) {
+    const chars = line.split("");
+    let revealed = "";
+
+    for (let i = 0; i <= chars.length; i++) {
+      // Move cursor to the correct position
+      process.stdout.write(`\x1b[${totalLines - lineIndex}A`); // Move up
+      process.stdout.write("\x1b[0G"); // Move to start of line
+
+      // Clear the line and show the revealed portion
+      process.stdout.write("\x1b[2K"); // Clear entire line
+      revealed = chars.slice(0, i).join("");
+      process.stdout.write(color(revealed));
+
+      // Move cursor back down
+      process.stdout.write(`\x1b[${totalLines - lineIndex}B`);
+
+      // Small delay for smooth animation
+      if (i < chars.length) {
+        await new Promise((resolve) => setTimeout(resolve, 8));
+      }
+    }
   }
 
   /**
@@ -139,8 +198,8 @@ export class PromptRenderer {
   /**
    * Displays the full screen with header and selections
    */
-  refreshDisplay(answers) {
-    this.showHeader();
+  async refreshDisplay(answers) {
+    await this.showHeader();
     this.showSelectionSummary(answers);
   }
 
