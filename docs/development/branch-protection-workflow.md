@@ -4,12 +4,50 @@ This document outlines the branch protection strategy and pull request workflow 
 
 ## Branch Protection Overview
 
-The `main` branch is protected with the following rules:
+The `main` branch is protected at **two levels** to ensure code quality and proper review:
+
+### Local Git Hooks Protection
+
+- **Blocks commits to main** - Pre-commit hook prevents local commits to main branch
+- **Blocks pushes to main** - Pre-push hook prevents direct pushes to main branch
+- **Immediate feedback** - Clear instructions provided when blocked
+- **No wasted resources** - Expensive tests only run on feature branches
+
+### GitHub Branch Protection Rules
 
 - **No direct pushes** - All changes must go through pull requests
 - **Required status checks** - All CI/CD tests must pass before merge
 - **Required reviews** - At least 1 approval required
 - **Up-to-date branches** - PRs must be current with main before merge
+
+## What Happens When You Try to Commit to Main
+
+If you accidentally try to commit directly to the `main` branch, you'll see:
+
+```bash
+$ git add .
+$ git commit -m "my changes"
+
+🚫 COMMIT BLOCKED: Direct commits to 'main' branch are not allowed!
+
+📋 Please use the following workflow:
+   1. Create a feature branch: git checkout -b feature/your-feature-name
+   2. Make your changes and commit to the feature branch
+   3. Push the feature branch: git push origin feature/your-feature-name
+   4. Create a Pull Request via GitHub
+
+💡 This protects the main branch and ensures all changes go through proper review.
+📚 See docs/development/branch-protection-workflow.md for details
+
+husky - pre-commit script failed (code 1)
+```
+
+**What to do next:**
+
+1. Your changes are still staged (safe)
+2. Create a feature branch: `git checkout -b feature/your-feature-name`
+3. Commit your changes: `git commit -m "your message"`
+4. Push and create a PR
 
 ## Development Workflow
 
@@ -190,3 +228,78 @@ Repository administrators can temporarily disable protection for emergency deplo
 - **Update dependencies**: Keep CI/CD tools current
 - **Review metrics**: Analyze PR and test success rates
 - **Adjust thresholds**: Fine-tune test timeouts and requirements
+
+## Technical Implementation
+
+### Git Hooks Overview
+
+The local branch protection is implemented using [Husky](https://typicode.github.io/husky/) git hooks:
+
+#### Pre-Commit Hook (`.husky/pre-commit`)
+
+- **Checks current branch** using `git rev-parse --abbrev-ref HEAD`
+- **Blocks commits to main** with clear error message and instructions
+- **Runs fast tests** on feature branches only (unit tests)
+- **Provides immediate feedback** without expensive operations
+
+#### Pre-Push Hook (`.husky/pre-push`)
+
+- **Checks current branch** before push operations
+- **Blocks pushes to main** with clear error message and instructions
+- **Runs comprehensive validation** on feature branches (linting, testing, QA)
+- **Skippable** with `SKIP_PREPUSH=1 git push` for emergencies
+
+### Hook Behavior
+
+| Branch Type | Pre-Commit     | Pre-Push           |
+| ----------- | -------------- | ------------------ |
+| `main`      | 🚫 **BLOCKED** | 🚫 **BLOCKED**     |
+| `feature/*` | ✅ Fast tests  | ✅ Full validation |
+| `fix/*`     | ✅ Fast tests  | ✅ Full validation |
+| `docs/*`    | ✅ Fast tests  | ✅ Full validation |
+
+### Benefits
+
+- **Early prevention** - Stops issues before they reach GitHub
+- **Resource efficiency** - No expensive tests on blocked operations
+- **Clear guidance** - Users know exactly what to do next
+- **Consistent enforcement** - Works regardless of GitHub settings
+- **Developer friendly** - Preserves staged changes for easy recovery
+
+### Troubleshooting
+
+#### Hook Not Working
+
+```bash
+# Reinstall husky hooks
+npm run prepare
+```
+
+#### Emergency Bypass (Maintainers Only)
+
+```bash
+# Skip pre-push validation
+SKIP_PREPUSH=1 git push origin main
+
+# Or temporarily disable hooks
+git config core.hooksPath /dev/null
+git push origin main
+git config --unset core.hooksPath
+```
+
+#### Updating Hook Logic
+
+Hooks are located in `.husky/` directory:
+
+- `.husky/pre-commit` - Commit-time validation
+- `.husky/pre-push` - Push-time validation
+
+After modifying hooks, test with:
+
+```bash
+# Test pre-commit
+git add . && git commit -m "test"
+
+# Test pre-push
+git push origin feature-branch
+```

@@ -120,7 +120,20 @@ We welcome contributions! This project uses branch protection and requires all c
 - [Architecture Overview](docs/architecture/how-it-works.md) - How the code is organized
 - [Adding Features](docs/extending/) - Extend the CLI with new options
 
-**Note**: Direct pushes to `main` are blocked. All changes must be reviewed and pass comprehensive testing before merge.
+**Note**: Direct commits and pushes to `main` are blocked locally and on GitHub. All changes must be reviewed and pass comprehensive testing before merge.
+
+### If You Try to Commit to Main
+
+You'll see a helpful error message with clear instructions:
+
+```bash
+🚫 COMMIT BLOCKED: Direct commits to 'main' branch are not allowed!
+📋 Please use the following workflow:
+   1. Create a feature branch: git checkout -b feature/your-feature-name
+   2. Make your changes and commit to the feature branch
+   3. Push the feature branch: git push origin feature/your-feature-name
+   4. Create a Pull Request via GitHub
+```
 
 ## License
 
