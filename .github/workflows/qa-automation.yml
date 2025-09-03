@@ -10,12 +10,15 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 jobs:
   quick-qa:
     name: Quick QA Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Skip if PR is in draft mode
+    if: github.event.pull_request.draft == false || github.event_name == 'push'
 
     steps:
       - name: Checkout code
@@ -168,9 +171,11 @@ jobs:
     name: Comprehensive QA Tests
     runs-on: ubuntu-latest
     timeout-minutes: 120
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[comprehensive-qa]')
+    # Run on PRs to main (before merge) or on main pushes with [comprehensive-qa] tag
+    if: |
+      (github.event_name == 'pull_request' && github.base_ref == 'main' && github.event.pull_request.draft == false) ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main' && contains(github.event.head_commit.message, '[comprehensive-qa]'))
     needs: critical-qa
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

@@ -102,11 +102,25 @@ See [QA Documentation](docs/qa/qa-automation-overview.md) for details.
 
 ## Contributing
 
-We welcome contributions! Please see:
+We welcome contributions! This project uses branch protection and requires all changes to go through pull requests.
 
-- [Contributor Guide](docs/development/contributor-tooling.md) - Development workflow
+### Quick Start for Contributors
+
+1. **Fork and clone** the repository
+2. **Create feature branch**: `git checkout -b feature/your-feature`
+3. **Make changes** and test locally
+4. **Push branch**: `git push origin feature/your-feature`
+5. **Create PR** using our template
+6. **Wait for reviews** and CI checks to pass
+
+### Development Resources
+
+- [Branch Protection Workflow](docs/development/branch-protection-workflow.md) - PR process and CI/CD
+- [Contributor Guide](docs/development/contributor-tooling.md) - Development workflow and tools
 - [Architecture Overview](docs/architecture/how-it-works.md) - How the code is organized
 - [Adding Features](docs/extending/) - Extend the CLI with new options
+
+**Note**: Direct pushes to `main` are blocked. All changes must be reviewed and pass comprehensive testing before merge.
 
 ## License
 
