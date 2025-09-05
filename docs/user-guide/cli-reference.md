@@ -5,10 +5,10 @@ Use flags to fully configure the app without interactive prompts.
 #### Basic usage
 
 ```bash
-node bin/react-kickstart.js <project-name> [flags]
+react-kickstart <project-name> [flags]
 
 # Example (Vite + TS + Tailwind + React Router + Redux + Vitest)
-node bin/react-kickstart.js my-app \
+react-kickstart my-app \
   --yes \
   --framework vite \
   --typescript \
@@ -47,31 +47,31 @@ node bin/react-kickstart.js my-app \
 - Vite minimal JS + CSS:
 
 ```bash
-node bin/react-kickstart.js app --yes --framework vite --no-typescript --styling css --routing none --state none --api none --testing none
+react-kickstart app --yes --framework vite --no-typescript --styling css --routing none --state none --api none --testing none
 ```
 
 - Next.js + TS + styled-components + app router + Jest:
 
 ```bash
-node bin/react-kickstart.js app --yes --framework nextjs --typescript --styling styled-components --next-routing app --testing jest --deployment vercel
+react-kickstart app --yes --framework nextjs --typescript --styling styled-components --next-routing app --testing jest --deployment vercel
 ```
 
 - Vite + Tailwind + Zustand + Fetch-only + Vitest (no git, no summary):
 
 ```bash
-node bin/react-kickstart.js app --yes --framework vite --styling tailwind --state zustand --api fetch-only --testing vitest --no-git --no-summary
+react-kickstart app --yes --framework vite --styling tailwind --state zustand --api fetch-only --testing vitest --no-git --no-summary
 ```
 
 - Next.js (pages router) + JS + CSS + Jest:
 
 ```bash
-node bin/react-kickstart.js app --yes --framework nextjs --no-typescript --styling css --next-routing pages --testing jest
+react-kickstart app --yes --framework nextjs --no-typescript --styling css --next-routing pages --testing jest
 ```
 
 - Vite + TS + React Router + Redux Toolkit + Vitest (Yarn):
 
 ```bash
-node bin/react-kickstart.js app \
+react-kickstart app \
   --yes \
   --framework vite \
   --typescript \
@@ -86,25 +86,25 @@ node bin/react-kickstart.js app \
 - CI: structure-only (skip install) and no autostart:
 
 ```bash
-node bin/react-kickstart.js app --yes --framework vite --typescript --styling tailwind --skip-install --no-autostart
+react-kickstart app --yes --framework vite --typescript --styling tailwind --skip-install --no-autostart
 ```
 
 - Minimal Next.js (TS + Tailwind + app router), skip git and summary:
 
 ```bash
-node bin/react-kickstart.js app --yes --framework nextjs --typescript --styling tailwind --next-routing app --no-git --no-summary
+react-kickstart app --yes --framework nextjs --typescript --styling tailwind --next-routing app --no-git --no-summary
 ```
 
 - Vite + TS + styled-components + Zustand + Vitest:
 
 ```bash
-node bin/react-kickstart.js app --yes --framework vite --typescript --styling styled-components --state zustand --testing vitest
+react-kickstart app --yes --framework vite --typescript --styling styled-components --state zustand --testing vitest
 ```
 
 - Vite JS quick demo (single line):
 
 ```bash
-node bin/react-kickstart.js demo -y -f vite --no-typescript --styling css --routing none --state none --api none --testing none
+react-kickstart demo -y -f vite --no-typescript --styling css --routing none --state none --api none --testing none
 ```
 
 #### Notes
