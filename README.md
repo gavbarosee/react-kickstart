@@ -44,10 +44,7 @@ _A modern CLI tool for creating React applications with your preferred framework
 
 <div align="center">
 
-<video width="800" controls autoplay muted loop>
-  <source src="https://github.com/gavbarosee/react-kickstart/releases/download/v0.1.0/react-kickstart-demo.mov" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+https://github.com/user-attachments/assets/3e2e935f-4f29-4445-8f25-3fd93bc5d440
 
 _The CLI's interactive mode in action!_
 
