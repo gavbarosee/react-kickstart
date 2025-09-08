@@ -121,17 +121,17 @@ gh run list --workflow=release.yml --limit=5
 gh run watch
 
 # Check npm package
-npm view react-kickstart
+npm view @gavbarosee/react-kickstart
 ```
 
 ### Verify Release
 
 ```bash
 # Check latest version
-npm view react-kickstart version
+npm view @gavbarosee/react-kickstart version
 
 # Test installation
-npx react-kickstart@latest --version
+npx @gavbarosee/react-kickstart@latest --version
 ```
 
 ## 🐛 Troubleshooting
@@ -184,6 +184,6 @@ gh run list --workflow=release.yml
 gh run list --workflow=full-matrix-validation.yml
 
 # Check package status
-npm view react-kickstart
-npm view react-kickstart versions --json
+npm view @gavbarosee/react-kickstart
+npm view @gavbarosee/react-kickstart versions --json
 ```
