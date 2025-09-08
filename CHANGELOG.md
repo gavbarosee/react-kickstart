@@ -1,3 +1,15 @@
+## [0.1.1](https://github.com/gavbarosee/react-kickstart/compare/v0.1.0...v0.1.1) (2025-09-08)
+
+
+### Bug Fixes
+
+* add GitHub Actions permissions for semantic-release git operations ([2d5edc0](https://github.com/gavbarosee/react-kickstart/commit/2d5edc0d2af795a8a24305ca7c8e321de18a49f2))
+* bypass Husky hooks for semantic-release git commits ([da97728](https://github.com/gavbarosee/react-kickstart/commit/da97728c6851b73ee7b964658d734e6d980da136))
+* change package name to scoped @gavbarosee/react-kickstart ([f1794eb](https://github.com/gavbarosee/react-kickstart/commit/f1794eb0c17b9d2cff8cba91e7547fc1b5785ae7))
+* configure npm authentication properly in release workflow ([3cc6e64](https://github.com/gavbarosee/react-kickstart/commit/3cc6e64968ca47645d69612b0bd258774fd3fe2d))
+* disable Husky hooks in CI environment for semantic-release ([58f897e](https://github.com/gavbarosee/react-kickstart/commit/58f897e6563cdbfb6e58af174daea8cb80897ec4))
+* use Personal Access Token to bypass branch protection ([7ecb9ab](https://github.com/gavbarosee/react-kickstart/commit/7ecb9ab6ca7dca6bb3a840c545ad88d6f825fc41))
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
