@@ -8,8 +8,8 @@ _A modern CLI tool for creating React applications with your preferred framework
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16-brightgreen.svg?style=for-the-badge)](https://nodejs.org/)
-[![NPM Version](https://img.shields.io/npm/v/react-kickstart?style=for-the-badge)](https://www.npmjs.com/package/react-kickstart)
-[![NPM Downloads](https://img.shields.io/npm/dm/react-kickstart?style=for-the-badge)](https://www.npmjs.com/package/react-kickstart)
+[![NPM Version](https://img.shields.io/npm/v/@gavbarosee/react-kickstart?style=for-the-badge)](https://www.npmjs.com/package/@gavbarosee/react-kickstart)
+[![NPM Downloads](https://img.shields.io/npm/dm/@gavbarosee/react-kickstart?style=for-the-badge)](https://www.npmjs.com/package/@gavbarosee/react-kickstart)
 
 <!-- Quality Badges -->
 
@@ -68,10 +68,10 @@ _The CLI's interactive mode in action!_
 
 ```bash
 # Interactive mode (guided prompts)
-npx react-kickstart my-app
+npx @gavbarosee/react-kickstart my-app
 
 # Non-interactive mode (with flags)
-npx react-kickstart my-app \
+npx @gavbarosee/react-kickstart my-app \
   --yes \
   --framework vite \
   --typescript \
@@ -156,21 +156,21 @@ npx react-kickstart my-app \
 
 ```bash
 # Run directly without installing
-npx react-kickstart my-app
+npx @gavbarosee/react-kickstart my-app
 
 # Or with yarn
-yarn create react-kickstart my-app
+yarn create @gavbarosee/react-kickstart my-app
 ```
 
 ### Global Install
 
 ```bash
 # Install globally for repeated use
-npm install -g react-kickstart
+npm install -g @gavbarosee/react-kickstart
 react-kickstart my-app
 
 # Or with yarn
-yarn global add react-kickstart
+yarn global add @gavbarosee/react-kickstart
 react-kickstart my-app
 ```
 
@@ -178,13 +178,13 @@ react-kickstart my-app
 
 ```bash
 # Interactive mode (recommended for beginners)
-npx react-kickstart my-app
+npx @gavbarosee/react-kickstart my-app
 
 # Quick start with defaults
-npx react-kickstart my-app --yes
+npx @gavbarosee/react-kickstart my-app --yes
 
 # Full-featured setup
-npx react-kickstart my-app --yes --framework nextjs --typescript --styling tailwind --state redux --api axios-react-query --testing jest --deployment vercel
+npx @gavbarosee/react-kickstart my-app --yes --framework nextjs --typescript --styling tailwind --state redux --api axios-react-query --testing jest --deployment vercel
 ```
 
 ---
@@ -207,13 +207,13 @@ npx react-kickstart my-app --yes --framework nextjs --typescript --styling tailw
 
 ```bash
 # Interactive mode (recommended)
-npx react-kickstart my-app
+npx @gavbarosee/react-kickstart my-app
 
 # Quick start with defaults
-npx react-kickstart my-app --yes
+npx @gavbarosee/react-kickstart my-app --yes
 
 # Full-featured setup
-npx react-kickstart my-app --yes --framework nextjs --typescript --styling tailwind --state redux --api axios-react-query --testing jest --deployment vercel
+npx @gavbarosee/react-kickstart my-app --yes --framework nextjs --typescript --styling tailwind --state redux --api axios-react-query --testing jest --deployment vercel
 ```
 
 **[Complete CLI Reference →](docs/user-guide/cli-reference.md)** - All flags, examples, and usage patterns
