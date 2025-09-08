@@ -23,7 +23,8 @@
     "qa:edge": "node qa-automation/test-runner.js edge",
     "qa:quick": "node qa-automation/test-runner.js critical 5",
     "qa:flags": "node qa-automation/flag-validator.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "semantic-release": "semantic-release"
   },
   "keywords": [
     "react",
@@ -98,7 +99,11 @@
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "prettier": "^3.6.2",
-    "vitest": "^1.6.0"
+    "vitest": "^1.6.0",
+    "semantic-release": "^24.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.0"
   },
   "lint-staged": {
     "src/**/*.{js,cjs}": [
@@ -117,5 +122,33 @@
   "engines": {
     "node": ">=16"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/changelog",
+        {
+          "changelogFile": "CHANGELOG.md"
+        }
+      ],
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "CHANGELOG.md",
+            "package.json",
+            "package-lock.json"
+          ],
+          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        }
+      ]
+    ]
+  }
 }

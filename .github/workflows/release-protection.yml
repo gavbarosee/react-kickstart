@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths: ["package.json"] # Trigger when version changes
+  workflow_dispatch:
 
 jobs:
   check-version-change:
@@ -26,10 +27,16 @@ jobs:
           CURRENT_VERSION=$(jq -r '.version' package.json)
           PREVIOUS_VERSION=$(git show HEAD~1:package.json | jq -r '.version')
 
-          if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+          # Check if this is a semantic-release automated commit
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+
+          if [[ "$COMMIT_MSG" == *"chore(release):"* ]] && [[ "$COMMIT_MSG" == *"[skip ci]"* ]]; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "🤖 Semantic release automated commit - skipping protection"
+          elif [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
             echo "changed=true" >> $GITHUB_OUTPUT
             echo "version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-            echo "🚨 Version changed from $PREVIOUS_VERSION to $CURRENT_VERSION"
+            echo "🚨 Manual version change detected from $PREVIOUS_VERSION to $CURRENT_VERSION"
           else
             echo "changed=false" >> $GITHUB_OUTPUT
             echo "No version change detected"
@@ -44,14 +51,18 @@ jobs:
     steps:
       - name: Block automatic publishing
         run: |
-          echo "🚫 BLOCKING AUTOMATIC PUBLISH"
+          echo "🚫 BLOCKING MANUAL VERSION CHANGE"
           echo ""
-          echo "Version bump detected: ${{ needs.check-version-change.outputs.new-version }}"
+          echo "Manual version bump detected: ${{ needs.check-version-change.outputs.new-version }}"
           echo ""
-          echo "⚠️  Before publishing to npm, you MUST:"
+          echo "⚠️  Manual version changes require full validation:"
           echo "   1. Run full matrix validation: gh workflow run full-matrix-validation.yml"
           echo "   2. Wait for ALL 8,640 configurations to pass"
-          echo "   3. Only then manually publish: npm publish"
+          echo "   3. Use semantic release instead: revert version change and use conventional commits"
+          echo ""
+          echo "💡 Recommended: Use semantic-release for automated versioning"
+          echo "   - Use conventional commit messages (feat:, fix:, etc.)"
+          echo "   - Let semantic-release handle version bumps automatically"
           echo ""
           echo "🔒 This protects users from broken configurations"
 
@@ -120,8 +131,8 @@ jobs:
             github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              title: `🚀 Release Checklist: v${version}`,
+              title: `🚀 Manual Version Change: v${version}`,
               body: checklist,
-              labels: ['release', 'checklist', 'validation-required'],
+              labels: ['release', 'manual-version', 'validation-required'],
               assignees: [context.actor]
             });
