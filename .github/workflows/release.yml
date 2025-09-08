@@ -170,6 +170,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }}.git
 
+      - name: Disable Husky in CI
+        run: |
+          echo "HUSKY=0" >> $GITHUB_ENV
+
       - name: Verify npm authentication
         run: npm whoami
 
