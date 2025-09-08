@@ -4,16 +4,27 @@
 
 _A modern CLI tool for creating React applications with your preferred framework and stack_
 
+<!-- Core Badges -->
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D16-brightgreen.svg?style=for-the-badge)](https://nodejs.org/)
 [![NPM Version](https://img.shields.io/npm/v/react-kickstart?style=for-the-badge)](https://www.npmjs.com/package/react-kickstart)
 [![NPM Downloads](https://img.shields.io/npm/dm/react-kickstart?style=for-the-badge)](https://www.npmjs.com/package/react-kickstart)
+
+<!-- Quality Badges -->
+
 [![GitHub Actions](https://img.shields.io/github/actions/workflow/status/gavbarosee/react-kickstart/ci.yml?style=for-the-badge&label=CI)](https://github.com/gavbarosee/react-kickstart/actions)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/pulls)
+[![Last Commit](https://img.shields.io/github/last-commit/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/commits/main)
+
+<!-- Community Badges -->
+
 [![GitHub Stars](https://img.shields.io/github/stars/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/stargazers)
 [![GitHub Issues](https://img.shields.io/github/issues/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/issues)
 [![GitHub Forks](https://img.shields.io/github/forks/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/network/members)
-[![Last Commit](https://img.shields.io/github/last-commit/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/commits/main)
+
+<!-- Repository Stats -->
+
 [![Languages](https://img.shields.io/github/languages/count/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart)
 [![Top Language](https://img.shields.io/github/languages/top/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart)
 [![Code Size](https://img.shields.io/github/languages/code-size/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart)
@@ -36,6 +47,7 @@ _A modern CLI tool for creating React applications with your preferred framework
 - [CLI Reference](#cli-reference)
 - [Documentation](#documentation)
 - [Quality Assurance](#quality-assurance)
+- [Community & Support](#community--support)
 - [Contributing](#contributing)
 - [Changelog](#changelog)
 - [License](#license)
@@ -238,6 +250,29 @@ React Kickstart includes comprehensive quality assurance systems to ensure relia
 
 ---
 
+## Community & Support
+
+### Getting Help
+
+- **[GitHub Discussions](https://github.com/gavbarosee/react-kickstart/discussions)** - Ask questions, share ideas, and get community support
+- **[GitHub Issues](https://github.com/gavbarosee/react-kickstart/issues)** - Report bugs and request features
+- **[Documentation](docs/)** - Comprehensive guides and API reference
+
+### Stay Updated
+
+- **[GitHub Releases](https://github.com/gavbarosee/react-kickstart/releases)** - Latest versions and release notes
+- **[Changelog](CHANGELOG.md)** - Detailed version history and breaking changes
+- **[Roadmap](https://github.com/gavbarosee/react-kickstart/projects)** - Upcoming features and improvements
+
+### Community Guidelines
+
+- Be respectful and constructive in all interactions
+- Search existing issues before creating new ones
+- Provide clear reproduction steps for bug reports
+- Follow the contribution guidelines for pull requests
+
+---
+
 ## Contributing
 
 **Contributions welcome!** All changes go through pull requests with automated testing and QA validation.
@@ -256,11 +291,9 @@ React Kickstart includes comprehensive quality assurance systems to ensure relia
 
 ### **Contributors**
 
-<div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
-  <a href="https://github.com/gavbarosee">
-    <img src="https://avatars.githubusercontent.com/u/30755017?v=4" width="60" height="60" style="border-radius: 50%;" alt="Gav Barosee">
-  </a>
-</div>
+[![Contributors](https://contrib.rocks/image?repo=gavbarosee/react-kickstart)](https://github.com/gavbarosee/react-kickstart/graphs/contributors)
+
+**[Become a contributor →](https://github.com/gavbarosee/react-kickstart/blob/main/docs/development/contributor-tooling.md)** - Setup guide and contribution workflow
 
 ---
 

@@ -1,0 +1,283 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      force_release:
+        description: "Force release (bypass validation checks)"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  # Check if this is a semantic release commit (automated)
+  check-release-commit:
+    name: Check Release Commit
+    runs-on: ubuntu-latest
+    outputs:
+      is-release-commit: ${{ steps.check.outputs.is-release }}
+      should-release: ${{ steps.check.outputs.should-release }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check commit type
+        id: check
+        run: |
+          # Check if this is an automated release commit
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+          echo "Commit message: $COMMIT_MSG"
+
+          if [[ "$COMMIT_MSG" == *"chore(release):"* ]] && [[ "$COMMIT_MSG" == *"[skip ci]"* ]]; then
+            echo "is-release=true" >> $GITHUB_OUTPUT
+            echo "should-release=false" >> $GITHUB_OUTPUT
+            echo "🤖 This is an automated release commit - skipping release"
+          elif [[ "${{ github.event.inputs.force_release }}" == "true" ]]; then
+            echo "is-release=false" >> $GITHUB_OUTPUT
+            echo "should-release=true" >> $GITHUB_OUTPUT
+            echo "🚀 Force release requested"
+          else
+            echo "is-release=false" >> $GITHUB_OUTPUT
+            echo "should-release=true" >> $GITHUB_OUTPUT
+            echo "📦 Regular commit - checking for release"
+          fi
+
+  # Run full validation before release
+  validation:
+    name: Pre-Release Validation
+    runs-on: ubuntu-latest
+    needs: check-release-commit
+    if: needs.check-release-commit.outputs.should-release == 'true'
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Prettier check
+        run: npm run format:check
+
+      - name: Unit Tests
+        run: npm run test:coverage
+
+      - name: Flag Validation Tests
+        run: npm run test:flags
+
+      - name: Feature Validation Tests
+        run: npm run test:features
+
+      - name: Upload validation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: validation-results-${{ matrix.node-version }}
+          path: |
+            coverage/
+            reports/
+
+  # Check if we need to run full matrix validation
+  check-matrix-validation:
+    name: Check Matrix Validation Status
+    runs-on: ubuntu-latest
+    needs: [check-release-commit, validation]
+    if: needs.check-release-commit.outputs.should-release == 'true'
+    outputs:
+      matrix-required: ${{ steps.check.outputs.required }}
+      matrix-status: ${{ steps.check.outputs.status }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for version change
+        id: check
+        run: |
+          # Check if package.json version changed in this push
+          if git diff HEAD~1 HEAD --name-only | grep -q "package.json"; then
+            CURRENT_VERSION=$(jq -r '.version' package.json)
+            PREVIOUS_VERSION=$(git show HEAD~1:package.json | jq -r '.version')
+            
+            if [ "$CURRENT_VERSION" != "$PREVIOUS_VERSION" ]; then
+              echo "required=true" >> $GITHUB_OUTPUT
+              echo "status=pending" >> $GITHUB_OUTPUT
+              echo "🔍 Version change detected - matrix validation required"
+            else
+              echo "required=false" >> $GITHUB_OUTPUT
+              echo "status=not-needed" >> $GITHUB_OUTPUT
+              echo "✅ No version change - matrix validation not required"
+            fi
+          else
+            echo "required=false" >> $GITHUB_OUTPUT
+            echo "status=not-needed" >> $GITHUB_OUTPUT
+            echo "✅ No package.json changes - matrix validation not required"
+          fi
+
+  # Semantic Release
+  release:
+    name: Semantic Release
+    runs-on: ubuntu-latest
+    needs: [check-release-commit, validation, check-matrix-validation]
+    if: |
+      needs.check-release-commit.outputs.should-release == 'true' &&
+      (needs.check-matrix-validation.outputs.matrix-required == 'false' || 
+       github.event.inputs.force_release == 'true')
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify npm authentication
+        run: npm whoami
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm run semantic-release
+
+      - name: Post-release notification
+        if: success()
+        run: |
+          echo "🎉 Release completed successfully!"
+          echo "📦 Package published to npm"
+          echo "📝 Changelog updated"
+          echo "🏷️ GitHub release created"
+
+  # Block release if matrix validation is required
+  block-release:
+    name: Block Release - Matrix Validation Required
+    runs-on: ubuntu-latest
+    needs: [check-release-commit, validation, check-matrix-validation]
+    if: |
+      needs.check-release-commit.outputs.should-release == 'true' &&
+      needs.check-matrix-validation.outputs.matrix-required == 'true' &&
+      github.event.inputs.force_release != 'true'
+    steps:
+      - name: Block release
+        run: |
+          echo "🚫 RELEASE BLOCKED"
+          echo ""
+          echo "⚠️  A version change was detected, but full matrix validation is required."
+          echo ""
+          echo "Before releasing, you MUST:"
+          echo "  1. Run: gh workflow run full-matrix-validation.yml"
+          echo "  2. Wait for ALL 8,640 configurations to pass"
+          echo "  3. Then force release: gh workflow run release.yml -f force_release=true"
+          echo ""
+          echo "🔒 This protects users from broken configurations"
+          exit 1
+
+  # Create release issue if matrix validation is needed
+  create-matrix-validation-issue:
+    name: Create Matrix Validation Issue
+    runs-on: ubuntu-latest
+    needs: [check-release-commit, validation, check-matrix-validation, block-release]
+    if: |
+      always() &&
+      needs.check-release-commit.outputs.should-release == 'true' &&
+      needs.check-matrix-validation.outputs.matrix-required == 'true' &&
+      github.event.inputs.force_release != 'true'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create matrix validation issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const version = '${{ steps.version.outputs.version }}';
+
+            const issueBody = `## 🚀 Matrix Validation Required for v${version}
+
+            **⚠️ Release is blocked pending full matrix validation**
+
+            A version change was detected, which requires running the complete test matrix (8,640 configurations) before release.
+
+            ### Required Actions
+
+            1. **Run Full Matrix Validation**
+               \`\`\`bash
+               gh workflow run full-matrix-validation.yml
+               \`\`\`
+
+            2. **Wait for Completion**
+               - Monitor the workflow progress
+               - Ensure ALL 8,640 configurations pass
+               - Check for any failing combinations
+
+            3. **Force Release After Validation**
+               \`\`\`bash
+               gh workflow run release.yml -f force_release=true
+               \`\`\`
+
+            ### Validation Status
+            - [ ] Full matrix validation started
+            - [ ] All 8,640 configurations passed
+            - [ ] No failing test combinations
+            - [ ] Ready for release
+
+            ### Release Commands
+            \`\`\`bash
+            # Check validation status
+            gh run list --workflow=full-matrix-validation.yml --limit=1
+
+            # Force release after validation
+            gh workflow run release.yml -f force_release=true
+
+            # Monitor release
+            gh run list --workflow=release.yml --limit=1
+            \`\`\`
+
+            ---
+
+            **🔒 Release Protection Active**
+
+            This issue was automatically created because the release workflow detected a version change.
+            The full matrix validation ensures all feature combinations work correctly before publishing to npm.
+
+            **Auto-close:** This issue will be automatically closed when the release completes successfully.`;
+
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚀 Matrix Validation Required: v${version}`,
+              body: issueBody,
+              labels: ['release', 'matrix-validation', 'blocked'],
+              assignees: [context.actor]
+            });
