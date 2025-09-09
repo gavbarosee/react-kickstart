@@ -312,3 +312,8 @@ For issues with the release system:
 2. Review validation reports in the `reports/` directory
 3. Create an issue with the `release` label
 4. Contact maintainers for urgent release needs
+
+## Related Documentation
+
+- **[Nightly Operations](./nightly-operations.md)**: Automated nightly validation, security checks, and performance monitoring
+- **[CI Setup](./ci-setup.md)**: Basic CI/CD configuration examples

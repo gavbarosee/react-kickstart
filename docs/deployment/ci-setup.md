@@ -44,3 +44,8 @@ qa:
 ```
 
 For slower networks, prefer structural checks first and schedule full runs nightly.
+
+## Related Documentation
+
+- **[Nightly Operations](./nightly-operations.md)**: Comprehensive guide to automated nightly checks, security scanning, and performance monitoring
+- **[Automated Release Setup](./automated-release-setup.md)**: Complete release automation with semantic versioning

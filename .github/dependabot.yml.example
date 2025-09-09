@@ -1,0 +1,78 @@
+# Example Dependabot Configuration
+# Rename to dependabot.yml to enable automated dependency updates
+
+version: 2
+updates:
+  # Main project dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "gavbarosee"
+    assignees:
+      - "gavbarosee"
+    labels:
+      - "dependencies"
+      - "automated"
+    commit-message:
+      prefix: "build(deps)"
+      include: "scope"
+    # Group minor and patch updates
+    groups:
+      development-dependencies:
+        patterns:
+          - "@vitest/*"
+          - "eslint*"
+          - "prettier"
+          - "husky"
+          - "lint-staged"
+        update-types:
+          - "minor"
+          - "patch"
+      testing-dependencies:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # QA automation dependencies
+  - package-ecosystem: "npm"
+    directory: "/qa-automation"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "gavbarosee"
+    labels:
+      - "dependencies"
+      - "qa-automation"
+      - "automated"
+    commit-message:
+      prefix: "build(qa-deps)"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "gavbarosee"
+    labels:
+      - "github-actions"
+      - "automated"
+    commit-message:
+      prefix: "ci"
