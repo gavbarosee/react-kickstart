@@ -66,6 +66,8 @@ _The CLI's interactive mode in action!_
 
 ## Quick Start
 
+> **New**: Now with enhanced semantic release automation!
+
 ```bash
 # Interactive mode (guided prompts)
 npx @gavbarosee/react-kickstart my-app
