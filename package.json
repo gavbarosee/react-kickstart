@@ -140,8 +140,6 @@
         "@semantic-release/npm",
         {
           "npmPublish": true,
-          "tarballDir": "dist",
-          "pkgRoot": ".",
           "access": "public"
         }
       ],
