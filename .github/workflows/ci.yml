@@ -32,8 +32,12 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Prettier check
-        run: npm run format:check
+      - name: Auto-format and check
+        run: |
+          echo "🎨 Running Prettier auto-format..."
+          npm run format
+          echo "✅ Checking if formatting is correct..."
+          npm run format:check
 
       - name: Unit Tests
         run: npm run test:coverage

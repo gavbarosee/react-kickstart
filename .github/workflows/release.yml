@@ -76,7 +76,10 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Prettier check
+      - name: Auto-format with Prettier
+        run: npm run format
+
+      - name: Verify formatting
         run: npm run format:check
 
       - name: Unit Tests
