@@ -1,14 +1,12 @@
 # [0.2.0](https://github.com/gavbarosee/react-kickstart/compare/v0.1.1...v0.2.0) (2025-09-09)
 
-
 ### Bug Fixes
 
-* remove problematic tarballDir config from semantic-release npm plugin ([a0e1bfc](https://github.com/gavbarosee/react-kickstart/commit/a0e1bfc13fafd3a60fcde04631f93d80714ce5f7))
-
+- remove problematic tarballDir config from semantic-release npm plugin ([a0e1bfc](https://github.com/gavbarosee/react-kickstart/commit/a0e1bfc13fafd3a60fcde04631f93d80714ce5f7))
 
 ### Features
 
-* add semantic release automation notice to README ([48923fc](https://github.com/gavbarosee/react-kickstart/commit/48923fcd883da7348b153713d706d53b1410d456))
+- add semantic release automation notice to README ([48923fc](https://github.com/gavbarosee/react-kickstart/commit/48923fcd883da7348b153713d706d53b1410d456))
 
 ## [0.1.1](https://github.com/gavbarosee/react-kickstart/compare/v0.1.0...v0.1.1) (2025-09-08)
 
