@@ -1,0 +1,195 @@
+# Example Security Workflow
+# Rename to security.yml to enable
+
+name: Security Scan
+
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Weekly Monday 3 AM UTC
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  dependency-audit:
+    name: Dependency Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: |
+          npm audit --audit-level=moderate --json > audit-report.json || true
+          
+          # Check for high/critical vulnerabilities
+          HIGH_VULNS=$(cat audit-report.json | jq '.metadata.vulnerabilities.high // 0')
+          CRITICAL_VULNS=$(cat audit-report.json | jq '.metadata.vulnerabilities.critical // 0')
+          
+          echo "High vulnerabilities: $HIGH_VULNS"
+          echo "Critical vulnerabilities: $CRITICAL_VULNS"
+          
+          if [ "$HIGH_VULNS" -gt 0 ] || [ "$CRITICAL_VULNS" -gt 0 ]; then
+            echo "❌ High or critical vulnerabilities found!"
+            cat audit-report.json | jq '.advisories'
+            exit 1
+          else
+            echo "✅ No high or critical vulnerabilities found"
+          fi
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-audit-report
+          path: audit-report.json
+
+  codeql-analysis:
+    name: CodeQL Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:javascript"
+
+  license-check:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install license checker
+        run: npm install -g license-checker
+
+      - name: Check licenses
+        run: |
+          license-checker --json --out licenses.json
+          
+          # Check for problematic licenses
+          PROBLEMATIC=$(license-checker --summary --excludePackages 'react-kickstart@*' | grep -E "(GPL|AGPL|LGPL)" || true)
+          
+          if [ -n "$PROBLEMATIC" ]; then
+            echo "❌ Problematic licenses found:"
+            echo "$PROBLEMATIC"
+            exit 1
+          else
+            echo "✅ All licenses are compatible"
+          fi
+
+      - name: Upload license report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: licenses.json
+
+  generated-project-security:
+    name: Generated Project Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate test projects
+        run: |
+          # Generate projects with different configurations
+          node bin/react-kickstart.js security-test-vite --yes --framework vite --typescript --no-autostart
+          node bin/react-kickstart.js security-test-nextjs --yes --framework nextjs --typescript --no-autostart
+
+      - name: Audit generated projects
+        run: |
+          echo "🔍 Auditing Vite project..."
+          cd security-test-vite
+          npm audit --audit-level=moderate || echo "Vite project has vulnerabilities"
+          cd ..
+          
+          echo "🔍 Auditing Next.js project..."
+          cd security-test-nextjs
+          npm audit --audit-level=moderate || echo "Next.js project has vulnerabilities"
+          cd ..
+
+      - name: Cleanup test projects
+        if: always()
+        run: |
+          rm -rf security-test-vite security-test-nextjs
+
+  security-report:
+    name: Generate Security Report
+    runs-on: ubuntu-latest
+    needs: [dependency-audit, codeql-analysis, license-check, generated-project-security]
+    if: always()
+    steps:
+      - name: Create security summary
+        run: |
+          echo "# Security Scan Summary - $(date)" > security-summary.md
+          echo "" >> security-summary.md
+          echo "## Scan Results" >> security-summary.md
+          echo "- Dependency Audit: ${{ needs.dependency-audit.result }}" >> security-summary.md
+          echo "- CodeQL Analysis: ${{ needs.codeql-analysis.result }}" >> security-summary.md
+          echo "- License Check: ${{ needs.license-check.result }}" >> security-summary.md
+          echo "- Generated Projects: ${{ needs.generated-project-security.result }}" >> security-summary.md
+          echo "" >> security-summary.md
+          
+          if [[ "${{ needs.dependency-audit.result }}" == "success" && 
+                "${{ needs.codeql-analysis.result }}" == "success" && 
+                "${{ needs.license-check.result }}" == "success" && 
+                "${{ needs.generated-project-security.result }}" == "success" ]]; then
+            echo "✅ **All security checks passed**" >> security-summary.md
+          else
+            echo "❌ **Some security checks failed - review required**" >> security-summary.md
+          fi
+
+      - name: Upload security summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-summary
+          path: security-summary.md
