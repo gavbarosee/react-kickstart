@@ -1,0 +1,68 @@
+name: Auto Format
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  format:
+    name: Auto Format Code
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.head_ref }}
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Prettier
+        run: npm run format
+
+      - name: Check for changes
+        id: verify-changed-files
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "📝 Prettier made formatting changes"
+            git status --short
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "✅ No formatting changes needed"
+          fi
+
+      - name: Commit and push changes
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "style: auto-format code with prettier [skip ci]"
+          git push
+
+      - name: Comment on PR
+        if: steps.verify-changed-files.outputs.changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🎨 **Auto-formatted code with Prettier**\n\nI found some formatting issues and fixed them automatically. The code is now properly formatted according to the project standards.'
+            })
