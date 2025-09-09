@@ -1,3 +1,11 @@
+## [0.2.1](https://github.com/gavbarosee/react-kickstart/compare/v0.2.0...v0.2.1) (2025-09-09)
+
+
+### Bug Fixes
+
+* format CHANGELOG.md with prettier ([14743a1](https://github.com/gavbarosee/react-kickstart/commit/14743a1ae09d6c9a30d67cb7b9dddcbd9b331743))
+* update chalk to 5.6.2 and pin version for security ([892d9c1](https://github.com/gavbarosee/react-kickstart/commit/892d9c1979ccfba82f62162938861431a89851d9))
+
 # [0.2.0](https://github.com/gavbarosee/react-kickstart/compare/v0.1.1...v0.2.0) (2025-09-09)
 
 ### Bug Fixes
