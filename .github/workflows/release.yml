@@ -189,15 +189,19 @@ jobs:
 
       - name: Configure GitHub Packages authentication
         run: |
+          # Create a clean .npmrc for GitHub Packages
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
           echo "@gavbarosee:registry=https://npm.pkg.github.com" >> ~/.npmrc
+          echo "registry=https://npm.pkg.github.com" >> ~/.npmrc
 
       - name: Publish to GitHub Packages
         run: |
           # Get the version that was just published
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           echo "Publishing version $PACKAGE_VERSION to GitHub Packages..."
-          npm publish --registry=https://npm.pkg.github.com
+
+          # Publish explicitly to GitHub Packages registry
+          npm publish --registry=https://npm.pkg.github.com --access=public
 
       - name: Post-release notification
         if: success()

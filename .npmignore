@@ -1,0 +1,43 @@
+# Exclude local development configuration from published package
+.npmrc
+
+# Development and testing files
+coverage/
+reports/
+qa-automation/test-report-*.json
+qa-automation/reports/
+
+# CI/CD files that shouldn't be in the package
+.github/workflows/
+.husky/
+
+# Development documentation
+docs/development/
+docs/deployment/
+docs/qa/
+docs/troubleshooting/
+
+# Test files
+src/__tests__/
+**/*.spec.js
+**/*.test.js
+
+# Development configuration
+.prettierrc.json
+.prettierignore
+commitlint.config.js
+vitest.config.js
+eslint.config.js
+
+# Git files
+.gitignore
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
