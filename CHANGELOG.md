@@ -1,3 +1,15 @@
+# [0.4.0](https://github.com/gavbarosee/react-kickstart/compare/v0.3.0...v0.4.0) (2025-09-10)
+
+
+### Bug Fixes
+
+* **ci:** update nightly validation permissions ([2bf89eb](https://github.com/gavbarosee/react-kickstart/commit/2bf89ebe85685a47e1bb7dc3f2453866b2c383e1))
+
+
+### Features
+
+* add dual publishing to npm and GitHub Packages ([cc48848](https://github.com/gavbarosee/react-kickstart/commit/cc488480f1f01959cf3ce0f537cb74d03eea4ceb))
+
 # [0.3.0](https://github.com/gavbarosee/react-kickstart/compare/v0.2.1...v0.3.0) (2025-09-10)
 
 
