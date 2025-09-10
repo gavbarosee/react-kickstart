@@ -15,6 +15,7 @@ permissions:
   contents: write
   issues: write
   pull-requests: write
+  packages: write
 
 jobs:
   # Check if this is a semantic release commit (automated)
@@ -162,7 +163,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Configure npm authentication
+      - name: Configure npm authentication for public npm
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
@@ -180,17 +181,30 @@ jobs:
       - name: Verify npm authentication
         run: npm whoami
 
-      - name: Release
+      - name: Release to public npm
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm run semantic-release
+
+      - name: Configure GitHub Packages authentication
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+          echo "@gavbarosee:registry=https://npm.pkg.github.com" >> ~/.npmrc
+
+      - name: Publish to GitHub Packages
+        run: |
+          # Get the version that was just published
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "Publishing version $PACKAGE_VERSION to GitHub Packages..."
+          npm publish --registry=https://npm.pkg.github.com
 
       - name: Post-release notification
         if: success()
         run: |
           echo "🎉 Release completed successfully!"
           echo "📦 Package published to npm"
+          echo "📦 Package published to GitHub Packages"
           echo "📝 Changelog updated"
           echo "🏷️ GitHub release created"
 
