@@ -1,5 +1,9 @@
 name: Full Matrix Validation
 
+permissions:
+  contents: read
+  issues: write
+
 on:
   # Trigger before any release
   push:
@@ -86,21 +90,45 @@ jobs:
         with:
           script: |
             const fs = require('fs');
+            const path = require('path');
+
+            // Check if qa-automation directory exists
+            if (!fs.existsSync('qa-automation')) {
+              console.log('⚠️ qa-automation directory not found, skipping report creation');
+              return;
+            }
+
             const reports = fs.readdirSync('qa-automation').filter(f => f.startsWith('test-report-'));
+
+            if (reports.length === 0) {
+              console.log('⚠️ No test reports found, skipping issue creation');
+              return;
+            }
 
             let totalTests = 0;
             let totalPassed = 0;
             let totalFailed = 0;
 
             reports.forEach(file => {
-              const report = JSON.parse(fs.readFileSync(`qa-automation/${file}`, 'utf8'));
-              totalTests += report.summary?.total || 0;
-              totalPassed += report.summary?.successful || 0;
-              totalFailed += report.summary?.failed || 0;
+              try {
+                const report = JSON.parse(fs.readFileSync(`qa-automation/${file}`, 'utf8'));
+                totalTests += report.summary?.total || 0;
+                totalPassed += report.summary?.successful || 0;
+                totalFailed += report.summary?.failed || 0;
+              } catch (error) {
+                console.log(`⚠️ Error reading report ${file}:`, error.message);
+              }
             });
 
-            const successRate = Math.round((totalPassed / totalTests) * 100);
-            const status = totalFailed === 0 ? '✅ SAFE TO RELEASE' : '🚫 DO NOT RELEASE';
+            // Avoid division by zero
+            const successRate = totalTests > 0 ? Math.round((totalPassed / totalTests) * 100) : 0;
+            const status = totalFailed === 0 && totalTests > 0 ? '✅ SAFE TO RELEASE' : '🚫 DO NOT RELEASE';
+
+            // Only create issue if we have meaningful data
+            if (totalTests === 0) {
+              console.log('⚠️ No tests were executed, skipping issue creation');
+              return;
+            }
 
             const comment = `## 🔬 Full Matrix Validation Results
 
@@ -117,10 +145,16 @@ jobs:
             }`;
 
             // Create issue for tracking
-            github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: `Full Matrix Validation - ${successRate}% Success Rate ${totalFailed === 0 ? '✅' : '❌'}`,
-              body: comment,
-              labels: ['qa', 'validation', totalFailed === 0 ? 'release-ready' : 'release-blocked']
-            });
+            try {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Full Matrix Validation - ${successRate}% Success Rate ${totalFailed === 0 ? '✅' : '❌'}`,
+                body: comment,
+                labels: ['qa', 'validation', totalFailed === 0 ? 'release-ready' : 'release-blocked']
+              });
+              console.log('✅ Successfully created validation report issue');
+            } catch (error) {
+              console.log('❌ Failed to create issue:', error.message);
+              // Don't fail the workflow if issue creation fails
+            }
