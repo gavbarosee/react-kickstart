@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/gavbarosee/react-kickstart/compare/v0.2.1...v0.3.0) (2025-09-10)
+
+
+### Features
+
+* publish to gh registry ([bebe426](https://github.com/gavbarosee/react-kickstart/commit/bebe426daf011cecd71027b1923d1431625a0174))
+
 ## [0.2.1](https://github.com/gavbarosee/react-kickstart/compare/v0.2.0...v0.2.1) (2025-09-09)
 
 
