@@ -1,3 +1,10 @@
+## [0.4.1](https://github.com/gavbarosee/react-kickstart/compare/v0.4.0...v0.4.1) (2025-09-10)
+
+
+### Bug Fixes
+
+* **ci:** fix registry issue ([cfa48a1](https://github.com/gavbarosee/react-kickstart/commit/cfa48a11f3311b838a426a4e914423cd1e2ab6cb))
+
 # [0.4.0](https://github.com/gavbarosee/react-kickstart/compare/v0.3.0...v0.4.0) (2025-09-10)
 
 
