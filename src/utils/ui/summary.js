@@ -1,68 +1,66 @@
-import boxen from "boxen";
 import chalk from "chalk";
 import inquirer from "inquirer";
 
-import { createUIRenderer } from "../../templates/index.js";
 import { validateUserChoices } from "../core/validation.js";
 
 function getFrameworkDescriptor(framework) {
   const descriptors = {
-    vite: "Fast dev server, optimized builds",
-    nextjs: "SSR, full-stack framework",
+    vite: "Fast dev, optimized builds",
+    nextjs: "SSR, full-stack",
   };
   return descriptors[framework] || "";
 }
 
 function getStylingDescriptor(styling) {
   const descriptors = {
-    tailwind: "Utility-first CSS framework",
-    "styled-components": "CSS-in-JS library",
-    css: "Standard CSS files",
+    tailwind: "Utility-first CSS",
+    "styled-components": "CSS-in-JS",
+    css: "Standard CSS",
   };
   return descriptors[styling] || "";
 }
 
 function getRoutingDescriptor(routing) {
   const descriptors = {
-    "react-router": "Popular, comprehensive routing",
+    "react-router": "Comprehensive routing",
   };
   return descriptors[routing] || "";
 }
 
 function getStateManagementDescriptor(stateManagement) {
   const descriptors = {
-    redux: "Predictable state container",
-    zustand: "Lightweight state management",
-    none: "No state management",
+    redux: "Predictable state",
+    zustand: "Lightweight state",
+    none: "None",
   };
   return descriptors[stateManagement] || "";
 }
 
 function getApiDescriptor(api) {
   const descriptors = {
-    "axios-only": "Promise-based HTTP client",
-    "fetch-only": "Native browser fetch API",
-    "axios-react-query": "Axios + React Query for server state",
-    "fetch-react-query": "Fetch + React Query for server state",
-    none: "No API setup",
+    "axios-only": "HTTP client",
+    "fetch-only": "Native fetch",
+    "axios-react-query": "Axios + React Query",
+    "fetch-react-query": "Fetch + React Query",
+    none: "None",
   };
   return descriptors[api] || "";
 }
 
 function getTestingDescriptor(testing) {
   const descriptors = {
-    vitest: "Fast unit test framework",
-    jest: "JavaScript testing framework",
-    none: "No testing setup",
+    vitest: "Fast unit tests",
+    jest: "Testing framework",
+    none: "None",
   };
   return descriptors[testing] || "";
 }
 
 function getDeploymentDescriptor(deployment) {
   const descriptors = {
-    vercel: "Zero-config deployments with Next.js integration",
-    netlify: "Powerful platform with build optimization",
-    none: "No deployment setup",
+    vercel: "Zero-config deployment",
+    netlify: "Build optimization",
+    none: "None",
   };
   return descriptors[deployment] || "";
 }
@@ -81,20 +79,20 @@ export function generateSummary(projectPath, projectName, userChoices) {
   };
 
   const formatSectionHeader = (title) => {
-    return chalk.cyan(`\n━━━━━━━━━━ ${title} ━━━━━━━━━━`);
+    return chalk.dim(`\n${title}`);
   };
 
   // create summary content with logical grouping
   const content = [
-    formatItem("", "Project", chalk.cyan(projectName)),
-    formatItem("", "Location", chalk.cyan(projectPath)),
+    formatItem("", "Project", chalk.white(projectName)),
+    formatItem("", "Location", chalk.dim(projectPath)),
 
     formatSectionHeader("Build Configuration"),
-    formatItem("", "Package Manager", chalk.green(userChoices.packageManager)),
+    formatItem("", "Package Manager", chalk.white(userChoices.packageManager)),
     formatItem(
       "",
       "Framework",
-      chalk.yellow(userChoices.framework),
+      chalk.white(userChoices.framework),
       getFrameworkDescriptor(userChoices.framework),
     ),
 
@@ -104,14 +102,14 @@ export function generateSummary(projectPath, projectName, userChoices) {
       ? formatItem(
           "",
           "Routing",
-          chalk.yellow(userChoices.routing),
+          chalk.white(userChoices.routing),
           getRoutingDescriptor(userChoices.routing),
         )
       : "",
 
     // conditionally show routing for next.js
     userChoices.framework === "nextjs"
-      ? formatItem("", "Router Type", chalk.blue(userChoices.nextRouting))
+      ? formatItem("", "Router Type", chalk.white(userChoices.nextRouting))
       : "",
 
     formatSectionHeader("Developer Experience"),
@@ -125,7 +123,7 @@ export function generateSummary(projectPath, projectName, userChoices) {
     formatItem(
       "",
       "Styling",
-      chalk.magenta(userChoices.styling),
+      chalk.white(userChoices.styling),
       getStylingDescriptor(userChoices.styling),
     ),
 
@@ -134,7 +132,7 @@ export function generateSummary(projectPath, projectName, userChoices) {
       ? formatItem(
           "",
           "State Management",
-          chalk.blue(userChoices.stateManagement),
+          chalk.white(userChoices.stateManagement),
           getStateManagementDescriptor(userChoices.stateManagement),
         )
       : "",
@@ -144,7 +142,7 @@ export function generateSummary(projectPath, projectName, userChoices) {
       ? formatItem(
           "",
           "API Setup",
-          chalk.green(userChoices.api),
+          chalk.white(userChoices.api),
           getApiDescriptor(userChoices.api),
         )
       : "",
@@ -154,7 +152,7 @@ export function generateSummary(projectPath, projectName, userChoices) {
       ? formatItem(
           "",
           "Testing",
-          chalk.cyan(userChoices.testing),
+          chalk.white(userChoices.testing),
           getTestingDescriptor(userChoices.testing),
         )
       : "",
@@ -165,36 +163,26 @@ export function generateSummary(projectPath, projectName, userChoices) {
       ? formatItem(
           "",
           "Deployment",
-          chalk.yellow(userChoices.deployment),
+          chalk.white(userChoices.deployment),
           getDeploymentDescriptor(userChoices.deployment),
         )
       : "",
     formatItem("", "Git Repository", getStatusSymbol(userChoices.initGit)),
     userChoices.openEditor
-      ? formatItem("", "Editor", chalk.cyan(userChoices.editor))
+      ? formatItem("", "Editor", chalk.white(userChoices.editor))
       : formatItem("", "Open in Editor", getStatusSymbol(userChoices.openEditor)),
 
     // Add warnings section if there are any
     validation.warnings && validation.warnings.length > 0
-      ? formatSectionHeader("Configuration Recommendations")
+      ? formatSectionHeader("Recommendations")
       : "",
-    ...(validation.warnings || []).map((warning) => chalk.yellow(`  ${warning}`)),
-
-    // action hint at the bottom
-    "",
-    chalk.gray("» Press Y to proceed or N to reconfigure «"),
+    ...(validation.warnings || []).map((warning) => chalk.dim(`  ${warning}`)),
   ]
     .filter(Boolean)
     .join("\n");
 
-  return boxen(content, {
-    title: " Your React Project Configuration ",
-    titleAlignment: "center",
-    padding: 1,
-    margin: 1,
-    borderColor: "cyan",
-    borderStyle: "round",
-  });
+  // Simple header + content (no box)
+  return `\n${chalk.white("Configuration")}\n\n${content}\n`;
 }
 
 // display the summary and ask for confirmation
@@ -202,14 +190,26 @@ export async function showSummaryPrompt(projectPath, projectName, userChoices) {
   const summary = generateSummary(projectPath, projectName, userChoices);
   console.log(summary);
 
-  const { confirmed } = await inquirer.prompt([
+  const { confirmed } = await inquirer.prompt(
+    [
+      {
+        type: "confirm",
+        name: "confirmed",
+        message: "Proceed with this configuration?",
+        default: true,
+      },
+    ],
     {
-      type: "confirm",
-      name: "confirmed",
-      message: "Proceed with this configuration?",
-      default: true,
+      theme: {
+        prefix: chalk.white("→"),
+        style: {
+          answer: chalk.white,
+          message: chalk.white,
+          highlight: chalk.white,
+        },
+      },
     },
-  ]);
+  );
 
   return confirmed;
 }

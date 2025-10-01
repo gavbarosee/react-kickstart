@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import figures from "figures";
 import inquirer from "inquirer";
 import symbols from "log-symbols";
 
@@ -53,18 +52,30 @@ export class UserErrorReporter {
    * Show network error recovery options
    */
   async showNetworkRecovery() {
-    const { action } = await inquirer.prompt([
+    const { action } = await inquirer.prompt(
+      [
+        {
+          type: "list",
+          name: "action",
+          message: "How would you like to proceed?",
+          choices: [
+            { name: "Retry the operation", value: "retry" },
+            { name: "Continue without network operations", value: "skip" },
+            { name: "Exit and try again later", value: "exit" },
+          ],
+        },
+      ],
       {
-        type: "list",
-        name: "action",
-        message: "How would you like to proceed?",
-        choices: [
-          { name: "Retry the operation", value: "retry" },
-          { name: "Continue without network operations", value: "skip" },
-          { name: "Exit and try again later", value: "exit" },
-        ],
+        theme: {
+          prefix: chalk.white("→"),
+          style: {
+            answer: chalk.white,
+            message: chalk.white,
+            highlight: chalk.white,
+          },
+        },
       },
-    ]);
+    );
 
     return action;
   }
@@ -90,21 +101,33 @@ export class UserErrorReporter {
    * Show permission error recovery options
    */
   async showPermissionRecovery() {
-    const { action } = await inquirer.prompt([
+    const { action } = await inquirer.prompt(
+      [
+        {
+          type: "list",
+          name: "action",
+          message: "How would you like to resolve this?",
+          choices: [
+            {
+              name: "Try running with elevated privileges (sudo)",
+              value: "sudo",
+            },
+            { name: "Choose a different directory", value: "different_dir" },
+            { name: "Exit and fix permissions manually", value: "exit" },
+          ],
+        },
+      ],
       {
-        type: "list",
-        name: "action",
-        message: "How would you like to resolve this?",
-        choices: [
-          {
-            name: "Try running with elevated privileges (sudo)",
-            value: "sudo",
+        theme: {
+          prefix: chalk.white("→"),
+          style: {
+            answer: chalk.white,
+            message: chalk.white,
+            highlight: chalk.white,
           },
-          { name: "Choose a different directory", value: "different_dir" },
-          { name: "Exit and fix permissions manually", value: "exit" },
-        ],
+        },
       },
-    ]);
+    );
 
     return action;
   }
@@ -165,14 +188,26 @@ export class UserErrorReporter {
       { name: "Exit and fix manually", value: "exit" },
     ];
 
-    const { action } = await inquirer.prompt([
+    const { action } = await inquirer.prompt(
+      [
+        {
+          type: "list",
+          name: "action",
+          message: "How would you like to proceed?",
+          choices,
+        },
+      ],
       {
-        type: "list",
-        name: "action",
-        message: "How would you like to proceed?",
-        choices,
+        theme: {
+          prefix: chalk.white("→"),
+          style: {
+            answer: chalk.white,
+            message: chalk.white,
+            highlight: chalk.white,
+          },
+        },
       },
-    ]);
+    );
 
     return action;
   }
@@ -206,18 +241,30 @@ export class UserErrorReporter {
    * Show process error recovery options
    */
   async showProcessRecovery(context = {}) {
-    const { action } = await inquirer.prompt([
+    const { action } = await inquirer.prompt(
+      [
+        {
+          type: "list",
+          name: "action",
+          message: "How would you like to proceed?",
+          choices: [
+            { name: "Retry the operation", value: "retry" },
+            { name: "Continue with manual setup", value: "manual" },
+            { name: "Exit", value: "exit" },
+          ],
+        },
+      ],
       {
-        type: "list",
-        name: "action",
-        message: "How would you like to proceed?",
-        choices: [
-          { name: "Retry the operation", value: "retry" },
-          { name: "Continue with manual setup", value: "manual" },
-          { name: "Exit", value: "exit" },
-        ],
+        theme: {
+          prefix: chalk.white("→"),
+          style: {
+            answer: chalk.white,
+            message: chalk.white,
+            highlight: chalk.white,
+          },
+        },
       },
-    ]);
+    );
 
     return action;
   }
@@ -227,9 +274,7 @@ export class UserErrorReporter {
    */
   reportUserCancellation() {
     console.log();
-    console.log(
-      chalk.yellow(`${figures.warning} Cancelled by user (CTRL-C). Cleaning up…`),
-    );
+    console.log(chalk.dim("Cancelled. Cleaning up…"));
     console.log();
   }
 

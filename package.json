@@ -73,12 +73,10 @@
   },
   "homepage": "https://github.com/gavbarosee/react-kickstart#readme",
   "dependencies": {
-    "boxen": "^8.0.1",
     "chalk": "5.6.2",
     "commander": "^14.0.0",
     "cross-spawn": "^7.0.3",
     "execa": "^9.6.0",
-    "figlet": "^1.7.0",
     "figures": "^6.1.0",
     "fs-extra": "^11.2.0",
     "inquirer": "^12.9.3",

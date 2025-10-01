@@ -25,15 +25,15 @@ export class StylingStep extends BaseStep {
   getChoices(answers) {
     return [
       {
-        name: chalk.cyan("Tailwind CSS") + " - Utility-first CSS framework",
+        name: chalk.white("Tailwind CSS") + chalk.dim(" - Utility-first CSS framework"),
         value: "tailwind",
       },
       {
-        name: chalk.magenta("styled-components") + " - CSS-in-JS library",
+        name: chalk.white("styled-components") + chalk.dim(" - CSS-in-JS library"),
         value: "styled-components",
       },
       {
-        name: chalk.blue("Plain CSS") + " - No additional dependencies",
+        name: chalk.white("Plain CSS") + chalk.dim(" - No additional dependencies"),
         value: "css",
       },
     ];

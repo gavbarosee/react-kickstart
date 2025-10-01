@@ -139,28 +139,28 @@ export function generateCompletionSummary(
 
   const successHeader = [
     "",
-    chalk.bgGreen(`[✓] Project Successfully Created!`),
-    `   ${chalk.cyan("Name:")} ${chalk.bold(projectName)}`,
-    `   ${chalk.cyan("Location:")} ${projectPath}`,
-    `   ${chalk.cyan("Tech Stack:")} ${techStack.join(", ")}`,
-    `   ${chalk.cyan("Package Manager:")} ${userChoices.packageManager}`,
-    `   ${chalk.cyan("Dev Server:")} ${chalk.underline(`http://localhost:${frameworkInfo.port}`)}`,
+    chalk.white("Project Created"),
+    `   ${chalk.dim("Name:")} ${chalk.white(projectName)}`,
+    `   ${chalk.dim("Location:")} ${chalk.dim(projectPath)}`,
+    `   ${chalk.dim("Tech Stack:")} ${chalk.white(techStack.join(", "))}`,
+    `   ${chalk.dim("Package Manager:")} ${chalk.white(userChoices.packageManager)}`,
+    `   ${chalk.dim("Dev Server:")} ${chalk.white(`http://localhost:${frameworkInfo.port}`)}`,
   ].join("\n");
 
   // STEP 2: next steps with commands
   const commandLines = [];
 
-  commandLines.push(`   ${chalk.bold("1.")} Navigate to project folder`);
-  commandLines.push(`      ${chalk.cyan(`cd ${projectName}`)}`);
+  commandLines.push(`   ${chalk.white("1.")} Navigate to project folder`);
+  commandLines.push(`      ${chalk.white(`cd ${projectName}`)}`);
   commandLines.push("");
 
   let cmdIndex = 2;
 
   commandLines.push(
-    `   ${chalk.bold(`${cmdIndex}.`)} Development server starting automatically`,
+    `   ${chalk.white(`${cmdIndex}.`)} Development server starting automatically`,
   );
   commandLines.push(
-    `      ${chalk.gray(
+    `      ${chalk.dim(
       `→ Opening your default browser to http://localhost:${frameworkInfo.port}`,
     )}`,
   );
@@ -168,9 +168,9 @@ export function generateCompletionSummary(
   cmdIndex++;
 
   if (commandExamples.dev) {
-    commandLines.push(`   ${chalk.bold(`${cmdIndex}.`)} Manual server control`);
+    commandLines.push(`   ${chalk.white(`${cmdIndex}.`)} Manual server control`);
     commandLines.push(
-      `      ${chalk.cyan(`${commandExamples.dev.command}`)} ${chalk.gray(
+      `      ${chalk.white(`${commandExamples.dev.command}`)} ${chalk.dim(
         `→ Restart development server if needed`,
       )}`,
     );
@@ -179,20 +179,16 @@ export function generateCompletionSummary(
   }
 
   if (commandExamples.build) {
-    commandLines.push(`   ${chalk.bold(`${cmdIndex}.`)} Build for production`);
+    commandLines.push(`   ${chalk.white(`${cmdIndex}.`)} Build for production`);
     commandLines.push(
-      `      ${chalk.cyan(`${commandExamples.build.command}`)} ${chalk.gray(
+      `      ${chalk.white(`${commandExamples.build.command}`)} ${chalk.dim(
         `→ ${commandExamples.build.description}`,
       )}`,
     );
     cmdIndex++;
   }
 
-  const nextStepsSection = [
-    "",
-    chalk.bgMagenta(`[i] Next Steps:`),
-    ...commandLines,
-  ].join("\n");
+  const nextStepsSection = ["", chalk.dim("Next Steps"), ...commandLines].join("\n");
 
   // STEP 3: tech-specific tips
   // (Quick Tips removed)
@@ -200,26 +196,26 @@ export function generateCompletionSummary(
   // STEP 4: documentation links
   const docsSection = [
     "",
-    chalk.bgBlue(`[i] Documentation:`),
-    `   • ${userChoices.framework}: ${chalk.underline(frameworkInfo.docs)}`,
-    `   • ${userChoices.styling}: ${chalk.underline(stylingInfo.docs)}`,
+    chalk.dim("Documentation"),
+    `   • ${chalk.white(userChoices.framework)}: ${chalk.dim(frameworkInfo.docs)}`,
+    `   • ${chalk.white(userChoices.styling)}: ${chalk.dim(stylingInfo.docs)}`,
     ...(userChoices.framework !== "nextjs" &&
     userChoices.routing &&
     userChoices.routing !== "none"
       ? [
-          `   • ${userChoices.routing}: ${chalk.underline(
+          `   • ${chalk.white(userChoices.routing)}: ${chalk.dim(
             getRoutingInfo(userChoices.routing).docs,
           )}`,
         ]
       : []),
     ...(userChoices.typescript
-      ? [`   • TypeScript: ${chalk.underline(languageInfo.docs)}`]
+      ? [`   • ${chalk.white("TypeScript")}: ${chalk.dim(languageInfo.docs)}`]
       : []),
     ...(userChoices.stateManagement === "redux"
-      ? [`   • Redux Toolkit: ${chalk.underline(getReduxInfo().docs)}`]
+      ? [`   • ${chalk.white("Redux Toolkit")}: ${chalk.dim(getReduxInfo().docs)}`]
       : []),
     ...(userChoices.stateManagement === "zustand"
-      ? [`   • Zustand: ${chalk.underline(getZustandInfo().docs)}`]
+      ? [`   • ${chalk.white("Zustand")}: ${chalk.dim(getZustandInfo().docs)}`]
       : []),
   ].join("\n");
 

@@ -27,25 +27,28 @@ export class ApiStep extends BaseStep {
     return [
       {
         name:
-          chalk.cyan("Axios + React Query") +
-          " - Complete API setup with smart caching",
+          chalk.white("Axios + React Query") +
+          chalk.dim(" - Complete API setup with smart caching"),
         value: "axios-react-query",
       },
       {
         name:
-          chalk.blue("Axios") + " - HTTP client with interceptors and error handling",
+          chalk.white("Axios") +
+          chalk.dim(" - HTTP client with interceptors and error handling"),
         value: "axios-only",
       },
       {
-        name: chalk.green("Fetch + React Query") + " - Native fetch with caching layer",
+        name:
+          chalk.white("Fetch + React Query") +
+          chalk.dim(" - Native fetch with caching layer"),
         value: "fetch-react-query",
       },
       {
-        name: chalk.magenta("Fetch") + " - Native fetch API with custom hooks",
+        name: chalk.white("Fetch") + chalk.dim(" - Native fetch API with custom hooks"),
         value: "fetch-only",
       },
       {
-        name: chalk.gray("Skip") + " - I'll handle API setup myself",
+        name: chalk.dim("Skip - I'll handle API setup myself"),
         value: "none",
       },
     ];

@@ -17,11 +17,11 @@ export class FrameworkStep extends BaseStep {
   getChoices(answers) {
     return [
       {
-        name: chalk.magenta("Vite") + " - Fast dev server, optimized builds",
+        name: chalk.white("Vite") + chalk.dim(" - Fast dev server, optimized builds"),
         value: "vite",
       },
       {
-        name: chalk.blue("Next.js") + " - SSR, full-stack framework",
+        name: chalk.white("Next.js") + chalk.dim(" - SSR, full-stack framework"),
         value: "nextjs",
       },
     ];

@@ -28,7 +28,7 @@ export class EditorStep extends BaseStep {
   getChoices(answers) {
     return [
       { name: chalk.green("Yes"), value: true },
-      { name: chalk.red("No"), value: false },
+      { name: chalk.dim("No"), value: false },
     ];
   }
 
@@ -80,10 +80,10 @@ export class EditorStep extends BaseStep {
 
       const choices = [];
       if (available.cursor)
-        choices.push({ name: chalk.cyan("Cursor"), value: "cursor" });
+        choices.push({ name: chalk.white("Cursor"), value: "cursor" });
       if (available.vscode)
         choices.push({
-          name: chalk.blue("Visual Studio Code"),
+          name: chalk.white("Visual Studio Code"),
           value: "vscode",
         });
 
@@ -92,6 +92,7 @@ export class EditorStep extends BaseStep {
         UI_UTILS.warning("You can open the project manually after setup.");
         answers.openEditor = false;
       } else {
+        console.log();
         UI_UTILS.log(
           `Detected editors: ${[
             available.cursor ? "Cursor" : null,
@@ -100,19 +101,32 @@ export class EditorStep extends BaseStep {
             .filter(Boolean)
             .join(", ")}`,
         );
+        console.log();
 
-        const { editor } = await inquirer.prompt([
+        const { editor } = await inquirer.prompt(
+          [
+            {
+              type: "list",
+              name: "editor",
+              message: "Which editor would you like to use?",
+              choices,
+              default:
+                answers.editor && choices.find((c) => c.value === answers.editor)
+                  ? answers.editor
+                  : choices[0].value,
+            },
+          ],
           {
-            type: "list",
-            name: "editor",
-            message: "Which editor would you like to use?",
-            choices,
-            default:
-              answers.editor && choices.find((c) => c.value === answers.editor)
-                ? answers.editor
-                : choices[0].value,
+            theme: {
+              prefix: chalk.white("→"),
+              style: {
+                answer: chalk.white,
+                message: chalk.white,
+                highlight: chalk.white,
+              },
+            },
           },
-        ]);
+        );
         answers.editor = editor;
       }
     }

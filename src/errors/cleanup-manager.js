@@ -73,7 +73,8 @@ export class CleanupManager {
       this.recordCleanup(projectPath, reason, cleanupResult);
 
       if (cleanupResult.success) {
-        console.log(chalk.yellow(`Cleaned up project directory: ${projectPath}`));
+        console.log(chalk.dim(`Cleaned up project directory: ${projectPath}`));
+        console.log();
       }
 
       return cleanupResult;

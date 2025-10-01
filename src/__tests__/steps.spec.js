@@ -52,10 +52,9 @@ describe("Steps - choices and flow", () => {
     const answers = {};
     const result = await step.execute(answers);
     expect(result.nextStep).toBe("nextjsOptions");
-    // back option present when canGoBack
-    // Ensure back option was offered by verifying choices passed include our marker
+
     const callArg = renderer.promptChoice.mock.calls[0][0];
-    expect(callArg.choices.some((c) => c && c.value === "BACK_OPTION")).toBe(true);
+    expect(callArg.choices.some((c) => c && c.value === "BACK_OPTION")).toBe(false);
   });
 
   it("NextjsOptionsStep goes to language and supports back", async () => {

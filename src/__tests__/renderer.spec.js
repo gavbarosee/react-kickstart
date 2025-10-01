@@ -37,16 +37,18 @@ describe("PromptRenderer", () => {
     });
 
     const output = logs.join("\n");
-    expect(output).toMatch(/Package Manager: .*npm/);
-    expect(output).toMatch(/Framework: .*nextjs/);
-    expect(output).toMatch(/Next\.js Routing: .*app/);
-    expect(output).toMatch(/TypeScript: .*Yes/);
-    expect(output).toMatch(/Linting: .*No/);
-    expect(output).toMatch(/Styling: .*tailwind/);
-    expect(output).toMatch(/Routing: .*react-router/);
-    expect(output).toMatch(/State Management: .*redux/);
-    expect(output).toMatch(/Git Init: .*Yes/);
-    expect(output).toMatch(/Open in Editor: .*Yes/);
-    expect(output).toMatch(/Editor: .*code/);
+    // Strip ANSI color codes before testing
+    // eslint-disable-next-line no-control-regex
+    const cleanOutput = output.replace(/\u001b\[[0-9;]*m/g, "");
+    expect(cleanOutput).toMatch(/Package Manager\s+npm/);
+    expect(cleanOutput).toMatch(/Framework\s+nextjs/);
+    expect(cleanOutput).toMatch(/Routing\s+app/);
+    expect(cleanOutput).toMatch(/TypeScript\s+Yes/);
+    expect(cleanOutput).toMatch(/Linting\s+No/);
+    expect(cleanOutput).toMatch(/Styling\s+tailwind/);
+    expect(cleanOutput).toMatch(/Routing\s+react-router/);
+    expect(cleanOutput).toMatch(/State\s+redux/);
+    expect(cleanOutput).toMatch(/Git\s+Yes/);
+    expect(cleanOutput).toMatch(/Editor\s+code/);
   });
 });

@@ -298,11 +298,8 @@ export function stopProgress(complete = true) {
       });
       process.stdout.write(`  ${finalLine}\n`);
 
-      const celebration =
-        chalk.yellow("  ✨ ") +
-        chalk.bold.white("Ready to code! ") +
-        chalk.yellow("🚀✨");
-      console.log(celebration);
+      console.log(`  ${chalk.green("✓")} ${chalk.white("Ready")}`);
+      console.log();
     } else {
       const finalLine = renderProgress(finalPercent, __progressLabel, {
         size: __progressSize,

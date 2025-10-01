@@ -26,7 +26,7 @@ export class LanguageStep extends BaseStep {
   getChoices(answers) {
     return [
       { name: chalk.green("Yes"), value: true },
-      { name: chalk.red("No"), value: false },
+      { name: chalk.dim("No"), value: false },
     ];
   }
 

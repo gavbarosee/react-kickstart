@@ -199,10 +199,9 @@ export async function createApp(projectDirectory, options = {}) {
       // Complete the progress bar
       UI_UTILS.stopProgress(true);
 
-      const successIcon = chalk.green("✅");
-      const successText = chalk.bold.white("Project successfully set up");
-      const sparkles = chalk.yellow("✨🎉✨");
-      console.log(`  ${successIcon} ${successText} ${sparkles}`);
+      console.log(
+        `  ${chalk.green("✓")} ${chalk.white("Project successfully set up")}`,
+      );
       console.log();
 
       UI_UTILS.divider();

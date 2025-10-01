@@ -193,49 +193,29 @@ export class TemplateEngine {
       type: "ui",
       render: (percentage, label = "", options = {}) => {
         const theme = this.getTheme();
-        const { size = theme.layout.progressBarSize, animated = true } = options;
+        const { size = theme.layout.progressBarSize } = options;
         const displayPercentage = Math.max(0, percentage);
 
         const filled = Math.round((displayPercentage / 100) * size);
         const empty = size - filled;
 
-        // Create gradient effect for filled portion
+        // Simple white progress bar
         let bar = "";
         if (filled > 0) {
-          // Use teal color for clean, consistent look
-          const gradientColors = [
-            chalk.cyan, // Teal/cyan
-            chalk.cyan, // Teal/cyan
-            chalk.cyan, // Teal/cyan
-            chalk.cyan, // Teal/cyan
-            chalk.cyan, // Teal/cyan
-            chalk.cyan, // Teal/cyan
-            chalk.cyan, // Teal/cyan
-          ];
-
-          for (let i = 0; i < filled; i++) {
-            const colorIndex = Math.floor((i / size) * gradientColors.length);
-            const color =
-              gradientColors[Math.min(colorIndex, gradientColors.length - 1)];
-            bar += color("█");
-          }
+          bar += chalk.white("█".repeat(filled));
         }
 
         // Add empty portion
         bar += theme.colors.dim("░".repeat(empty));
 
-        // Add sparkle animation for active progress
-        const sparkles =
-          animated && percentage < 100 && percentage > 0 ? chalk.yellow("✨") : "";
-
-        // Enhanced typography with clean styling
-        const enhancedLabel = chalk.bold.white(label);
+        // Clean minimal text
+        const enhancedLabel = chalk.white(label);
         const percentText =
           percentage === 100
-            ? chalk.bold.green(`${percentage}% `) + chalk.yellow("🎉")
-            : chalk.bold.white(`${percentage}%`);
+            ? chalk.green(`${percentage}%`)
+            : chalk.white(`${percentage}%`);
 
-        return `${enhancedLabel} ${sparkles}[${bar}] ${percentText}`;
+        return `${bar} ${percentText} ${enhancedLabel}`;
       },
     });
 

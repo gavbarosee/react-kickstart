@@ -18,11 +18,11 @@ export class RoutingStep extends BaseStep {
     return [
       {
         name:
-          chalk.blue("React Router") + chalk.gray(" - Popular, comprehensive routing"),
+          chalk.white("React Router") + chalk.dim(" - Popular, comprehensive routing"),
         value: "react-router",
       },
       {
-        name: chalk.gray("None") + chalk.gray(" - No routing library"),
+        name: chalk.dim("None - No routing library"),
         value: "none",
       },
     ];
