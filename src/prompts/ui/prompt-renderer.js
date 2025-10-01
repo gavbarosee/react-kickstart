@@ -48,7 +48,6 @@ export class PromptRenderer {
         chalk.gray("Generate production-ready React starter apps in seconds"),
       );
       console.log();
-      console.log();
 
       // Separator appears instantly on subsequent renders
       console.log(chalk.gray("─".repeat(process.stdout.columns || 80)));
@@ -88,7 +87,6 @@ export class PromptRenderer {
    */
   showSelectionSummary(answers) {
     if (Object.keys(answers).length === 0) return;
-
     console.log(chalk.dim("Configuration"));
 
     if (answers.packageManager) {
@@ -148,8 +146,6 @@ export class PromptRenderer {
     if (answers.openEditor !== undefined && answers.openEditor) {
       console.log(`  Editor           ${chalk.white(answers.editor || "vscode")}`);
     }
-
-    console.log();
   }
 
   /**
