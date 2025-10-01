@@ -97,12 +97,13 @@ export class BaseStep {
     const choices = this.getChoices(answers);
     const canGoBack = this.navigator.canGoBack();
 
-    // Show step header
+    // Show step header (pass answers to determine if separator needed)
     this.renderer.showStepHeader(
       this.stepNumber,
       this.totalSteps,
       this.title,
       this.icon,
+      answers,
     );
     const defaultIndex = this.getDefault(answers);
 

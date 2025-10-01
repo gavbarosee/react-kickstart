@@ -18,23 +18,27 @@ export class PromptRenderer {
     console.log();
 
     if (!this.hasAnimated) {
-      // First time: typing animation (premium speed)
+      // Logo + Title type in
       await this.typeText(chalk.white("[/]"), 20);
       process.stdout.write(" ");
       await this.typeText(chalk.white.bold("React Kickstart"), 20);
       console.log();
+
+      // Small pause, then rest fades in sequentially
+      await this.delay(80);
       console.log();
 
-      await this.delay(60);
-      await this.typeText(
+      await this.delay(40);
+      console.log(
         chalk.gray("Generate production-ready React starter apps in seconds"),
-        12,
       );
-      console.log();
+
+      await this.delay(40);
+
       console.log();
 
-      // Separator "draws" across as final touch
-      await this.typeText(chalk.gray("─".repeat(process.stdout.columns || 80)), 2);
+      await this.delay(40);
+      console.log(chalk.gray("─".repeat(process.stdout.columns || 80)));
       console.log();
 
       this.hasAnimated = true; // Mark as animated
@@ -146,6 +150,8 @@ export class PromptRenderer {
     if (answers.openEditor !== undefined && answers.openEditor) {
       console.log(`  Editor           ${chalk.white(answers.editor || "vscode")}`);
     }
+
+    console.log();
   }
 
   /**
@@ -159,8 +165,12 @@ export class PromptRenderer {
   /**
    * Shows step header with progress indicator
    */
-  showStepHeader(stepNumber, totalSteps, title, _ = "•") {
-    console.log();
+  showStepHeader(stepNumber, totalSteps, title, _ = "•", answers = {}) {
+    // Only show separator if there's configuration to separate from
+    if (Object.keys(answers).length > 0) {
+      console.log(chalk.dim("─".repeat(process.stdout.columns || 80)));
+      console.log();
+    }
     console.log(
       chalk.dim(`Step ${stepNumber}/${totalSteps}`) + " " + chalk.white(title),
     );

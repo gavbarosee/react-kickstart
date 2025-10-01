@@ -283,13 +283,13 @@ export class UserErrorReporter {
    */
   reportGeneralError(error, verbose = false) {
     console.error();
-    console.error(chalk.red(`${symbols.error} An unexpected error occurred`));
-    console.error(chalk.red(`${error.message || error}`));
+    console.error(chalk.red("✗") + " " + chalk.white("An unexpected error occurred"));
+    console.error(chalk.dim(`${error.message || error}`));
 
     if (verbose && error.stack) {
       console.error();
-      console.error(chalk.gray("Stack trace:"));
-      console.error(chalk.gray(error.stack));
+      console.error(chalk.dim("Stack trace:"));
+      console.error(chalk.dim(error.stack));
     }
 
     console.error();
@@ -300,11 +300,11 @@ export class UserErrorReporter {
    */
   reportCriticalError(error) {
     console.error();
-    console.error(chalk.bgRed.white(" CRITICAL ERROR "));
-    console.error(chalk.red(`${error.message || error}`));
+    console.error(chalk.red("✗") + " " + chalk.white("Critical error"));
+    console.error(chalk.dim(`${error.message || error}`));
     console.error();
-    console.error(chalk.yellow("This is an unexpected internal error."));
-    console.error(chalk.yellow("Please report this issue with the details above."));
+    console.error(chalk.dim("This is an unexpected internal error."));
+    console.error(chalk.dim("Please report this issue with the details above."));
     console.error();
     this.showHelpInfo();
   }
@@ -313,21 +313,18 @@ export class UserErrorReporter {
    * Show help information and links
    */
   showHelpInfo() {
-    console.log(chalk.cyan("Need help?"));
+    console.log(chalk.white("Need help?"));
     console.log(
-      chalk.blue(
-        "  • Documentation: https://github.com/gavbarosee/react-kickstart#readme",
-      ),
+      chalk.dim("  Documentation: ") +
+        chalk.white("https://github.com/gavbarosee/react-kickstart#readme"),
     );
     console.log(
-      chalk.blue(
-        "  • Report issues: https://github.com/gavbarosee/react-kickstart/issues/new",
-      ),
+      chalk.dim("  Report issues: ") +
+        chalk.white("https://github.com/gavbarosee/react-kickstart/issues/new"),
     );
     console.log(
-      chalk.blue(
-        "  • Discussions: https://github.com/gavbarosee/react-kickstart/discussions",
-      ),
+      chalk.dim("  Discussions: ") +
+        chalk.white("https://github.com/gavbarosee/react-kickstart/discussions"),
     );
     console.log();
   }

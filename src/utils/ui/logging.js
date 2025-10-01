@@ -139,7 +139,7 @@ export function subHeader(title) {
  * Display divider line
  */
 export function divider() {
-  uiRenderer.divider("·", 47);
+  console.log(chalk.dim("─".repeat(process.stdout.columns || 80)));
 }
 
 /**
