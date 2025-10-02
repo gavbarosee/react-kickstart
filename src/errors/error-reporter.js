@@ -274,7 +274,7 @@ export class UserErrorReporter {
    */
   reportUserCancellation() {
     console.log();
-    console.log(chalk.dim("Cancelled. Cleaning up…"));
+    console.log(chalk.dim("Cancelled."));
     console.log();
   }
 

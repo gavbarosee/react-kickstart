@@ -290,16 +290,12 @@ export function stopProgress(complete = true) {
       // Clear the current line completely first
       process.stdout.write("\r" + " ".repeat(process.stdout.columns || 80) + "\r");
 
-      // Show completion animation
-      const completionMessage = "Project setup complete";
-      const finalLine = renderProgress(finalPercent, completionMessage, {
+      // Show completion
+      const finalLine = renderProgress(finalPercent, "", {
         size: __progressSize,
         animated: true,
       });
-      process.stdout.write(`  ${finalLine}\n`);
-
-      console.log(`  ${chalk.green("✓")} ${chalk.white("Ready")}`);
-      console.log();
+      process.stdout.write(`  ${finalLine}\n\n`);
     } else {
       const finalLine = renderProgress(finalPercent, __progressLabel, {
         size: __progressSize,

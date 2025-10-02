@@ -144,6 +144,7 @@ export async function createApp(projectDirectory, options = {}) {
 
       // Start project generation with single progress bar
       UI_UTILS.divider();
+      console.log();
 
       // Start single continuous progress bar
       UI_UTILS.startProgress("Setting up your project", { size: 30 });
@@ -198,11 +199,6 @@ export async function createApp(projectDirectory, options = {}) {
 
       // Complete the progress bar
       UI_UTILS.stopProgress(true);
-
-      console.log(
-        `  ${chalk.green("✓")} ${chalk.white("Project successfully set up")}`,
-      );
-      console.log();
 
       UI_UTILS.divider();
 

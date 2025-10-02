@@ -139,47 +139,39 @@ export function generateCompletionSummary(
 
   const successHeader = [
     "",
-    chalk.white("Project Created"),
+    `${chalk.green("✓")} ${chalk.white("Project Created")}`,
     `   ${chalk.dim("Name:")} ${chalk.white(projectName)}`,
     `   ${chalk.dim("Location:")} ${chalk.dim(projectPath)}`,
-    `   ${chalk.dim("Tech Stack:")} ${chalk.white(techStack.join(", "))}`,
-    `   ${chalk.dim("Package Manager:")} ${chalk.white(userChoices.packageManager)}`,
-    `   ${chalk.dim("Dev Server:")} ${chalk.white(`http://localhost:${frameworkInfo.port}`)}`,
+    `   ${chalk.dim("Stack:")} ${chalk.white(techStack.map((t) => t.toLowerCase()).join(" • "))}`,
+    `   ${chalk.dim("Dev Server:")} ${chalk.white.underline(`http://localhost:${frameworkInfo.port}`)}`,
+    "",
+    chalk.dim("─".repeat(process.stdout.columns || 80)),
   ].join("\n");
 
   // STEP 2: next steps with commands
   const commandLines = [];
 
-  commandLines.push(`   ${chalk.white("1.")} Navigate to project folder`);
+  commandLines.push(`   ${chalk.white("1.")} Open in browser`);
+  commandLines.push(
+    `      ${chalk.white.underline(`http://localhost:${frameworkInfo.port}`)} ${chalk.dim("→ Server is running")}`,
+  );
+  commandLines.push("");
+
+  commandLines.push(`   ${chalk.white("2.")} Navigate to project folder`);
   commandLines.push(`      ${chalk.white(`cd ${projectName}`)}`);
   commandLines.push("");
 
-  let cmdIndex = 2;
-
-  commandLines.push(
-    `   ${chalk.white(`${cmdIndex}.`)} Development server starting automatically`,
-  );
-  commandLines.push(
-    `      ${chalk.dim(
-      `→ Opening your default browser to http://localhost:${frameworkInfo.port}`,
-    )}`,
-  );
-  commandLines.push("");
-  cmdIndex++;
+  let cmdIndex = 3;
 
   if (commandExamples.dev) {
-    commandLines.push(`   ${chalk.white(`${cmdIndex}.`)} Manual server control`);
-    commandLines.push(
-      `      ${chalk.white(`${commandExamples.dev.command}`)} ${chalk.dim(
-        `→ Restart development server if needed`,
-      )}`,
-    );
+    commandLines.push(`   ${chalk.white(`${cmdIndex}.`)} Restart server if needed`);
+    commandLines.push(`      ${chalk.white(`${commandExamples.dev.command}`)}`);
     commandLines.push("");
     cmdIndex++;
   }
 
   if (commandExamples.build) {
-    commandLines.push(`   ${chalk.white(`${cmdIndex}.`)} Build for production`);
+    commandLines.push(`   ${chalk.white(`${cmdIndex}.`)} Production build`);
     commandLines.push(
       `      ${chalk.white(`${commandExamples.build.command}`)} ${chalk.dim(
         `→ ${commandExamples.build.description}`,
@@ -197,25 +189,29 @@ export function generateCompletionSummary(
   const docsSection = [
     "",
     chalk.dim("Documentation"),
-    `   • ${chalk.white(userChoices.framework)}: ${chalk.dim(frameworkInfo.docs)}`,
-    `   • ${chalk.white(userChoices.styling)}: ${chalk.dim(stylingInfo.docs)}`,
+    `   • ${chalk.white(userChoices.framework.toLowerCase())}: ${chalk.white.underline(frameworkInfo.docs)}`,
+    `   • ${chalk.white(userChoices.styling)}: ${chalk.white.underline(stylingInfo.docs)}`,
     ...(userChoices.framework !== "nextjs" &&
     userChoices.routing &&
     userChoices.routing !== "none"
       ? [
-          `   • ${chalk.white(userChoices.routing)}: ${chalk.dim(
+          `   • ${chalk.white(userChoices.routing)}: ${chalk.white.underline(
             getRoutingInfo(userChoices.routing).docs,
           )}`,
         ]
       : []),
     ...(userChoices.typescript
-      ? [`   • ${chalk.white("TypeScript")}: ${chalk.dim(languageInfo.docs)}`]
+      ? [
+          `   • ${chalk.white("typescript")}: ${chalk.white.underline(languageInfo.docs)}`,
+        ]
       : []),
     ...(userChoices.stateManagement === "redux"
-      ? [`   • ${chalk.white("Redux Toolkit")}: ${chalk.dim(getReduxInfo().docs)}`]
+      ? [`   • ${chalk.white("redux")}: ${chalk.white.underline(getReduxInfo().docs)}`]
       : []),
     ...(userChoices.stateManagement === "zustand"
-      ? [`   • ${chalk.white("Zustand")}: ${chalk.dim(getZustandInfo().docs)}`]
+      ? [
+          `   • ${chalk.white("zustand")}: ${chalk.white.underline(getZustandInfo().docs)}`,
+        ]
       : []),
   ].join("\n");
 

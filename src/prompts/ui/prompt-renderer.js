@@ -20,28 +20,28 @@ export class PromptRenderer {
 
     if (!this.hasAnimated) {
       // Type logo + title
-      await this.typeText(chalk.white("[/]"), 30);
+      await this.typeText(chalk.white("[/]"), 15);
       process.stdout.write(" ");
-      await this.typeText(chalk.white.bold("React Kickstart"), 30);
+      await this.typeText(chalk.white.bold("React Kickstart"), 15);
 
       // Hide cursor immediately and prepare for fade-in
       process.stdout.write("\x1B[?25l");
       console.log();
 
       // Brief pause after typing
-      await this.delay(200);
+      await this.delay(100);
       console.log();
 
-      await this.fadeIn("Generate production-ready React starter apps in seconds", 240);
+      await this.fadeIn("Generate production-ready React starter apps in seconds", 120);
 
       console.log();
 
       // Fade in separator with enhanced smoothness
-      await this.fadeInSeparator("─".repeat(process.stdout.columns || 80), 400);
+      await this.fadeInSeparator("─".repeat(process.stdout.columns || 80), 200);
       console.log();
 
-      // Show cursor again for prompts
-      process.stdout.write("\x1B[?25h");
+      // Don't show cursor yet - let first step fade-in handle it
+      // process.stdout.write("\x1B[?25h");
 
       this.hasAnimated = true; // Mark as animated
     } else {
@@ -189,14 +189,13 @@ export class PromptRenderer {
     const stepNumber = parts[1];
     const title = parts[2];
 
-    // Create smooth fade steps with gradual progression
     const fadeSteps = [
       chalk.hex("#2a2a2a")(stepNumber) + " " + chalk.hex("#2a2a2a")(title),
-      chalk.hex("#3a3a3a")(stepNumber) + " " + chalk.hex("#3a3a3a")(title),
-      chalk.hex("#4a4a4a")(stepNumber) + " " + chalk.hex("#555555")(title),
-      chalk.hex("#555555")(stepNumber) + " " + chalk.hex("#777777")(title),
-      chalk.hex("#666666")(stepNumber) + " " + chalk.hex("#999999")(title),
-      chalk.hex("#777777")(stepNumber) + " " + chalk.hex("#bbbbbb")(title),
+      chalk.hex("#3a3a3a")(stepNumber) + " " + chalk.hex("#4a4a4a")(title),
+      chalk.hex("#4a4a4a")(stepNumber) + " " + chalk.hex("#666666")(title),
+      chalk.hex("#555555")(stepNumber) + " " + chalk.hex("#999999")(title),
+      chalk.hex("#5d5d5d")(stepNumber) + " " + chalk.hex("#cccccc")(title),
+      chalk.hex("#646464")(stepNumber) + " " + chalk.hex("#eeeeee")(title),
       chalk.dim(stepNumber) + " " + chalk.white(title),
     ];
 
@@ -304,11 +303,14 @@ export class PromptRenderer {
 
     if (isFirstStep) {
       // Pause before fading in first step for smooth transition
-      await this.delay(300);
+      // await this.delay(80);
 
-      // Fade in the first step
-      process.stdout.write("\x1B[?25l"); // Hide cursor
-      await this.fadeInStep(stepText, 300);
+      // Fade in the first step (cursor already hidden from header)
+      await this.fadeInStep(stepText, 160);
+
+      // Brief pause before showing the prompt to make transition smoother
+      await this.delay(100);
+
       process.stdout.write("\x1B[?25h"); // Show cursor
 
       this.firstStepShown = true;

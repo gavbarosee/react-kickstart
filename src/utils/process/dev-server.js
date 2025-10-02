@@ -154,8 +154,12 @@ export async function startProject(projectPath, userChoices) {
 
       const [cmd, ...args] = devCommand.split(" ");
 
-      spinner.succeed(`Development server starting at ${chalk.white(devUrl)}`);
-      console.log(`\n${chalk.white(">")} ${chalk.white(`${cmd} ${args.join(" ")}`)}`);
+      spinner.succeed(
+        `Development server starting at ${chalk.white.underline(devUrl)}`,
+      );
+      console.log(
+        `\n  ${chalk.white("Running:")} ${chalk.white(`${cmd} ${args.join(" ")}`)}`,
+      );
       console.log(chalk.dim("\nPress Ctrl+C to stop the development server\n"));
 
       await new Promise((resolve) => setTimeout(resolve, 500));
