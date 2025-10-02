@@ -98,7 +98,7 @@ export class BaseStep {
     const canGoBack = this.navigator.canGoBack();
 
     // Show step header (pass answers to determine if separator needed)
-    this.renderer.showStepHeader(
+    await this.renderer.showStepHeader(
       this.stepNumber,
       this.totalSteps,
       this.title,

@@ -8,6 +8,7 @@ export class PromptRenderer {
   constructor() {
     this.answers = {};
     this.hasAnimated = false; // Track if animation has played
+    this.firstStepShown = false; // Track if first step has been shown
   }
 
   /**
@@ -18,28 +19,29 @@ export class PromptRenderer {
     console.log();
 
     if (!this.hasAnimated) {
-      // Logo + Title type in
-      await this.typeText(chalk.white("[/]"), 20);
+      // Type logo + title
+      await this.typeText(chalk.white("[/]"), 30);
       process.stdout.write(" ");
-      await this.typeText(chalk.white.bold("React Kickstart"), 20);
+      await this.typeText(chalk.white.bold("React Kickstart"), 30);
+
+      // Hide cursor immediately and prepare for fade-in
+      process.stdout.write("\x1B[?25l");
       console.log();
 
-      // Small pause, then rest fades in sequentially
-      await this.delay(80);
+      // Brief pause after typing
+      await this.delay(200);
       console.log();
 
-      await this.delay(40);
-      console.log(
-        chalk.gray("Generate production-ready React starter apps in seconds"),
-      );
-
-      await this.delay(40);
+      await this.fadeIn("Generate production-ready React starter apps in seconds", 240);
 
       console.log();
 
-      await this.delay(40);
-      console.log(chalk.gray("─".repeat(process.stdout.columns || 80)));
+      // Fade in separator with enhanced smoothness
+      await this.fadeInSeparator("─".repeat(process.stdout.columns || 80), 400);
       console.log();
+
+      // Show cursor again for prompts
+      process.stdout.write("\x1B[?25h");
 
       this.hasAnimated = true; // Mark as animated
     } else {
@@ -84,6 +86,130 @@ export class PromptRenderer {
    */
   delay(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Fade in text by gradually increasing opacity
+   */
+  async fadeIn(text, durationMs = 300) {
+    const fadeSteps = [
+      chalk.hex("#333333")(text),
+      chalk.hex("#444444")(text),
+      chalk.hex("#555555")(text),
+      chalk.hex("#666666")(text),
+      chalk.hex("#777777")(text),
+      chalk.gray(text),
+    ];
+
+    // Use ANSI clear code for flicker-free rendering
+    const clearLine = "\r\x1B[2K";
+    const stepDelay = durationMs / fadeSteps.length;
+
+    for (const step of fadeSteps) {
+      process.stdout.write(clearLine + step);
+      await this.delay(stepDelay);
+    }
+
+    console.log(); // Move to next line after fade complete
+  }
+
+  /**
+   * Fade in separator with extra smooth gradient
+   */
+  async fadeInSeparator(text, durationMs = 400) {
+    const fadeSteps = [
+      chalk.hex("#2a2a2a")(text),
+      chalk.hex("#333333")(text),
+      chalk.hex("#3d3d3d")(text),
+      chalk.hex("#474747")(text),
+      chalk.hex("#525252")(text),
+      chalk.hex("#5c5c5c")(text),
+      chalk.hex("#666666")(text),
+      chalk.hex("#707070")(text),
+      chalk.hex("#7a7a7a")(text),
+      chalk.gray(text),
+    ];
+
+    // Use ANSI clear code for flicker-free rendering
+    const clearLine = "\r\x1B[2K";
+    const stepDelay = durationMs / fadeSteps.length;
+
+    for (const step of fadeSteps) {
+      process.stdout.write(clearLine + step);
+      await this.delay(stepDelay);
+    }
+
+    console.log(); // Move to next line after fade complete
+  }
+
+  /**
+   * Fade in white text (for logo and title)
+   */
+  async fadeInWhite(text, durationMs = 300) {
+    const fadeSteps = [
+      chalk.hex("#333333")(text),
+      chalk.hex("#444444")(text),
+      chalk.hex("#555555")(text),
+      chalk.hex("#666666")(text),
+      chalk.hex("#777777")(text),
+      chalk.hex("#888888")(text),
+      chalk.hex("#999999")(text),
+      chalk.hex("#aaaaaa")(text),
+      chalk.hex("#bbbbbb")(text),
+      chalk.hex("#cccccc")(text),
+      chalk.hex("#dddddd")(text),
+      chalk.hex("#eeeeee")(text),
+      chalk.white(text),
+      chalk.white.bold(text),
+    ];
+
+    // Use ANSI clear code for flicker-free rendering
+    const clearLine = "\r\x1B[2K";
+    const stepDelay = durationMs / fadeSteps.length;
+
+    for (const step of fadeSteps) {
+      process.stdout.write(clearLine + step);
+      await this.delay(stepDelay);
+    }
+
+    console.log(); // Move to next line after fade complete
+  }
+
+  /**
+   * Fade in step header (mixed dim and white text)
+   */
+  async fadeInStep(stepText, durationMs = 300) {
+    // Extract parts: "Step X/Y Title"
+    const parts = stepText.match(/^(Step \d+\/\d+) (.+)$/);
+    if (!parts) {
+      console.log(stepText);
+      return;
+    }
+
+    const stepNumber = parts[1];
+    const title = parts[2];
+
+    // Create smooth fade steps with gradual progression
+    const fadeSteps = [
+      chalk.hex("#2a2a2a")(stepNumber) + " " + chalk.hex("#2a2a2a")(title),
+      chalk.hex("#3a3a3a")(stepNumber) + " " + chalk.hex("#3a3a3a")(title),
+      chalk.hex("#4a4a4a")(stepNumber) + " " + chalk.hex("#555555")(title),
+      chalk.hex("#555555")(stepNumber) + " " + chalk.hex("#777777")(title),
+      chalk.hex("#666666")(stepNumber) + " " + chalk.hex("#999999")(title),
+      chalk.hex("#777777")(stepNumber) + " " + chalk.hex("#bbbbbb")(title),
+      chalk.dim(stepNumber) + " " + chalk.white(title),
+    ];
+
+    // Use ANSI clear code for flicker-free rendering
+    const clearLine = "\r\x1B[2K";
+    const stepDelay = durationMs / fadeSteps.length;
+
+    for (const step of fadeSteps) {
+      process.stdout.write(clearLine + step);
+      await this.delay(stepDelay);
+    }
+
+    console.log(); // Move to next line after fade complete
   }
 
   /**
@@ -165,15 +291,34 @@ export class PromptRenderer {
   /**
    * Shows step header with progress indicator
    */
-  showStepHeader(stepNumber, totalSteps, title, _ = "•", answers = {}) {
+  async showStepHeader(stepNumber, totalSteps, title, _ = "•", answers = {}) {
+    const isFirstStep = !this.firstStepShown && Object.keys(answers).length === 0;
+
     // Only show separator if there's configuration to separate from
     if (Object.keys(answers).length > 0) {
       console.log(chalk.dim("─".repeat(process.stdout.columns || 80)));
       console.log();
     }
-    console.log(
-      chalk.dim(`Step ${stepNumber}/${totalSteps}`) + " " + chalk.white(title),
-    );
+
+    const stepText = `Step ${stepNumber}/${totalSteps} ${title}`;
+
+    if (isFirstStep) {
+      // Pause before fading in first step for smooth transition
+      await this.delay(300);
+
+      // Fade in the first step
+      process.stdout.write("\x1B[?25l"); // Hide cursor
+      await this.fadeInStep(stepText, 300);
+      process.stdout.write("\x1B[?25h"); // Show cursor
+
+      this.firstStepShown = true;
+    } else {
+      // Show subsequent steps instantly
+      console.log(
+        chalk.dim(`Step ${stepNumber}/${totalSteps}`) + " " + chalk.white(title),
+      );
+    }
+
     console.log();
   }
 
