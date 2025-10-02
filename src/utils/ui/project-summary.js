@@ -139,48 +139,56 @@ export function generateCompletionSummary(
 
   const successHeader = [
     "",
-    `${chalk.green("✓")} ${chalk.white("Project Created")}`,
-    `   ${chalk.dim("Name:")} ${chalk.white(projectName)}`,
-    `   ${chalk.dim("Location:")} ${chalk.dim(projectPath)}`,
-    `   ${chalk.dim("Stack:")} ${chalk.white(techStack.map((t) => t.toLowerCase()).join(" • "))}`,
-    `   ${chalk.dim("Dev Server:")} ${chalk.white.underline(`http://localhost:${frameworkInfo.port}`)}`,
+    `${chalk.hex("#34d399")("✓")} ${chalk.hex("#f1f5f9")("Project Created")}`,
+    `   ${chalk.hex("#64748b")("Name:")} ${chalk.hex("#e2e8f0")(projectName)}`,
+    `   ${chalk.hex("#64748b")("Location:")} ${chalk.hex("#64748b")(projectPath)}`,
+    `   ${chalk.hex("#64748b")("Stack:")} ${chalk.hex("#e2e8f0")(techStack.map((t) => t.toLowerCase()).join(" • "))}`,
+    `   ${chalk.hex("#64748b")("Dev Server:")} ${chalk.hex("#22d3ee").underline(`http://localhost:${frameworkInfo.port}`)}`,
     "",
-    chalk.dim("─".repeat(process.stdout.columns || 80)),
+    chalk.hex("#475569")("─".repeat(process.stdout.columns || 80)),
   ].join("\n");
 
   // STEP 2: next steps with commands
   const commandLines = [];
 
-  commandLines.push(`   ${chalk.white("1.")} Open in browser`);
+  commandLines.push(`   ${chalk.hex("#cbd5e1")("1.")} Open in browser`);
   commandLines.push(
-    `      ${chalk.white.underline(`http://localhost:${frameworkInfo.port}`)} ${chalk.dim("→ Server is running")}`,
+    `      ${chalk.hex("#22d3ee").underline(`http://localhost:${frameworkInfo.port}`)} ${chalk.hex("#64748b")("→ Server is running")}`,
   );
   commandLines.push("");
 
-  commandLines.push(`   ${chalk.white("2.")} Navigate to project folder`);
-  commandLines.push(`      ${chalk.white(`cd ${projectName}`)}`);
+  commandLines.push(`   ${chalk.hex("#cbd5e1")("2.")} Navigate to project folder`);
+  commandLines.push(`      ${chalk.hex("#e2e8f0")(`cd ${projectName}`)}`);
   commandLines.push("");
 
   let cmdIndex = 3;
 
   if (commandExamples.dev) {
-    commandLines.push(`   ${chalk.white(`${cmdIndex}.`)} Restart server if needed`);
-    commandLines.push(`      ${chalk.white(`${commandExamples.dev.command}`)}`);
+    commandLines.push(
+      `   ${chalk.hex("#cbd5e1")(`${cmdIndex}.`)} Restart server if needed`,
+    );
+    commandLines.push(
+      `      ${chalk.hex("#e2e8f0")(`${commandExamples.dev.command}`)}`,
+    );
     commandLines.push("");
     cmdIndex++;
   }
 
   if (commandExamples.build) {
-    commandLines.push(`   ${chalk.white(`${cmdIndex}.`)} Production build`);
+    commandLines.push(`   ${chalk.hex("#cbd5e1")(`${cmdIndex}.`)} Production build`);
     commandLines.push(
-      `      ${chalk.white(`${commandExamples.build.command}`)} ${chalk.dim(
-        `→ ${commandExamples.build.description}`,
-      )}`,
+      `      ${chalk.hex("#e2e8f0")(`${commandExamples.build.command}`)} ${chalk.hex(
+        "#64748b",
+      )(`→ ${commandExamples.build.description}`)}`,
     );
     cmdIndex++;
   }
 
-  const nextStepsSection = ["", chalk.dim("Next Steps"), ...commandLines].join("\n");
+  const nextStepsSection = [
+    "",
+    chalk.hex("#94a3b8")("Next Steps"),
+    ...commandLines,
+  ].join("\n");
 
   // STEP 3: tech-specific tips
   // (Quick Tips removed)
@@ -188,29 +196,31 @@ export function generateCompletionSummary(
   // STEP 4: documentation links
   const docsSection = [
     "",
-    chalk.dim("Documentation"),
-    `   • ${chalk.white(userChoices.framework.toLowerCase())}: ${chalk.white.underline(frameworkInfo.docs)}`,
-    `   • ${chalk.white(userChoices.styling)}: ${chalk.white.underline(stylingInfo.docs)}`,
+    chalk.hex("#94a3b8")("Documentation"),
+    `   • ${chalk.hex("#94a3b8")(userChoices.framework.toLowerCase())}: ${chalk.hex("#22d3ee").underline(frameworkInfo.docs)}`,
+    `   • ${chalk.hex("#94a3b8")(userChoices.styling)}: ${chalk.hex("#22d3ee").underline(stylingInfo.docs)}`,
     ...(userChoices.framework !== "nextjs" &&
     userChoices.routing &&
     userChoices.routing !== "none"
       ? [
-          `   • ${chalk.white(userChoices.routing)}: ${chalk.white.underline(
-            getRoutingInfo(userChoices.routing).docs,
-          )}`,
+          `   • ${chalk.hex("#94a3b8")(userChoices.routing)}: ${chalk
+            .hex("#22d3ee")
+            .underline(getRoutingInfo(userChoices.routing).docs)}`,
         ]
       : []),
     ...(userChoices.typescript
       ? [
-          `   • ${chalk.white("typescript")}: ${chalk.white.underline(languageInfo.docs)}`,
+          `   • ${chalk.hex("#94a3b8")("typescript")}: ${chalk.hex("#22d3ee").underline(languageInfo.docs)}`,
         ]
       : []),
     ...(userChoices.stateManagement === "redux"
-      ? [`   • ${chalk.white("redux")}: ${chalk.white.underline(getReduxInfo().docs)}`]
+      ? [
+          `   • ${chalk.hex("#94a3b8")("redux")}: ${chalk.hex("#22d3ee").underline(getReduxInfo().docs)}`,
+        ]
       : []),
     ...(userChoices.stateManagement === "zustand"
       ? [
-          `   • ${chalk.white("zustand")}: ${chalk.white.underline(getZustandInfo().docs)}`,
+          `   • ${chalk.hex("#94a3b8")("zustand")}: ${chalk.hex("#22d3ee").underline(getZustandInfo().docs)}`,
         ]
       : []),
   ].join("\n");

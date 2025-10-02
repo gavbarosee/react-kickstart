@@ -20,9 +20,9 @@ export class PromptRenderer {
 
     if (!this.hasAnimated) {
       // Type logo + title
-      await this.typeText(chalk.white("[/]"), 15);
+      await this.typeText(chalk.hex("#f1f5f9")("[/]"), 15);
       process.stdout.write(" ");
-      await this.typeText(chalk.white.bold("React Kickstart"), 15);
+      await this.typeText(chalk.hex("#f1f5f9").bold("React Kickstart"), 15);
 
       // Hide cursor immediately and prepare for fade-in
       process.stdout.write("\x1B[?25l");
@@ -46,17 +46,17 @@ export class PromptRenderer {
       this.hasAnimated = true; // Mark as animated
     } else {
       // Subsequent times: instant display
-      const logo = chalk.white("[/]");
-      const title = chalk.white.bold("React Kickstart");
+      const logo = chalk.hex("#f1f5f9")("[/]");
+      const title = chalk.hex("#f1f5f9").bold("React Kickstart");
       console.log(`${logo} ${title}`);
       console.log();
       console.log(
-        chalk.gray("Generate production-ready React starter apps in seconds"),
+        chalk.hex("#94a3b8")("Generate production-ready React starter apps in seconds"),
       );
       console.log();
 
       // Separator appears instantly on subsequent renders
-      console.log(chalk.gray("─".repeat(process.stdout.columns || 80)));
+      console.log(chalk.hex("#64748b")("─".repeat(process.stdout.columns || 80)));
       console.log();
     }
   }
@@ -93,12 +93,12 @@ export class PromptRenderer {
    */
   async fadeIn(text, durationMs = 300) {
     const fadeSteps = [
-      chalk.hex("#333333")(text),
-      chalk.hex("#444444")(text),
-      chalk.hex("#555555")(text),
-      chalk.hex("#666666")(text),
-      chalk.hex("#777777")(text),
-      chalk.gray(text),
+      chalk.hex("#334155")(text),
+      chalk.hex("#475569")(text),
+      chalk.hex("#54647d")(text),
+      chalk.hex("#64748b")(text),
+      chalk.hex("#7889a0")(text),
+      chalk.hex("#94a3b8")(text),
     ];
 
     // Use ANSI clear code for flicker-free rendering
@@ -118,16 +118,16 @@ export class PromptRenderer {
    */
   async fadeInSeparator(text, durationMs = 400) {
     const fadeSteps = [
-      chalk.hex("#2a2a2a")(text),
-      chalk.hex("#333333")(text),
-      chalk.hex("#3d3d3d")(text),
-      chalk.hex("#474747")(text),
-      chalk.hex("#525252")(text),
-      chalk.hex("#5c5c5c")(text),
-      chalk.hex("#666666")(text),
-      chalk.hex("#707070")(text),
-      chalk.hex("#7a7a7a")(text),
-      chalk.gray(text),
+      chalk.hex("#1e293b")(text),
+      chalk.hex("#293548")(text),
+      chalk.hex("#334155")(text),
+      chalk.hex("#3d4d62")(text),
+      chalk.hex("#475569")(text),
+      chalk.hex("#515e70")(text),
+      chalk.hex("#5b6777")(text),
+      chalk.hex("#64748b")(text),
+      chalk.hex("#758197")(text),
+      chalk.hex("#94a3b8")(text),
     ];
 
     // Use ANSI clear code for flicker-free rendering
@@ -190,13 +190,13 @@ export class PromptRenderer {
     const title = parts[2];
 
     const fadeSteps = [
-      chalk.hex("#2a2a2a")(stepNumber) + " " + chalk.hex("#2a2a2a")(title),
-      chalk.hex("#3a3a3a")(stepNumber) + " " + chalk.hex("#4a4a4a")(title),
-      chalk.hex("#4a4a4a")(stepNumber) + " " + chalk.hex("#666666")(title),
-      chalk.hex("#555555")(stepNumber) + " " + chalk.hex("#999999")(title),
-      chalk.hex("#5d5d5d")(stepNumber) + " " + chalk.hex("#cccccc")(title),
-      chalk.hex("#646464")(stepNumber) + " " + chalk.hex("#eeeeee")(title),
-      chalk.dim(stepNumber) + " " + chalk.white(title),
+      chalk.hex("#1e293b")(stepNumber) + " " + chalk.hex("#1e293b")(title),
+      chalk.hex("#334155")(stepNumber) + " " + chalk.hex("#475569")(title),
+      chalk.hex("#475569")(stepNumber) + " " + chalk.hex("#64748b")(title),
+      chalk.hex("#546375")(stepNumber) + " " + chalk.hex("#94a3b8")(title),
+      chalk.hex("#5d6f82")(stepNumber) + " " + chalk.hex("#cbd5e1")(title),
+      chalk.hex("#64748b")(stepNumber) + " " + chalk.hex("#e2e8f0")(title),
+      chalk.hex("#64748b")(stepNumber) + " " + chalk.hex("#f1f5f9")(title),
     ];
 
     // Use ANSI clear code for flicker-free rendering
@@ -216,64 +216,68 @@ export class PromptRenderer {
    */
   showSelectionSummary(answers) {
     if (Object.keys(answers).length === 0) return;
-    console.log(chalk.dim("Configuration"));
+    console.log(chalk.hex("#64748b")("Configuration"));
 
     if (answers.packageManager) {
-      console.log(`  Package Manager  ${chalk.white(answers.packageManager)}`);
+      console.log(`  Package Manager  ${chalk.hex("#e2e8f0")(answers.packageManager)}`);
     }
 
     if (answers.framework) {
-      console.log(`  Framework        ${chalk.white(answers.framework)}`);
+      console.log(`  Framework        ${chalk.hex("#e2e8f0")(answers.framework)}`);
     }
 
     if (answers.framework === "nextjs" && answers.nextRouting) {
-      console.log(`  Routing          ${chalk.white(answers.nextRouting)}`);
+      console.log(`  Routing          ${chalk.hex("#e2e8f0")(answers.nextRouting)}`);
     }
 
     if (answers.typescript !== undefined) {
       console.log(
-        `  TypeScript       ${answers.typescript ? chalk.green("Yes") : chalk.dim("No")}`,
+        `  TypeScript       ${answers.typescript ? chalk.hex("#34d399")("Yes") : chalk.hex("#64748b")("No")}`,
       );
     }
 
     if (answers.linting !== undefined) {
       console.log(
-        `  Linting          ${answers.linting ? chalk.green("Yes") : chalk.dim("No")}`,
+        `  Linting          ${answers.linting ? chalk.hex("#34d399")("Yes") : chalk.hex("#64748b")("No")}`,
       );
     }
 
     if (answers.styling) {
-      console.log(`  Styling          ${chalk.white(answers.styling)}`);
+      console.log(`  Styling          ${chalk.hex("#e2e8f0")(answers.styling)}`);
     }
 
     if (answers.routing) {
-      console.log(`  Routing          ${chalk.white(answers.routing)}`);
+      console.log(`  Routing          ${chalk.hex("#e2e8f0")(answers.routing)}`);
     }
 
     if (answers.stateManagement) {
-      console.log(`  State            ${chalk.white(answers.stateManagement)}`);
+      console.log(
+        `  State            ${chalk.hex("#e2e8f0")(answers.stateManagement)}`,
+      );
     }
 
     if (answers.api) {
-      console.log(`  API              ${chalk.white(answers.api)}`);
+      console.log(`  API              ${chalk.hex("#e2e8f0")(answers.api)}`);
     }
 
     if (answers.testing) {
-      console.log(`  Testing          ${chalk.white(answers.testing)}`);
+      console.log(`  Testing          ${chalk.hex("#e2e8f0")(answers.testing)}`);
     }
 
     if (answers.deployment) {
-      console.log(`  Deployment       ${chalk.white(answers.deployment)}`);
+      console.log(`  Deployment       ${chalk.hex("#e2e8f0")(answers.deployment)}`);
     }
 
     if (answers.initGit !== undefined) {
       console.log(
-        `  Git              ${answers.initGit ? chalk.green("Yes") : chalk.dim("No")}`,
+        `  Git              ${answers.initGit ? chalk.hex("#34d399")("Yes") : chalk.hex("#64748b")("No")}`,
       );
     }
 
     if (answers.openEditor !== undefined && answers.openEditor) {
-      console.log(`  Editor           ${chalk.white(answers.editor || "vscode")}`);
+      console.log(
+        `  Editor           ${chalk.hex("#e2e8f0")(answers.editor || "vscode")}`,
+      );
     }
 
     console.log();
@@ -295,7 +299,7 @@ export class PromptRenderer {
 
     // Only show separator if there's configuration to separate from
     if (Object.keys(answers).length > 0) {
-      console.log(chalk.dim("─".repeat(process.stdout.columns || 80)));
+      console.log(chalk.hex("#475569")("─".repeat(process.stdout.columns || 80)));
       console.log();
     }
 
@@ -317,7 +321,9 @@ export class PromptRenderer {
     } else {
       // Show subsequent steps instantly
       console.log(
-        chalk.dim(`Step ${stepNumber}/${totalSteps}`) + " " + chalk.white(title),
+        chalk.hex("#64748b")(`Step ${stepNumber}/${totalSteps}`) +
+          " " +
+          chalk.hex("#f1f5f9")(title),
       );
     }
 
@@ -345,12 +351,12 @@ export class PromptRenderer {
       ],
       {
         theme: {
-          prefix: chalk.white("→"),
+          prefix: chalk.hex("#f1f5f9")("→"),
           helpMode: "never",
           style: {
-            answer: chalk.white,
-            message: chalk.white,
-            highlight: chalk.white,
+            answer: chalk.hex("#e2e8f0"),
+            message: chalk.hex("#e2e8f0"),
+            highlight: chalk.hex("#e2e8f0"),
           },
         },
       },
@@ -363,9 +369,13 @@ export class PromptRenderer {
    * Shows final completion message
    */
   showCompletion() {
-    console.log(chalk.green("\n✓") + " " + chalk.white("Configuration complete\n"));
     console.log(
-      chalk.dim(
+      chalk.hex("#34d399")("\n✓") +
+        " " +
+        chalk.hex("#f1f5f9")("Configuration complete\n"),
+    );
+    console.log(
+      chalk.hex("#64748b")(
         "The project will automatically start in your default browser after creation.\n",
       ),
     );
@@ -383,7 +393,7 @@ export class PromptRenderer {
    */
   createBackOption() {
     return {
-      name: chalk.dim("← Back to previous step"),
+      name: chalk.hex("#64748b")("← Back to previous step"),
       value: "BACK_OPTION",
     };
   }

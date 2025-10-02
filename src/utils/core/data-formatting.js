@@ -47,7 +47,7 @@ export function formatPackageCount(count) {
  * @returns {string} - Colored status symbol
  */
 export function getStatusSymbol(value) {
-  return value ? chalk.green("✓") : chalk.red("✗");
+  return value ? chalk.hex("#34d399")("✓") : chalk.red("✗");
 }
 
 /**
@@ -60,7 +60,7 @@ export function getStatusSymbol(value) {
  */
 export function formatSummaryItem(icon, label, value, description = "") {
   const paddedLabel = `${icon} ${label}:`.padEnd(20);
-  const descText = description ? chalk.gray(` → ${description}`) : "";
+  const descText = description ? chalk.hex("#64748b")(` → ${description}`) : "";
   return `${paddedLabel} ${value}${descText}`;
 }
 
@@ -70,7 +70,7 @@ export function formatSummaryItem(icon, label, value, description = "") {
  * @returns {string} - Formatted section header
  */
 export function formatSectionHeader(title) {
-  return chalk.cyan(`\n━━━━━━━━━━ ${title} ━━━━━━━━━━`);
+  return chalk.hex("#06b6d4")(`\n━━━━━━━━━━ ${title} ━━━━━━━━━━`);
 }
 
 /**
@@ -118,9 +118,11 @@ export function formatChoiceList(choices, selectedIndex = -1) {
   return choices
     .map((choice, index) => {
       const isSelected = index === selectedIndex;
-      const marker = isSelected ? chalk.green("▶") : " ";
+      const marker = isSelected ? chalk.hex("#34d399")("▶") : " ";
       const text = isSelected ? chalk.bold(choice.name) : choice.name;
-      const desc = choice.description ? chalk.gray(` - ${choice.description}`) : "";
+      const desc = choice.description
+        ? chalk.hex("#64748b")(` - ${choice.description}`)
+        : "";
 
       return `${marker} ${text}${desc}`;
     })
@@ -139,9 +141,9 @@ export function formatErrorMessage(title, message, suggestions = []) {
 
   if (suggestions.length > 0) {
     output.push("");
-    output.push(chalk.cyan("Suggestions:"));
+    output.push(chalk.hex("#22d3ee")("Suggestions:"));
     suggestions.forEach((suggestion) => {
-      output.push(chalk.cyan(`  • ${suggestion}`));
+      output.push(chalk.hex("#22d3ee")(`  • ${suggestion}`));
     });
   }
 
@@ -155,7 +157,7 @@ export function formatErrorMessage(title, message, suggestions = []) {
  * @returns {string} - Formatted success message
  */
 export function formatSuccessMessage(message) {
-  return chalk.green(`✓ ${message}`);
+  return chalk.hex("#34d399")(`✓ ${message}`);
 }
 
 /**
@@ -173,7 +175,7 @@ export function formatWarningMessage(message) {
  * @returns {string} - Formatted info message
  */
 export function formatInfoMessage(message) {
-  return chalk.blue(`ℹ ${message}`);
+  return chalk.hex("#22d3ee")(`ℹ ${message}`);
 }
 
 /**
@@ -182,7 +184,7 @@ export function formatInfoMessage(message) {
  * @returns {string} - Formatted command
  */
 export function formatCommand(command) {
-  return chalk.bold.cyan(command);
+  return chalk.hex("#22d3ee").bold(command);
 }
 
 /**
@@ -191,7 +193,7 @@ export function formatCommand(command) {
  * @returns {string} - Formatted file path
  */
 export function formatFilePath(filePath) {
-  return chalk.cyan(filePath);
+  return chalk.hex("#22d3ee")(filePath);
 }
 
 /**
@@ -200,7 +202,7 @@ export function formatFilePath(filePath) {
  * @returns {string} - Formatted URL
  */
 export function formatUrl(url) {
-  return chalk.blue.underline(url);
+  return chalk.hex("#22d3ee").underline(url);
 }
 
 /**

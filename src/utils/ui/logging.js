@@ -39,7 +39,7 @@ export function nextStep(message) {
  */
 export function log(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.blue(theme.icons.info)} ${message}`);
+  console.log(`${chalk.hex("#22d3ee")(theme.icons.info)} ${message}`);
 }
 
 /**
@@ -48,7 +48,7 @@ export function log(message) {
  */
 export function success(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.green(theme.icons.success)} ${message}`);
+  console.log(`${chalk.hex("#34d399")(theme.icons.success)} ${message}`);
 }
 
 /**
@@ -139,7 +139,7 @@ export function subHeader(title) {
  * Display divider line
  */
 export function divider() {
-  console.log(chalk.dim("─".repeat(process.stdout.columns || 80)));
+  console.log(chalk.hex("#475569")("─".repeat(process.stdout.columns || 80)));
 }
 
 /**
@@ -157,7 +157,7 @@ export function bullet(text) {
  */
 export function frameworkLog(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.blue(theme.icons.sparkles)} ${message}`);
+  console.log(`${chalk.hex("#22d3ee")(theme.icons.sparkles)} ${message}`);
 }
 
 /**
