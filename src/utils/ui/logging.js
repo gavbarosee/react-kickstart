@@ -1,5 +1,6 @@
 import chalk from "chalk";
 
+import { COLORS } from "./colors.js";
 import { createUserErrorReporter } from "../../errors/index.js";
 import { createUIRenderer } from "../../templates/index.js";
 
@@ -39,7 +40,7 @@ export function nextStep(message) {
  */
 export function log(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.hex("#22d3ee")(theme.icons.info)} ${message}`);
+  console.log(`${chalk.hex(COLORS.accent.cyan)(theme.icons.info)} ${message}`);
 }
 
 /**
@@ -48,7 +49,7 @@ export function log(message) {
  */
 export function success(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.hex("#34d399")(theme.icons.success)} ${message}`);
+  console.log(`${chalk.hex(COLORS.status.success)(theme.icons.success)} ${message}`);
 }
 
 /**
@@ -57,7 +58,7 @@ export function success(message) {
  */
 export function warning(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.yellow(theme.icons.warning)} ${message}`);
+  console.log(`${chalk.hex(COLORS.status.warning)(theme.icons.warning)} ${message}`);
 }
 
 /**
@@ -139,7 +140,7 @@ export function subHeader(title) {
  * Display divider line
  */
 export function divider() {
-  console.log(chalk.hex("#475569")("─".repeat(process.stdout.columns || 80)));
+  console.log(chalk.hex(COLORS.ui.separator)("─".repeat(process.stdout.columns || 80)));
 }
 
 /**
@@ -157,7 +158,7 @@ export function bullet(text) {
  */
 export function frameworkLog(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.hex("#22d3ee")(theme.icons.sparkles)} ${message}`);
+  console.log(`${chalk.hex(COLORS.accent.cyan)(theme.icons.sparkles)} ${message}`);
 }
 
 /**
@@ -302,7 +303,7 @@ export function stopProgress(complete = true) {
       });
       // Clear the entire line before writing final content
       const terminalWidth = process.stdout.columns || 80;
-      process.stdout.write(`\r${" ".repeat(terminalWidth)}\r  ${finalLine}\n\n`);
+      process.stdout.write(`\r${" ".repeat(terminalWidth)}\r  ${finalLine}\n\n\n\n`);
     }
   }
 

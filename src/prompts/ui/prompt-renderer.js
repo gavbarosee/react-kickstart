@@ -1,6 +1,8 @@
 import chalk from "chalk";
 import inquirer from "inquirer";
 
+import { COLORS } from "../../utils/ui/colors.js";
+
 /**
  * Handles the UI rendering and display logic for prompts
  */
@@ -20,9 +22,9 @@ export class PromptRenderer {
 
     if (!this.hasAnimated) {
       // Type logo + title
-      await this.typeText(chalk.hex("#f1f5f9")("[/]"), 15);
+      await this.typeText(chalk.hex(COLORS.text.primary)("[/]"), 15);
       process.stdout.write(" ");
-      await this.typeText(chalk.hex("#f1f5f9").bold("React Kickstart"), 15);
+      await this.typeText(chalk.hex(COLORS.text.primary).bold("React Kickstart"), 15);
 
       // Hide cursor immediately and prepare for fade-in
       process.stdout.write("\x1B[?25l");
@@ -46,17 +48,19 @@ export class PromptRenderer {
       this.hasAnimated = true; // Mark as animated
     } else {
       // Subsequent times: instant display
-      const logo = chalk.hex("#f1f5f9")("[/]");
-      const title = chalk.hex("#f1f5f9").bold("React Kickstart");
+      const logo = chalk.hex(COLORS.text.primary)("[/]");
+      const title = chalk.hex(COLORS.text.primary).bold("React Kickstart");
       console.log(`${logo} ${title}`);
       console.log();
       console.log(
-        chalk.hex("#94a3b8")("Generate production-ready React starter apps in seconds"),
+        chalk.hex(COLORS.text.muted)(
+          "Generate production-ready React starter apps in seconds",
+        ),
       );
       console.log();
 
       // Separator appears instantly on subsequent renders
-      console.log(chalk.hex("#64748b")("─".repeat(process.stdout.columns || 80)));
+      console.log(chalk.hex(COLORS.text.dim)("─".repeat(process.stdout.columns || 80)));
       console.log();
     }
   }
@@ -94,11 +98,11 @@ export class PromptRenderer {
   async fadeIn(text, durationMs = 300) {
     const fadeSteps = [
       chalk.hex("#334155")(text),
-      chalk.hex("#475569")(text),
+      chalk.hex(COLORS.ui.separator)(text),
       chalk.hex("#54647d")(text),
-      chalk.hex("#64748b")(text),
+      chalk.hex(COLORS.text.dim)(text),
       chalk.hex("#7889a0")(text),
-      chalk.hex("#94a3b8")(text),
+      chalk.hex(COLORS.text.muted)(text),
     ];
 
     // Use ANSI clear code for flicker-free rendering
@@ -122,12 +126,12 @@ export class PromptRenderer {
       chalk.hex("#293548")(text),
       chalk.hex("#334155")(text),
       chalk.hex("#3d4d62")(text),
-      chalk.hex("#475569")(text),
+      chalk.hex(COLORS.ui.separator)(text),
       chalk.hex("#515e70")(text),
       chalk.hex("#5b6777")(text),
-      chalk.hex("#64748b")(text),
+      chalk.hex(COLORS.text.dim)(text),
       chalk.hex("#758197")(text),
-      chalk.hex("#94a3b8")(text),
+      chalk.hex(COLORS.text.muted)(text),
     ];
 
     // Use ANSI clear code for flicker-free rendering
@@ -191,12 +195,18 @@ export class PromptRenderer {
 
     const fadeSteps = [
       chalk.hex("#1e293b")(stepNumber) + " " + chalk.hex("#1e293b")(title),
-      chalk.hex("#334155")(stepNumber) + " " + chalk.hex("#475569")(title),
-      chalk.hex("#475569")(stepNumber) + " " + chalk.hex("#64748b")(title),
-      chalk.hex("#546375")(stepNumber) + " " + chalk.hex("#94a3b8")(title),
-      chalk.hex("#5d6f82")(stepNumber) + " " + chalk.hex("#cbd5e1")(title),
-      chalk.hex("#64748b")(stepNumber) + " " + chalk.hex("#e2e8f0")(title),
-      chalk.hex("#64748b")(stepNumber) + " " + chalk.hex("#f1f5f9")(title),
+      chalk.hex("#334155")(stepNumber) + " " + chalk.hex(COLORS.ui.separator)(title),
+      chalk.hex(COLORS.ui.separator)(stepNumber) +
+        " " +
+        chalk.hex(COLORS.text.dim)(title),
+      chalk.hex("#546375")(stepNumber) + " " + chalk.hex(COLORS.text.muted)(title),
+      chalk.hex("#5d6f82")(stepNumber) + " " + chalk.hex(COLORS.text.tertiary)(title),
+      chalk.hex(COLORS.text.dim)(stepNumber) +
+        " " +
+        chalk.hex(COLORS.text.secondary)(title),
+      chalk.hex(COLORS.text.dim)(stepNumber) +
+        " " +
+        chalk.hex(COLORS.text.primary)(title),
     ];
 
     // Use ANSI clear code for flicker-free rendering
@@ -216,67 +226,109 @@ export class PromptRenderer {
    */
   showSelectionSummary(answers) {
     if (Object.keys(answers).length === 0) return;
-    console.log(chalk.hex("#64748b")("Configuration"));
+    console.log(chalk.hex(COLORS.text.dim)("Configuration"));
+    console.log();
+
+    // Helper function to format each line with consistent padding
+    const formatLine = (label, value) => {
+      const paddedLabel = label.padEnd(17); // Consistent 17-char width for all labels
+      return `  ${paddedLabel} ${value}`;
+    };
 
     if (answers.packageManager) {
-      console.log(`  Package Manager  ${chalk.hex("#e2e8f0")(answers.packageManager)}`);
+      console.log(
+        formatLine(
+          "Package Manager",
+          chalk.hex(COLORS.text.secondary)(answers.packageManager),
+        ),
+      );
     }
 
     if (answers.framework) {
-      console.log(`  Framework        ${chalk.hex("#e2e8f0")(answers.framework)}`);
+      console.log(
+        formatLine("Framework", chalk.hex(COLORS.text.secondary)(answers.framework)),
+      );
     }
 
     if (answers.framework === "nextjs" && answers.nextRouting) {
-      console.log(`  Routing          ${chalk.hex("#e2e8f0")(answers.nextRouting)}`);
+      console.log(
+        formatLine("Routing", chalk.hex(COLORS.text.secondary)(answers.nextRouting)),
+      );
     }
 
     if (answers.typescript !== undefined) {
       console.log(
-        `  TypeScript       ${answers.typescript ? chalk.hex("#34d399")("Yes") : chalk.hex("#64748b")("No")}`,
+        formatLine(
+          "TypeScript",
+          answers.typescript
+            ? chalk.hex(COLORS.status.success)("Yes")
+            : chalk.hex(COLORS.text.dim)("No"),
+        ),
       );
     }
 
     if (answers.linting !== undefined) {
       console.log(
-        `  Linting          ${answers.linting ? chalk.hex("#34d399")("Yes") : chalk.hex("#64748b")("No")}`,
+        formatLine(
+          "Linting",
+          answers.linting
+            ? chalk.hex(COLORS.status.success)("Yes")
+            : chalk.hex(COLORS.text.dim)("No"),
+        ),
       );
     }
 
     if (answers.styling) {
-      console.log(`  Styling          ${chalk.hex("#e2e8f0")(answers.styling)}`);
+      console.log(
+        formatLine("Styling", chalk.hex(COLORS.text.secondary)(answers.styling)),
+      );
     }
 
     if (answers.routing) {
-      console.log(`  Routing          ${chalk.hex("#e2e8f0")(answers.routing)}`);
+      console.log(
+        formatLine("Routing", chalk.hex(COLORS.text.secondary)(answers.routing)),
+      );
     }
 
     if (answers.stateManagement) {
       console.log(
-        `  State            ${chalk.hex("#e2e8f0")(answers.stateManagement)}`,
+        formatLine("State", chalk.hex(COLORS.text.secondary)(answers.stateManagement)),
       );
     }
 
     if (answers.api) {
-      console.log(`  API              ${chalk.hex("#e2e8f0")(answers.api)}`);
+      console.log(formatLine("API", chalk.hex(COLORS.text.secondary)(answers.api)));
     }
 
     if (answers.testing) {
-      console.log(`  Testing          ${chalk.hex("#e2e8f0")(answers.testing)}`);
+      console.log(
+        formatLine("Testing", chalk.hex(COLORS.text.secondary)(answers.testing)),
+      );
     }
 
     if (answers.deployment) {
-      console.log(`  Deployment       ${chalk.hex("#e2e8f0")(answers.deployment)}`);
+      console.log(
+        formatLine("Deployment", chalk.hex(COLORS.text.secondary)(answers.deployment)),
+      );
     }
 
     if (answers.initGit !== undefined) {
       console.log(
-        `  Git              ${answers.initGit ? chalk.hex("#34d399")("Yes") : chalk.hex("#64748b")("No")}`,
+        formatLine(
+          "Git",
+          answers.initGit
+            ? chalk.hex(COLORS.status.success)("Yes")
+            : chalk.hex(COLORS.text.dim)("No"),
+        ),
       );
     }
 
     if (answers.openEditor !== undefined && answers.openEditor) {
       console.log(
-        `  Editor           ${chalk.hex("#e2e8f0")(answers.editor || "vscode")}`,
+        formatLine(
+          "Editor",
+          chalk.hex(COLORS.text.secondary)(answers.editor || "vscode"),
+        ),
       );
     }
 
@@ -299,7 +351,9 @@ export class PromptRenderer {
 
     // Only show separator if there's configuration to separate from
     if (Object.keys(answers).length > 0) {
-      console.log(chalk.hex("#475569")("─".repeat(process.stdout.columns || 80)));
+      console.log(
+        chalk.hex(COLORS.ui.separator)("─".repeat(process.stdout.columns || 80)),
+      );
       console.log();
     }
 
@@ -321,9 +375,9 @@ export class PromptRenderer {
     } else {
       // Show subsequent steps instantly
       console.log(
-        chalk.hex("#64748b")(`Step ${stepNumber}/${totalSteps}`) +
+        chalk.hex(COLORS.text.dim)(`Step ${stepNumber}/${totalSteps}`) +
           " " +
-          chalk.hex("#f1f5f9")(title),
+          chalk.hex(COLORS.text.primary)(title),
       );
     }
 
@@ -351,12 +405,12 @@ export class PromptRenderer {
       ],
       {
         theme: {
-          prefix: chalk.hex("#f1f5f9")("→"),
+          prefix: chalk.hex(COLORS.text.primary)("→"),
           helpMode: "never",
           style: {
-            answer: chalk.hex("#e2e8f0"),
-            message: chalk.hex("#e2e8f0"),
-            highlight: chalk.hex("#e2e8f0"),
+            answer: chalk.hex(COLORS.text.secondary),
+            message: chalk.hex(COLORS.text.secondary),
+            highlight: chalk.hex(COLORS.text.secondary),
           },
         },
       },
@@ -369,16 +423,19 @@ export class PromptRenderer {
    * Shows final completion message
    */
   showCompletion() {
+    console.log();
     console.log(
-      chalk.hex("#34d399")("\n✓") +
+      chalk.hex(COLORS.status.success)("✓") +
         " " +
-        chalk.hex("#f1f5f9")("Configuration complete\n"),
+        chalk.hex(COLORS.text.primary)("Configuration complete"),
     );
+    console.log();
     console.log(
-      chalk.hex("#64748b")(
-        "The project will automatically start in your default browser after creation.\n",
+      chalk.hex(COLORS.text.dim)(
+        "The project will automatically start in your default browser after creation.",
       ),
     );
+    console.log();
   }
 
   /**
@@ -393,7 +450,7 @@ export class PromptRenderer {
    */
   createBackOption() {
     return {
-      name: chalk.hex("#64748b")("← Back to previous step"),
+      name: chalk.hex(COLORS.text.dim)("← Back to previous step"),
       value: "BACK_OPTION",
     };
   }

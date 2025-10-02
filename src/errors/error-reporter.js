@@ -2,6 +2,8 @@ import chalk from "chalk";
 import inquirer from "inquirer";
 import symbols from "log-symbols";
 
+import { COLORS } from "../utils/ui/colors.js";
+
 /**
  * Provides consistent, user-friendly error messaging and recovery options
  */
@@ -24,8 +26,14 @@ export class UserErrorReporter {
    * Show validation error recovery options
    */
   showValidationRecovery() {
-    console.log(chalk.cyan("Please check your input and try again."));
-    console.log(chalk.cyan("Make sure project names are valid npm package names."));
+    console.log(
+      chalk.hex(COLORS.accent.cyan)("Please check your input and try again."),
+    );
+    console.log(
+      chalk.hex(COLORS.accent.cyan)(
+        "Make sure project names are valid npm package names.",
+      ),
+    );
     console.error();
   }
 
@@ -39,9 +47,15 @@ export class UserErrorReporter {
 
     if (this.isNetworkError(error)) {
       console.error();
-      console.error(chalk.yellow("This appears to be a network connectivity issue."));
       console.error(
-        chalk.yellow("Please check your internet connection and try again."),
+        chalk.hex(COLORS.status.warning)(
+          "This appears to be a network connectivity issue.",
+        ),
+      );
+      console.error(
+        chalk.hex(COLORS.status.warning)(
+          "Please check your internet connection and try again.",
+        ),
       );
     }
 
@@ -67,11 +81,11 @@ export class UserErrorReporter {
       ],
       {
         theme: {
-          prefix: chalk.white("→"),
+          prefix: chalk.hex(COLORS.text.primary)("→"),
           style: {
-            answer: chalk.white,
-            message: chalk.white,
-            highlight: chalk.white,
+            answer: chalk.hex(COLORS.text.secondary),
+            message: chalk.hex(COLORS.text.secondary),
+            highlight: chalk.hex(COLORS.text.secondary),
           },
         },
       },
@@ -88,9 +102,13 @@ export class UserErrorReporter {
     console.error(chalk.red(`${symbols.error} Permission Error`));
     console.error(chalk.red(`${error.message || error}`));
     console.error();
-    console.error(chalk.yellow("This appears to be a file system permissions issue."));
     console.error(
-      chalk.yellow(
+      chalk.hex(COLORS.status.warning)(
+        "This appears to be a file system permissions issue.",
+      ),
+    );
+    console.error(
+      chalk.hex(COLORS.status.warning)(
         "You might need elevated privileges or different directory permissions.",
       ),
     );
@@ -119,11 +137,11 @@ export class UserErrorReporter {
       ],
       {
         theme: {
-          prefix: chalk.white("→"),
+          prefix: chalk.hex(COLORS.text.primary)("→"),
           style: {
-            answer: chalk.white,
-            message: chalk.white,
-            highlight: chalk.white,
+            answer: chalk.hex(COLORS.text.secondary),
+            message: chalk.hex(COLORS.text.secondary),
+            highlight: chalk.hex(COLORS.text.secondary),
           },
         },
       },
@@ -151,23 +169,41 @@ export class UserErrorReporter {
     const errorMsg = error.message || String(error);
 
     if (errorMsg.includes("ENOTFOUND") || errorMsg.includes("ETIMEDOUT")) {
-      console.error(chalk.cyan("→ Network connectivity issue detected"));
-      console.error(chalk.cyan("  Check your internet connection and proxy settings"));
-    } else if (errorMsg.includes("ENOENT")) {
-      console.error(chalk.cyan("→ Package manager not found"));
       console.error(
-        chalk.cyan("  Make sure npm or yarn is installed and in your PATH"),
+        chalk.hex(COLORS.accent.cyan)("→ Network connectivity issue detected"),
+      );
+      console.error(
+        chalk.hex(COLORS.accent.cyan)(
+          "  Check your internet connection and proxy settings",
+        ),
+      );
+    } else if (errorMsg.includes("ENOENT")) {
+      console.error(chalk.hex(COLORS.accent.cyan)("→ Package manager not found"));
+      console.error(
+        chalk.hex(COLORS.accent.cyan)(
+          "  Make sure npm or yarn is installed and in your PATH",
+        ),
       );
     } else if (errorMsg.includes("EACCES") || errorMsg.includes("permission")) {
-      console.error(chalk.cyan("→ Permission issue detected"));
-      console.error(chalk.cyan("  You might need to run with elevated privileges"));
-    } else if (errorMsg.includes("ERESOLVE") || errorMsg.includes("peer dep")) {
-      console.error(chalk.cyan("→ Dependency conflict detected"));
-      console.error(chalk.cyan("  There may be version conflicts between packages"));
-    } else if (errorMsg.includes("E404") || errorMsg.includes("not found")) {
-      console.error(chalk.cyan("→ Package not found"));
+      console.error(chalk.hex(COLORS.accent.cyan)("→ Permission issue detected"));
       console.error(
-        chalk.cyan("  One or more packages may not exist or be accessible"),
+        chalk.hex(COLORS.accent.cyan)(
+          "  You might need to run with elevated privileges",
+        ),
+      );
+    } else if (errorMsg.includes("ERESOLVE") || errorMsg.includes("peer dep")) {
+      console.error(chalk.hex(COLORS.accent.cyan)("→ Dependency conflict detected"));
+      console.error(
+        chalk.hex(COLORS.accent.cyan)(
+          "  There may be version conflicts between packages",
+        ),
+      );
+    } else if (errorMsg.includes("E404") || errorMsg.includes("not found")) {
+      console.error(chalk.hex(COLORS.accent.cyan)("→ Package not found"));
+      console.error(
+        chalk.hex(COLORS.accent.cyan)(
+          "  One or more packages may not exist or be accessible",
+        ),
       );
     }
   }
@@ -199,11 +235,11 @@ export class UserErrorReporter {
       ],
       {
         theme: {
-          prefix: chalk.white("→"),
+          prefix: chalk.hex(COLORS.text.primary)("→"),
           style: {
-            answer: chalk.white,
-            message: chalk.white,
-            highlight: chalk.white,
+            answer: chalk.hex(COLORS.text.secondary),
+            message: chalk.hex(COLORS.text.secondary),
+            highlight: chalk.hex(COLORS.text.secondary),
           },
         },
       },
@@ -220,9 +256,11 @@ export class UserErrorReporter {
     console.error(chalk.red(`${symbols.error} File System Error`));
     console.error(chalk.red(`${error.message || error}`));
     console.error();
-    console.error(chalk.yellow("A file system operation failed."));
+    console.error(chalk.hex(COLORS.status.warning)("A file system operation failed."));
     console.error(
-      chalk.yellow("This could be due to permissions, disk space, or file locks."),
+      chalk.hex(COLORS.status.warning)(
+        "This could be due to permissions, disk space, or file locks.",
+      ),
     );
     console.error();
   }
@@ -256,11 +294,11 @@ export class UserErrorReporter {
       ],
       {
         theme: {
-          prefix: chalk.white("→"),
+          prefix: chalk.hex(COLORS.text.primary)("→"),
           style: {
-            answer: chalk.white,
-            message: chalk.white,
-            highlight: chalk.white,
+            answer: chalk.hex(COLORS.text.secondary),
+            message: chalk.hex(COLORS.text.secondary),
+            highlight: chalk.hex(COLORS.text.secondary),
           },
         },
       },
@@ -274,7 +312,7 @@ export class UserErrorReporter {
    */
   reportUserCancellation() {
     console.log();
-    console.log(chalk.dim("Cancelled."));
+    console.log(chalk.hex(COLORS.text.dim)("Cancelled."));
     console.log();
   }
 
@@ -283,13 +321,17 @@ export class UserErrorReporter {
    */
   reportGeneralError(error, verbose = false) {
     console.error();
-    console.error(chalk.red("✗") + " " + chalk.white("An unexpected error occurred"));
-    console.error(chalk.dim(`${error.message || error}`));
+    console.error(
+      chalk.red("✗") +
+        " " +
+        chalk.hex(COLORS.text.primary)("An unexpected error occurred"),
+    );
+    console.error(chalk.hex(COLORS.text.dim)(`${error.message || error}`));
 
     if (verbose && error.stack) {
       console.error();
-      console.error(chalk.dim("Stack trace:"));
-      console.error(chalk.dim(error.stack));
+      console.error(chalk.hex(COLORS.text.dim)("Stack trace:"));
+      console.error(chalk.hex(COLORS.text.dim)(error.stack));
     }
 
     console.error();
@@ -300,11 +342,15 @@ export class UserErrorReporter {
    */
   reportCriticalError(error) {
     console.error();
-    console.error(chalk.red("✗") + " " + chalk.white("Critical error"));
-    console.error(chalk.dim(`${error.message || error}`));
+    console.error(
+      chalk.red("✗") + " " + chalk.hex(COLORS.text.primary)("Critical error"),
+    );
+    console.error(chalk.hex(COLORS.text.dim)(`${error.message || error}`));
     console.error();
-    console.error(chalk.dim("This is an unexpected internal error."));
-    console.error(chalk.dim("Please report this issue with the details above."));
+    console.error(chalk.hex(COLORS.text.dim)("This is an unexpected internal error."));
+    console.error(
+      chalk.hex(COLORS.text.dim)("Please report this issue with the details above."),
+    );
     console.error();
     this.showHelpInfo();
   }
@@ -313,18 +359,24 @@ export class UserErrorReporter {
    * Show help information and links
    */
   showHelpInfo() {
-    console.log(chalk.white("Need help?"));
+    console.log(chalk.hex(COLORS.text.primary)("Need help?"));
     console.log(
-      chalk.dim("  Documentation: ") +
-        chalk.white("https://github.com/gavbarosee/react-kickstart#readme"),
+      chalk.hex(COLORS.text.dim)("  Documentation: ") +
+        chalk
+          .hex(COLORS.accent.cyan)
+          .underline("https://github.com/gavbarosee/react-kickstart#readme"),
     );
     console.log(
-      chalk.dim("  Report issues: ") +
-        chalk.white("https://github.com/gavbarosee/react-kickstart/issues/new"),
+      chalk.hex(COLORS.text.dim)("  Report issues: ") +
+        chalk
+          .hex(COLORS.accent.cyan)
+          .underline("https://github.com/gavbarosee/react-kickstart/issues/new"),
     );
     console.log(
-      chalk.dim("  Discussions: ") +
-        chalk.white("https://github.com/gavbarosee/react-kickstart/discussions"),
+      chalk.hex(COLORS.text.dim)("  Discussions: ") +
+        chalk
+          .hex(COLORS.accent.cyan)
+          .underline("https://github.com/gavbarosee/react-kickstart/discussions"),
     );
     console.log();
   }
@@ -333,30 +385,50 @@ export class UserErrorReporter {
    * Show recovery suggestions based on error type
    */
   showRecoverySuggestions(errorType) {
-    console.log(chalk.cyan("Recovery suggestions:"));
+    console.log(chalk.hex(COLORS.accent.cyan)("Recovery suggestions:"));
 
     switch (errorType) {
       case "network":
-        console.log(chalk.blue("  • Check your internet connection"));
         console.log(
-          chalk.blue("  • Verify proxy settings if behind a corporate firewall"),
+          chalk.hex(COLORS.accent.cyan)("  • Check your internet connection"),
         );
-        console.log(chalk.blue("  • Try again in a few minutes"));
+        console.log(
+          chalk.hex(COLORS.accent.cyan)(
+            "  • Verify proxy settings if behind a corporate firewall",
+          ),
+        );
+        console.log(chalk.hex(COLORS.accent.cyan)("  • Try again in a few minutes"));
         break;
       case "permission":
-        console.log(chalk.blue("  • Try running with elevated privileges"));
-        console.log(chalk.blue("  • Check directory permissions"));
-        console.log(chalk.blue("  • Choose a different directory"));
+        console.log(
+          chalk.hex(COLORS.accent.cyan)("  • Try running with elevated privileges"),
+        );
+        console.log(chalk.hex(COLORS.accent.cyan)("  • Check directory permissions"));
+        console.log(chalk.hex(COLORS.accent.cyan)("  • Choose a different directory"));
         break;
       case "dependency":
-        console.log(chalk.blue("  • Clear npm/yarn cache and try again"));
-        console.log(chalk.blue("  • Switch to a different package manager"));
-        console.log(chalk.blue("  • Check if all required tools are installed"));
+        console.log(
+          chalk.hex(COLORS.accent.cyan)("  • Clear npm/yarn cache and try again"),
+        );
+        console.log(
+          chalk.hex(COLORS.accent.cyan)("  • Switch to a different package manager"),
+        );
+        console.log(
+          chalk.hex(COLORS.accent.cyan)(
+            "  • Check if all required tools are installed",
+          ),
+        );
         break;
       default:
-        console.log(chalk.blue("  • Try running the command again"));
-        console.log(chalk.blue("  • Check the documentation for troubleshooting"));
-        console.log(chalk.blue("  • Report the issue if it persists"));
+        console.log(chalk.hex(COLORS.accent.cyan)("  • Try running the command again"));
+        console.log(
+          chalk.hex(COLORS.accent.cyan)(
+            "  • Check the documentation for troubleshooting",
+          ),
+        );
+        console.log(
+          chalk.hex(COLORS.accent.cyan)("  • Report the issue if it persists"),
+        );
     }
 
     console.log();
@@ -422,9 +494,9 @@ export class UserErrorReporter {
 
     if (suggestions.length > 0) {
       console.error();
-      console.error(chalk.cyan("Suggestions:"));
+      console.error(chalk.hex(COLORS.accent.cyan)("Suggestions:"));
       suggestions.forEach((suggestion) => {
-        console.error(chalk.blue(`  • ${suggestion}`));
+        console.error(chalk.hex(COLORS.accent.cyan)(`  • ${suggestion}`));
       });
     }
 
