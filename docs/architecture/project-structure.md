@@ -70,11 +70,11 @@ Rendering note: This guide uses low-tech ASCII diagrams that render everywhere.
           │                          └─────────────────┬──────────────┘
           │                                            │
           ▼                                            ▼
-┌────────────────────────┐                  ┌──────────────────────────────┐
-│ utils/ui/completion.js │                  │  qa-automation/ (optional)   │
-│ → final summary/tips   │                  │  - test-matrix-generator     │
-└────────────────────────┘                  │  - test-runner, reports      │
-                                            └──────────────────────────────┘
+┌──────────────────────────┐                ┌──────────────────────────────┐
+│ utils/ui/project-        │                │  qa-automation/ (optional)   │
+│   summary.js             │                │  - test-matrix-generator     │
+│ → final summary/tips     │                │  - test-runner, reports      │
+└──────────────────────────┘                └──────────────────────────────┘
 ```
 
 #### Key concepts

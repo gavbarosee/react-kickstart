@@ -146,8 +146,8 @@ Add/branch in the component and entry templates so generated projects demonstrat
 
 #### 8) Completion/Docs/Editor Integration (Recommended)
 
-- File: `src/utils/ui/completion.js`
-  - Extend `getStylingInfo(styling)` to include docs URL for your styling.
+- File: `src/utils/ui/project-summary.js`
+  - Extend `getStylingInfo(styling)` to include docs URL for your styling (if such function exists).
 
 - File: `src/utils/ui/summary.js`
   - Add a short description for your styling in the lookup map.

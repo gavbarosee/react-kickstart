@@ -87,7 +87,7 @@ If your framework has its own router/pages system, mirror the Next.js logic by s
 
 #### 11) Completion/UX Details
 
-- File: `src/utils/ui/completion.js`
+- File: `src/utils/ui/project-summary.js`
   - Add your framework to `getFrameworkDocumentation(...)` (docs URL, default port, build dir) to improve the completion summary and autostart behavior.
   - If start commands differ, ensure `package-json-builder.js` scripts and these values are consistent.
 

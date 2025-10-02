@@ -182,13 +182,13 @@ Check published versions:
 
 ```bash
 # View package info
-npm view react-kickstart
+npm view @gavbarosee/react-kickstart
 
 # Check latest version
-npm view react-kickstart version
+npm view @gavbarosee/react-kickstart version
 
 # View all versions
-npm view react-kickstart versions --json
+npm view @gavbarosee/react-kickstart versions --json
 ```
 
 ### GitHub Releases
@@ -260,7 +260,7 @@ If version conflicts occur:
 1. **Check current version**
 
    ```bash
-   npm view react-kickstart version
+   npm view @gavbarosee/react-kickstart version
    jq -r '.version' package.json
    ```
 
