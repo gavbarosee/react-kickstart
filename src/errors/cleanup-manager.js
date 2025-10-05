@@ -3,6 +3,8 @@ import fs from "fs-extra";
 import os from "os";
 import path from "path";
 
+import { COLORS } from "../utils/ui/colors.js";
+
 /**
  * Manages project cleanup with safety checks and different cleanup strategies
  */
@@ -73,7 +75,10 @@ export class CleanupManager {
       this.recordCleanup(projectPath, reason, cleanupResult);
 
       if (cleanupResult.success) {
-        console.log(chalk.yellow(`Cleaned up project directory: ${projectPath}`));
+        console.log(
+          chalk.hex(COLORS.text.dim)(`Cleaned up project directory: ${projectPath}`),
+        );
+        console.log();
       }
 
       return cleanupResult;

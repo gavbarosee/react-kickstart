@@ -22,40 +22,35 @@ export class DeploymentStep extends BaseStep {
     if (answers.framework === "vite") {
       // Netlify first for Vite (recommended)
       choices.push({
-        name: chalk.green("Netlify") + chalk.dim(" (Recommended)"),
+        name: chalk.white("Netlify") + chalk.dim(" (Recommended)"),
         value: "netlify",
-        description: "Powerful platform with great build optimization",
       });
 
       // Vercel second for Vite
       choices.push({
-        name: chalk.blue("Vercel"),
+        name: chalk.white("Vercel"),
         value: "vercel",
-        description: "Zero-config deployments with excellent Next.js integration",
       });
     } else {
       // Vercel first for Next.js and other frameworks (recommended for Next.js)
       choices.push({
         name:
-          chalk.blue("Vercel") +
+          chalk.white("Vercel") +
           (answers.framework === "nextjs" ? chalk.dim(" (Recommended)") : ""),
         value: "vercel",
-        description: "Zero-config deployments with excellent Next.js integration",
       });
 
       // Netlify second for non-Vite frameworks
       choices.push({
-        name: chalk.green("Netlify"),
+        name: chalk.white("Netlify"),
         value: "netlify",
-        description: "Powerful platform with great build optimization",
       });
     }
 
     // Skip option always last
     choices.push({
-      name: chalk.gray("Skip deployment setup"),
+      name: chalk.dim("Skip deployment setup"),
       value: "none",
-      description: "Configure deployment manually later",
     });
 
     return choices;

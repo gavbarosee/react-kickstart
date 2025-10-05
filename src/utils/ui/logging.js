@@ -1,5 +1,6 @@
 import chalk from "chalk";
 
+import { COLORS } from "./colors.js";
 import { createUserErrorReporter } from "../../errors/index.js";
 import { createUIRenderer } from "../../templates/index.js";
 
@@ -39,7 +40,7 @@ export function nextStep(message) {
  */
 export function log(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.blue(theme.icons.info)} ${message}`);
+  console.log(`${chalk.hex(COLORS.accent.cyan)(theme.icons.info)} ${message}`);
 }
 
 /**
@@ -48,7 +49,7 @@ export function log(message) {
  */
 export function success(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.green(theme.icons.success)} ${message}`);
+  console.log(`${chalk.hex(COLORS.status.success)(theme.icons.success)} ${message}`);
 }
 
 /**
@@ -57,7 +58,7 @@ export function success(message) {
  */
 export function warning(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.yellow(theme.icons.warning)} ${message}`);
+  console.log(`${chalk.hex(COLORS.status.warning)(theme.icons.warning)} ${message}`);
 }
 
 /**
@@ -139,7 +140,7 @@ export function subHeader(title) {
  * Display divider line
  */
 export function divider() {
-  uiRenderer.divider("·", 47);
+  console.log(chalk.hex(COLORS.ui.separator)("─".repeat(process.stdout.columns || 80)));
 }
 
 /**
@@ -157,7 +158,7 @@ export function bullet(text) {
  */
 export function frameworkLog(message) {
   const theme = uiRenderer.engine.getTheme();
-  console.log(`${chalk.blue(theme.icons.sparkles)} ${message}`);
+  console.log(`${chalk.hex(COLORS.accent.cyan)(theme.icons.sparkles)} ${message}`);
 }
 
 /**
@@ -290,26 +291,19 @@ export function stopProgress(complete = true) {
       // Clear the current line completely first
       process.stdout.write("\r" + " ".repeat(process.stdout.columns || 80) + "\r");
 
-      // Show completion animation
-      const completionMessage = "Project setup complete";
-      const finalLine = renderProgress(finalPercent, completionMessage, {
+      // Show completion
+      const finalLine = renderProgress(finalPercent, "", {
         size: __progressSize,
         animated: true,
       });
-      process.stdout.write(`  ${finalLine}\n`);
-
-      const celebration =
-        chalk.yellow("  ✨ ") +
-        chalk.bold.white("Ready to code! ") +
-        chalk.yellow("🚀✨");
-      console.log(celebration);
+      process.stdout.write(`  ${finalLine}\n\n`);
     } else {
       const finalLine = renderProgress(finalPercent, __progressLabel, {
         size: __progressSize,
       });
       // Clear the entire line before writing final content
       const terminalWidth = process.stdout.columns || 80;
-      process.stdout.write(`\r${" ".repeat(terminalWidth)}\r  ${finalLine}\n\n`);
+      process.stdout.write(`\r${" ".repeat(terminalWidth)}\r  ${finalLine}\n\n\n\n`);
     }
   }
 

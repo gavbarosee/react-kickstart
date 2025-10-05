@@ -25,15 +25,19 @@ export class StateManagementStep extends BaseStep {
   getChoices(answers) {
     return [
       {
-        name: chalk.blue("Redux Toolkit") + " - Powerful state management library",
+        name:
+          chalk.white("Redux Toolkit") +
+          chalk.dim(" - Powerful state management library"),
         value: "redux",
       },
       {
-        name: chalk.green("Zustand") + " - Lightweight state management solution",
+        name:
+          chalk.white("Zustand") +
+          chalk.dim(" - Lightweight state management solution"),
         value: "zustand",
       },
       {
-        name: chalk.gray("None") + " - No global state management",
+        name: chalk.dim("None - No global state management"),
         value: "none",
       },
     ];

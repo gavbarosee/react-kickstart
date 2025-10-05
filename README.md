@@ -1,35 +1,13 @@
 <div align="center">
 
-![React Kickstart Logo](https://github.com/gavbarosee/react-kickstart/releases/download/v0.1.0/react-kickstart-logo.png)
+![React Kickstart Logo](https://res.cloudinary.com/ddy8ydri4/image/upload/v1759661837/rk-banner_jxltjl.jpg)
 
-_A modern CLI tool for creating React applications with your preferred framework and stack_
+Generate pre-configured React apps with your choice of [framework, styling, and tooling](#stack-options)
 
-<!-- Core Badges -->
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D16-brightgreen.svg?style=for-the-badge)](https://nodejs.org/)
-[![NPM Version](https://img.shields.io/npm/v/@gavbarosee/react-kickstart?style=for-the-badge)](https://www.npmjs.com/package/@gavbarosee/react-kickstart)
-[![NPM Downloads](https://img.shields.io/npm/dm/@gavbarosee/react-kickstart?style=for-the-badge)](https://www.npmjs.com/package/@gavbarosee/react-kickstart)
-
-<!-- Quality Badges -->
-
-[![GitHub Actions](https://img.shields.io/github/actions/workflow/status/gavbarosee/react-kickstart/ci.yml?style=for-the-badge&label=CI)](https://github.com/gavbarosee/react-kickstart/actions)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/pulls)
-[![Last Commit](https://img.shields.io/github/last-commit/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/commits/main)
-
-<!-- Community Badges -->
-
-[![GitHub Stars](https://img.shields.io/github/stars/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/stargazers)
-[![GitHub Issues](https://img.shields.io/github/issues/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/issues)
-[![GitHub Forks](https://img.shields.io/github/forks/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart/network/members)
-
-<!-- Repository Stats -->
-
-[![Languages](https://img.shields.io/github/languages/count/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart)
-[![Top Language](https://img.shields.io/github/languages/top/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart)
-[![Code Size](https://img.shields.io/github/languages/code-size/gavbarosee/react-kickstart?style=for-the-badge)](https://github.com/gavbarosee/react-kickstart)
-
-> **From idea to running app in seconds** • **Zero configuration** • **Production-ready** • **Your stack, your choice**
+[![NPM Version](https://img.shields.io/npm/v/@gavbarosee/react-kickstart?style=flat-square)](https://www.npmjs.com/package/@gavbarosee/react-kickstart)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/gavbarosee/react-kickstart/ci.yml?style=flat-square&label=CI)](https://github.com/gavbarosee/react-kickstart/actions)
+[![NPM Downloads](https://img.shields.io/npm/dm/@gavbarosee/react-kickstart?style=flat-square)](https://www.npmjs.com/package/@gavbarosee/react-kickstart)
 
 </div>
 
@@ -39,26 +17,23 @@ _A modern CLI tool for creating React applications with your preferred framework
 
 - [Demo](#demo)
 - [Quick Start](#quick-start)
-- [What React Kickstart Does](#what-react-kickstart-does)
-- [Why Not Just Use Vite or Next.js CLI?](#why-not-just-use-vite-or-nextjs-cli)
-- [Prerequisites](#prerequisites)
+- [What It Does](#what-it-does)
+- [Quick Examples](#quick-examples)
 - [Installation](#installation)
-- [Usage Examples](#usage-examples)
 - [CLI Reference](#cli-reference)
-- [Documentation](#documentation)
-- [Quality Assurance](#quality-assurance)
 - [Community & Support](#community--support)
 - [Contributing](#contributing)
-- [Changelog](#changelog)
 - [License](#license)
+
+---
 
 ## Demo
 
 <div align="center">
 
-https://github.com/user-attachments/assets/3e2e935f-4f29-4445-8f25-3fd93bc5d440
+https://github.com/user-attachments/assets/cd32c723-63f7-4b6f-81b9-abed53477318
 
-_The CLI's interactive mode in action!_
+_Interactive CLI demonstration_
 
 </div>
 
@@ -66,134 +41,110 @@ _The CLI's interactive mode in action!_
 
 ## Quick Start
 
-> **New**: Now with enhanced semantic release automation!
+No installation needed. Just run with npx:
 
 ```bash
-# Interactive mode (guided prompts)
 npx @gavbarosee/react-kickstart my-app
-
-# Non-interactive mode (with flags)
-npx @gavbarosee/react-kickstart my-app \
-  --yes \
-  --framework vite \
-  --typescript \
-  --styling tailwind \
-  --routing react-router \
-  --state redux \
-  --api axios-react-query \
-  --testing vitest \
-  --deployment netlify
+# or with yarn
+yarn create @gavbarosee/react-kickstart my-app
 ```
 
-## What React Kickstart Does
+You'll be asked a few questions to configure your stack. Typically under a minute.
 
-**React Kickstart creates a complete, working React application in seconds.** Here's exactly what happens when you run it:
+**Prefer global installation?** Install once and use the shorter command:
 
-### **The Complete Setup Process**
+```bash
+npm install -g @gavbarosee/react-kickstart
+# or with yarn
+yarn global add @gavbarosee/react-kickstart
 
-1. **Asks you simple questions** - What framework? TypeScript? Styling? State Management? Routing? Tests? Linting? Deployment? etc (or skip for a default configuration with `--yes`)
-2. **Creates your project folder** with a clean file structure
-3. **Installs all dependencies** automatically (npm/yarn) - no manual setup needed
-4. **Configures everything** - ESLint, Prettier, build scripts, deployment settings
-5. **Generates example code** showing how to use your chosen tools together
-6. **Opens your IDE** automatically (VS Code, Cursor, etc.) if installed
-7. **Starts the dev server** and opens your browser to `localhost`
-8. **Ready to code!** - Your app is running and you can start building immediately
+# then run
+react-kickstart my-app
+```
 
-### **What Makes It Special**
-
-- **Zero configuration** - Everything just works out of the box
-- **Smart detection** - Finds your installed IDE and package manager
-- **Battle-tested combinations** - All tools are pre-configured to work together perfectly
-- **Real examples** - Not empty templates, but working code you can build on
-- **Production ready** - Includes deployment configs, testing setup, and best practices
-
-### **Technology Options**
-
-| **Choose Your Stack** | **Available Options**                                                     |
-| --------------------- | ------------------------------------------------------------------------- |
-| **Framework**         | Vite (fast dev) or Next.js (full-stack)                                   |
-| **Language**          | TypeScript (recommended) or JavaScript                                    |
-| **Styling**           | Tailwind CSS, styled-components, or plain CSS                             |
-| **Routing**           | React Router (Vite only), Next.js App Router, or Pages Router             |
-| **State Management**  | Redux Toolkit, Zustand, or none                                           |
-| **API Calls**         | Axios + React Query, Axios only, Fetch + React Query, Fetch only, or none |
-| **Testing**           | Vitest (fast), Jest (traditional), or none                                |
-| **Deployment**        | Vercel, Netlify, or manual setup                                          |
-| **Package Manager**   | npm or yarn (auto-detected)                                               |
+**Requirements:** Node.js >= 18
 
 ---
 
-## Why Not Just Use Vite or Next.js CLI?
+## What It Does
 
-**Great question!** The official tools (`npm create vite@latest`, `npx create-next-app`) are excellent, but they only get you started. React Kickstart goes **much further**:
+Tools like `create-vite` and `create-next-app` give you a framework with minimal setup. React Kickstart scaffolds your entire application stack:
 
-### **Official CLI Tools Give You:**
+- **State management** — Redux or Zustand configured with working examples
+- **Routing** — React Router or Next.js routing set up with example pages
+- **API integration** — Axios or fetch with React Query configured and ready
+- **Testing** — Vitest or Jest set up with example tests
+- **Styling** — Tailwind CSS, styled-components, or CSS properly configured
+- **Deployment** — Vercel or Netlify configurations included
+- **Code quality** — ESLint and Prettier preconfigured
 
-- Basic project structure
-- Minimal configuration
-- A "Hello World" starting point
+Everything works together out of the box with no configuration required.
 
-### **React Kickstart Gives You:**
+### How It Works
 
-- **Everything above, PLUS:**
-- **Pre-configured tool combinations** - Redux + RTK Query, Tailwind + TypeScript, etc.
-- **Working example code** - See how the tools work together, not just empty templates
-- **Complete development setup** - ESLint, Prettier, testing, deployment configs
-- **Smart integrations** - Auto-detects your IDE and package manager
-- **Production-ready structure** - Organized folders, best practices, proper imports
-- **One command setup** - No need to manually add and configure 5+ additional tools
+1. **Sets up your project** — Creates folders and base files
+2. **Adds your choices** — Framework, styling, state management, and tooling ([see options](#stack-options))
+3. **Installs dependencies** — Runs npm or yarn automatically (auto-detects which you use)
+4. **Configures everything** — ESLint, Prettier, TypeScript, testing—all wired together
+5. **Generates working code** — Example components showing how everything fits together
+6. **Opens your editor** — Detects VS Code or Cursor and launches it
+7. **Starts the dev server** — Opens `localhost:3000` (Vite) or `:3001` (Next.js) in your browser
+
+### Stack Options
+
+| Category            | Options                                                |
+| ------------------- | ------------------------------------------------------ |
+| **Framework**       | Vite, Next.js (app/pages router)                       |
+| **Language**        | TypeScript, JavaScript                                 |
+| **Styling**         | Tailwind CSS, styled-components, CSS                   |
+| **Routing**         | React Router, Next.js built-in                         |
+| **State**           | Redux Toolkit, Zustand, none                           |
+| **API**             | Axios + React Query, Fetch + React Query, basic setups |
+| **Testing**         | Vitest, Jest, none                                     |
+| **Deployment**      | Vercel, Netlify, manual                                |
+| **Package Manager** | npm, yarn (auto-detected)                              |
+| **Git**             | Initialize repository (yes/no)                         |
+| **Linting**         | ESLint + Prettier (yes/no)                             |
+| **Editor**          | Cursor, VS Code, none (auto-detects installed editors) |
 
 ---
 
-## Prerequisites
+## Quick Examples
 
-- **Node.js** `>= 16` - Required for running the CLI
+**Quick & Simple:**
+
+```bash
+npx @gavbarosee/react-kickstart my-app --yes
+```
+
+Good for quick prototypes. Vite with sensible defaults.
+
+**Production Ready:**
+
+```bash
+npx @gavbarosee/react-kickstart my-app \
+  --framework nextjs \
+  --typescript \
+  --styling tailwind \
+  --state redux \
+  --api axios-react-query \
+  --testing jest \
+  --deployment vercel
+```
+
+Everything you need to start building a real application.
 
 ---
 
 ## Installation
 
-### NPX (Recommended)
-
-```bash
-# Run directly without installing
-npx @gavbarosee/react-kickstart my-app
-
-# Or with yarn
-yarn create @gavbarosee/react-kickstart my-app
-```
-
-### Global Install
-
-```bash
-# Install globally for repeated use
-npm install -g @gavbarosee/react-kickstart
-react-kickstart my-app
-
-# Or with yarn
-yarn global add @gavbarosee/react-kickstart
-react-kickstart my-app
-```
-
-## Usage Examples
-
-```bash
-# Interactive mode (recommended for beginners)
-npx @gavbarosee/react-kickstart my-app
-
-# Quick start with defaults
-npx @gavbarosee/react-kickstart my-app --yes
-
-# Full-featured setup
-npx @gavbarosee/react-kickstart my-app --yes --framework nextjs --typescript --styling tailwind --state redux --api axios-react-query --testing jest --deployment vercel
-```
+Use npx (no installation needed) or install globally if you'll use it often. [See Quick Start above](#quick-start).
 
 ---
 
 ## CLI Reference
 
-### **Key Flags**
+### Available Flags
 
 | Flag              | Options                                   | Default    | Description                |
 | ----------------- | ----------------------------------------- | ---------- | -------------------------- |
@@ -204,125 +155,34 @@ npx @gavbarosee/react-kickstart my-app --yes --framework nextjs --typescript --s
 | `--state`         | `redux`, `zustand`, `none`                | `none`     | State management           |
 | `--api`           | `axios-react-query`, `fetch-only`, `none` | `none`     | API integration            |
 | `--testing`       | `vitest`, `jest`, `none`                  | `none`     | Testing framework          |
+| `--deployment`    | `vercel`, `netlify`, `none`               | `none`     | Deployment platform        |
 
-### **Quick Examples**
-
-```bash
-# Interactive mode (recommended)
-npx @gavbarosee/react-kickstart my-app
-
-# Quick start with defaults
-npx @gavbarosee/react-kickstart my-app --yes
-
-# Full-featured setup
-npx @gavbarosee/react-kickstart my-app --yes --framework nextjs --typescript --styling tailwind --state redux --api axios-react-query --testing jest --deployment vercel
-```
-
-**[Complete CLI Reference →](docs/user-guide/cli-reference.md)** - All flags, examples, and usage patterns
-
----
-
-## Documentation
-
-### **For Users**
-
-**[Getting Started →](docs/user-guide/getting-started.md)** - Installation, first project, and basic usage  
-**[CLI Reference →](docs/user-guide/cli-reference.md)** - Complete command and flag documentation  
-**[Troubleshooting →](docs/user-guide/troubleshooting.md)** - Common issues and solutions
-
-### **For Contributors**
-
-**[Contributor Guide →](docs/development/contributor-tooling.md)** - Setup, workflow, and requirements  
-**[Architecture Overview →](docs/architecture/how-it-works.md)** - How React Kickstart works internally  
-**[Extending React Kickstart →](docs/extending/adding-a-new-framework.md)** - Add frameworks, styling, testing options  
-**[Quality Assurance →](docs/qa/qa-automation-overview.md)** - Testing and validation systems
-
----
-
-## Quality Assurance
-
-React Kickstart includes comprehensive quality assurance systems to ensure reliability:
-
-- **Automated Testing** - Unit tests, integration tests, and end-to-end validation
-- **Feature Validation** - Automated testing of all framework/tool combinations
-- **Flag Validation** - CLI flag compatibility and error handling tests
-- **QA Reports** - Detailed test reports for every build and release
-
-**[QA Documentation →](docs/qa/qa-automation-overview.md)** - Complete testing and validation systems
+**[Complete CLI Reference](https://react-kickstart.dev/cli-reference)** — Full documentation with all options and examples
 
 ---
 
 ## Community & Support
 
-### Getting Help
+**Need help?**
 
-- **[GitHub Discussions](https://github.com/gavbarosee/react-kickstart/discussions)** - Ask questions, share ideas, and get community support
+- **[GitHub Discussions](https://github.com/gavbarosee/react-kickstart/discussions)** - Ask questions and share ideas
 - **[GitHub Issues](https://github.com/gavbarosee/react-kickstart/issues)** - Report bugs and request features
-- **[Documentation](docs/)** - Comprehensive guides and API reference
+- **[Documentation](https://react-kickstart.dev)** - Guides and references
 
-### Stay Updated
+**Stay in the loop:**
 
-- **[GitHub Releases](https://github.com/gavbarosee/react-kickstart/releases)** - Latest versions and release notes
-- **[Changelog](CHANGELOG.md)** - Detailed version history and breaking changes
-- **[Roadmap](https://github.com/gavbarosee/react-kickstart/projects)** - Upcoming features and improvements
-
-### Community Guidelines
-
-- Be respectful and constructive in all interactions
-- Search existing issues before creating new ones
-- Provide clear reproduction steps for bug reports
-- Follow the contribution guidelines for pull requests
+- **[GitHub Releases](https://github.com/gavbarosee/react-kickstart/releases)** - New versions and updates
+- **[Changelog](CHANGELOG.md)** - What's changed in each version
 
 ---
 
 ## Contributing
 
-**Contributions welcome!** All changes go through pull requests with automated testing and QA validation.
+See the [contributor guide](https://react-kickstart.dev/contributing) for detailed setup and workflow.
 
-**See the [Documentation](#documentation) section above for contributor guides and setup instructions.**
-
-### **Ways to Contribute**
-
-| Type              | Examples                                   |
-| ----------------- | ------------------------------------------ |
-| **Code**          | Features, bug fixes, refactoring           |
-| **Documentation** | Guides, examples, README improvements      |
-| **Testing**       | QA improvements, test coverage             |
-| **Design**        | UI/UX improvements, logos, assets          |
-| **Ideas**         | Feature requests, architecture discussions |
-
-### **Contributors**
+### Contributors
 
 [![Contributors](https://contrib.rocks/image?repo=gavbarosee/react-kickstart)](https://github.com/gavbarosee/react-kickstart/graphs/contributors)
-
-**[Become a contributor →](https://github.com/gavbarosee/react-kickstart/blob/main/docs/development/contributor-tooling.md)** - Setup guide and contribution workflow
-
----
-
-## Changelog
-
-**Current Version: 0.1.0** - Initial release with Vite/Next.js, TypeScript, Tailwind, Redux, testing, and deployment support.
-
-**[Full Changelog →](CHANGELOG.md)** - Complete version history and release notes
-
----
-
-## Project Health & Maintenance
-
-This project is actively maintained with automated testing, security monitoring, and regular updates:
-
-### **Deployment & Operations**
-
-- **[Automated Release Setup](docs/deployment/automated-release-setup.md)** - Semantic versioning, npm publishing, GitHub releases
-- **[Nightly Operations](docs/deployment/nightly-operations.md)** - Automated validation, security checks, performance monitoring
-- **[CI/CD Setup](docs/deployment/ci-setup.md)** - Continuous integration examples and best practices
-
-### **Quality Assurance**
-
-- **Matrix Testing**: Comprehensive validation across all framework/feature combinations
-- **Automated QA**: Real project generation and validation (not mocks)
-- **Release Protection**: Version changes require full matrix validation before publishing
-- **Community Support**: Issues responded to within 48 hours
 
 ---
 

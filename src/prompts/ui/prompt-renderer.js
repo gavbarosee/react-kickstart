@@ -1,6 +1,7 @@
 import chalk from "chalk";
-import figlet from "figlet";
 import inquirer from "inquirer";
+
+import { COLORS } from "../../utils/ui/colors.js";
 
 /**
  * Handles the UI rendering and display logic for prompts
@@ -8,119 +9,216 @@ import inquirer from "inquirer";
 export class PromptRenderer {
   constructor() {
     this.answers = {};
-    this.hasShownAnimation = false;
+    this.hasAnimated = false; // Track if animation has played
+    this.firstStepShown = false; // Track if first step has been shown
   }
 
   /**
-   * Clears terminal and shows the main header (animated first time, static after)
+   * Clears terminal and shows the main header with typing animation (only first time)
    */
   async showHeader() {
     process.stdout.write("\x1Bc");
     console.log();
 
-    // Generate the figlet text
-    const figletText = figlet.textSync("React Kickstart", {
-      font: "Small Slant",
-      horizontalLayout: "fitted",
-    });
+    if (!this.hasAnimated) {
+      // Type logo + title
+      await this.typeText(chalk.hex(COLORS.text.primary)("[/]"), 15);
+      process.stdout.write(" ");
+      await this.typeText(chalk.hex(COLORS.text.primary).bold("React Kickstart"), 15);
 
-    const lines = figletText.split("\n");
-    const gradientColors = [
-      chalk.rgb(0, 100, 200), // Deep blue
-      chalk.rgb(0, 120, 180), // Steel blue
-      chalk.rgb(0, 140, 160), // Teal blue
-      chalk.rgb(0, 160, 140), // Blue-green
-      chalk.rgb(0, 180, 120), // Emerald
-      chalk.rgb(20, 200, 100), // Green
-    ];
+      // Hide cursor immediately and prepare for fade-in
+      process.stdout.write("\x1B[?25l");
+      console.log();
 
-    if (!this.hasShownAnimation) {
-      // Show animation on first run
-      await this.animateLogoReveal(lines, gradientColors);
-      this.hasShownAnimation = true;
+      // Brief pause after typing
+      await this.delay(100);
+      console.log();
+
+      await this.fadeIn("Generate production-ready React starter apps in seconds", 120);
+
+      console.log();
+
+      // Fade in separator with enhanced smoothness
+      await this.fadeInSeparator("─".repeat(process.stdout.columns || 80), 200);
+      console.log();
+
+      // Don't show cursor yet - let first step fade-in handle it
+      // process.stdout.write("\x1B[?25h");
+
+      this.hasAnimated = true; // Mark as animated
     } else {
-      // Show static logo for subsequent displays
-      this.showStaticLogo(lines, gradientColors);
-    }
+      // Subsequent times: instant display
+      const logo = chalk.hex(COLORS.text.primary)("[/]");
+      const title = chalk.hex(COLORS.text.primary).bold("React Kickstart");
+      console.log(`${logo} ${title}`);
+      console.log();
+      console.log(
+        chalk.hex(COLORS.text.muted)(
+          "Generate production-ready React starter apps in seconds",
+        ),
+      );
+      console.log();
 
-    console.log();
-    console.log(chalk.cyan("  A modern CLI tool for creating React applications"));
-    console.log(chalk.cyan("  ------------------------------------------------"));
-    console.log();
-  }
-
-  /**
-   * Shows the static logo instantly (no animation)
-   */
-  showStaticLogo(lines, gradientColors) {
-    const coloredLines = lines.map((line, index) => {
-      const colorIndex = index % gradientColors.length;
-      return gradientColors[colorIndex](line);
-    });
-
-    console.log(coloredLines.join("\n"));
-  }
-
-  /**
-   * Animates the logo reveal from left to right with beautiful timing
-   */
-  async animateLogoReveal(lines, gradientColors) {
-    const maxWidth = Math.max(...lines.map((line) => line.length));
-    const animationSpeed = 8; // milliseconds per character (faster!)
-    const lineDelay = 20; // milliseconds between starting each line (faster!)
-
-    // Create placeholder for the logo
-    const logoLines = lines.length;
-    for (let i = 0; i < logoLines; i++) {
+      // Separator appears instantly on subsequent renders
+      console.log(chalk.hex(COLORS.text.dim)("─".repeat(process.stdout.columns || 80)));
       console.log();
     }
-
-    // Move cursor back to start of logo
-    process.stdout.write(`\x1b[${logoLines}A`);
-
-    // Animate each line with a slight delay
-    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      const line = lines[lineIndex];
-      const colorIndex = lineIndex % gradientColors.length;
-      const color = gradientColors[colorIndex];
-
-      // Start this line's animation after a delay
-      setTimeout(async () => {
-        await this.animateLineReveal(line, color, lineIndex, logoLines);
-      }, lineIndex * lineDelay);
-    }
-
-    // Wait for all animations to complete
-    const totalAnimationTime =
-      (lines.length - 1) * lineDelay + maxWidth * animationSpeed + 100;
-    await new Promise((resolve) => setTimeout(resolve, totalAnimationTime));
   }
 
   /**
-   * Animates a single line revealing from left to right
+   * Types text character by character
    */
-  async animateLineReveal(line, color, lineIndex, totalLines) {
-    const chars = line.split("");
-    let revealed = "";
+  async typeText(text, speed = 50) {
+    // Strip ANSI codes to get actual characters
+    // eslint-disable-next-line no-control-regex
+    const plainText = text.replace(/\u001b\[[0-9;]*m/g, "");
 
-    for (let i = 0; i <= chars.length; i++) {
-      // Move cursor to the correct position
-      process.stdout.write(`\x1b[${totalLines - lineIndex}A`); // Move up
-      process.stdout.write("\x1b[0G"); // Move to start of line
+    // Extract chalk styling codes
+    const prefix = text.substring(0, text.indexOf(plainText));
+    const suffix = text.substring(text.indexOf(plainText) + plainText.length);
 
-      // Clear the line and show the revealed portion
-      process.stdout.write("\x1b[2K"); // Clear entire line
-      revealed = chars.slice(0, i).join("");
-      process.stdout.write(color(revealed));
-
-      // Move cursor back down
-      process.stdout.write(`\x1b[${totalLines - lineIndex}B`);
-
-      // Small delay for smooth animation
-      if (i < chars.length) {
-        await new Promise((resolve) => setTimeout(resolve, 8));
-      }
+    for (let i = 0; i < plainText.length; i++) {
+      const char = plainText[i];
+      // Write character with original styling
+      process.stdout.write(prefix + char + suffix);
+      await this.delay(speed);
     }
+  }
+
+  /**
+   * Simple delay utility
+   */
+  delay(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Fade in text by gradually increasing opacity
+   */
+  async fadeIn(text, durationMs = 300) {
+    const fadeSteps = [
+      chalk.hex("#334155")(text),
+      chalk.hex(COLORS.ui.separator)(text),
+      chalk.hex("#54647d")(text),
+      chalk.hex(COLORS.text.dim)(text),
+      chalk.hex("#7889a0")(text),
+      chalk.hex(COLORS.text.muted)(text),
+    ];
+
+    // Use ANSI clear code for flicker-free rendering
+    const clearLine = "\r\x1B[2K";
+    const stepDelay = durationMs / fadeSteps.length;
+
+    for (const step of fadeSteps) {
+      process.stdout.write(clearLine + step);
+      await this.delay(stepDelay);
+    }
+
+    console.log(); // Move to next line after fade complete
+  }
+
+  /**
+   * Fade in separator with extra smooth gradient
+   */
+  async fadeInSeparator(text, durationMs = 400) {
+    const fadeSteps = [
+      chalk.hex("#1e293b")(text),
+      chalk.hex("#293548")(text),
+      chalk.hex("#334155")(text),
+      chalk.hex("#3d4d62")(text),
+      chalk.hex(COLORS.ui.separator)(text),
+      chalk.hex("#515e70")(text),
+      chalk.hex("#5b6777")(text),
+      chalk.hex(COLORS.text.dim)(text),
+      chalk.hex("#758197")(text),
+      chalk.hex(COLORS.text.muted)(text),
+    ];
+
+    // Use ANSI clear code for flicker-free rendering
+    const clearLine = "\r\x1B[2K";
+    const stepDelay = durationMs / fadeSteps.length;
+
+    for (const step of fadeSteps) {
+      process.stdout.write(clearLine + step);
+      await this.delay(stepDelay);
+    }
+
+    console.log(); // Move to next line after fade complete
+  }
+
+  /**
+   * Fade in white text (for logo and title)
+   */
+  async fadeInWhite(text, durationMs = 300) {
+    const fadeSteps = [
+      chalk.hex("#333333")(text),
+      chalk.hex("#444444")(text),
+      chalk.hex("#555555")(text),
+      chalk.hex("#666666")(text),
+      chalk.hex("#777777")(text),
+      chalk.hex("#888888")(text),
+      chalk.hex("#999999")(text),
+      chalk.hex("#aaaaaa")(text),
+      chalk.hex("#bbbbbb")(text),
+      chalk.hex("#cccccc")(text),
+      chalk.hex("#dddddd")(text),
+      chalk.hex("#eeeeee")(text),
+      chalk.white(text),
+      chalk.white.bold(text),
+    ];
+
+    // Use ANSI clear code for flicker-free rendering
+    const clearLine = "\r\x1B[2K";
+    const stepDelay = durationMs / fadeSteps.length;
+
+    for (const step of fadeSteps) {
+      process.stdout.write(clearLine + step);
+      await this.delay(stepDelay);
+    }
+
+    console.log(); // Move to next line after fade complete
+  }
+
+  /**
+   * Fade in step header (mixed dim and white text)
+   */
+  async fadeInStep(stepText, durationMs = 300) {
+    // Extract parts: "Step X/Y Title"
+    const parts = stepText.match(/^(Step \d+\/\d+) (.+)$/);
+    if (!parts) {
+      console.log(stepText);
+      return;
+    }
+
+    const stepNumber = parts[1];
+    const title = parts[2];
+
+    const fadeSteps = [
+      chalk.hex("#1e293b")(stepNumber) + " " + chalk.hex("#1e293b")(title),
+      chalk.hex("#334155")(stepNumber) + " " + chalk.hex(COLORS.ui.separator)(title),
+      chalk.hex(COLORS.ui.separator)(stepNumber) +
+        " " +
+        chalk.hex(COLORS.text.dim)(title),
+      chalk.hex("#546375")(stepNumber) + " " + chalk.hex(COLORS.text.muted)(title),
+      chalk.hex("#5d6f82")(stepNumber) + " " + chalk.hex(COLORS.text.tertiary)(title),
+      chalk.hex(COLORS.text.dim)(stepNumber) +
+        " " +
+        chalk.hex(COLORS.text.secondary)(title),
+      chalk.hex(COLORS.text.dim)(stepNumber) +
+        " " +
+        chalk.hex(COLORS.text.primary)(title),
+    ];
+
+    // Use ANSI clear code for flicker-free rendering
+    const clearLine = "\r\x1B[2K";
+    const stepDelay = durationMs / fadeSteps.length;
+
+    for (const step of fadeSteps) {
+      process.stdout.write(clearLine + step);
+      await this.delay(stepDelay);
+    }
+
+    console.log(); // Move to next line after fade complete
   }
 
   /**
@@ -128,87 +226,110 @@ export class PromptRenderer {
    */
   showSelectionSummary(answers) {
     if (Object.keys(answers).length === 0) return;
+    console.log(chalk.hex(COLORS.text.dim)("Configuration"));
+    console.log();
 
-    console.log(chalk.bgBlue("  Your selections so far:"));
+    // Helper function to format each line with consistent padding
+    const formatLine = (label, value) => {
+      const paddedLabel = label.padEnd(17); // Consistent 17-char width for all labels
+      return `  ${paddedLabel} ${value}`;
+    };
 
     if (answers.packageManager) {
       console.log(
-        `  ${chalk.dim("•")} Package Manager: ${chalk.green(answers.packageManager)}`,
+        formatLine(
+          "Package Manager",
+          chalk.hex(COLORS.text.secondary)(answers.packageManager),
+        ),
       );
     }
 
     if (answers.framework) {
-      console.log(`  ${chalk.dim("•")} Framework: ${chalk.yellow(answers.framework)}`);
+      console.log(
+        formatLine("Framework", chalk.hex(COLORS.text.secondary)(answers.framework)),
+      );
     }
 
     if (answers.framework === "nextjs" && answers.nextRouting) {
       console.log(
-        `  ${chalk.dim("•")} Next.js Routing: ${chalk.blue(answers.nextRouting)}`,
+        formatLine("Routing", chalk.hex(COLORS.text.secondary)(answers.nextRouting)),
       );
     }
 
     if (answers.typescript !== undefined) {
       console.log(
-        `  ${chalk.dim("•")} TypeScript: ${
-          answers.typescript ? chalk.green("Yes") : chalk.red("No")
-        }`,
+        formatLine(
+          "TypeScript",
+          answers.typescript
+            ? chalk.hex(COLORS.status.success)("Yes")
+            : chalk.hex(COLORS.text.dim)("No"),
+        ),
       );
     }
 
     if (answers.linting !== undefined) {
       console.log(
-        `  ${chalk.dim("•")} Linting: ${
-          answers.linting ? chalk.green("Yes") : chalk.red("No")
-        }`,
+        formatLine(
+          "Linting",
+          answers.linting
+            ? chalk.hex(COLORS.status.success)("Yes")
+            : chalk.hex(COLORS.text.dim)("No"),
+        ),
       );
     }
 
     if (answers.styling) {
-      console.log(`  ${chalk.dim("•")} Styling: ${chalk.magenta(answers.styling)}`);
+      console.log(
+        formatLine("Styling", chalk.hex(COLORS.text.secondary)(answers.styling)),
+      );
     }
 
     if (answers.routing) {
-      console.log(`  ${chalk.dim("•")} Routing: ${chalk.blue(answers.routing)}`);
+      console.log(
+        formatLine("Routing", chalk.hex(COLORS.text.secondary)(answers.routing)),
+      );
     }
 
     if (answers.stateManagement) {
       console.log(
-        `  ${chalk.dim("•")} State Management: ${chalk.cyan(answers.stateManagement)}`,
+        formatLine("State", chalk.hex(COLORS.text.secondary)(answers.stateManagement)),
       );
     }
 
     if (answers.api) {
-      console.log(`  ${chalk.dim("•")} API Setup: ${chalk.green(answers.api)}`);
+      console.log(formatLine("API", chalk.hex(COLORS.text.secondary)(answers.api)));
     }
 
     if (answers.testing) {
-      console.log(`  ${chalk.dim("•")} Testing: ${chalk.blue(answers.testing)}`);
+      console.log(
+        formatLine("Testing", chalk.hex(COLORS.text.secondary)(answers.testing)),
+      );
     }
 
     if (answers.deployment) {
       console.log(
-        `  ${chalk.dim("•")} Deployment: ${chalk.yellow(answers.deployment)}`,
+        formatLine("Deployment", chalk.hex(COLORS.text.secondary)(answers.deployment)),
       );
     }
 
     if (answers.initGit !== undefined) {
       console.log(
-        `  ${chalk.dim("•")} Git Init: ${
-          answers.initGit ? chalk.green("Yes") : chalk.red("No")
-        }`,
+        formatLine(
+          "Git",
+          answers.initGit
+            ? chalk.hex(COLORS.status.success)("Yes")
+            : chalk.hex(COLORS.text.dim)("No"),
+        ),
       );
     }
 
-    if (answers.openEditor !== undefined) {
+    if (answers.openEditor !== undefined && answers.openEditor) {
       console.log(
-        `  ${chalk.dim("•")} Open in Editor: ${
-          answers.openEditor ? chalk.green("Yes") : chalk.red("No")
-        }`,
+        formatLine(
+          "Editor",
+          chalk.hex(COLORS.text.secondary)(answers.editor || "vscode"),
+        ),
       );
-
-      if (answers.openEditor && answers.editor) {
-        console.log(`  ${chalk.dim("•")} Editor: ${chalk.blue(answers.editor)}`);
-      }
     }
 
     console.log();
@@ -225,20 +346,41 @@ export class PromptRenderer {
   /**
    * Shows step header with progress indicator
    */
-  showStepHeader(
-    stepNumber,
-    totalSteps,
-    title,
-    icon = "•",
-    showNavInstructions = false,
-  ) {
-    console.log();
-    console.log(chalk.bold.cyan(` ${icon} STEP ${stepNumber} OF ${totalSteps}`));
-    console.log(chalk.bold.white(` ${title}`));
-    console.log(chalk.cyan("━".repeat(40)));
-    if (showNavInstructions) {
-      console.log(chalk.dim("(Use ↑↓ to navigate, ← or Backspace to go back)"));
+  async showStepHeader(stepNumber, totalSteps, title, _ = "•", answers = {}) {
+    const isFirstStep = !this.firstStepShown && Object.keys(answers).length === 0;
+
+    // Only show separator if there's configuration to separate from
+    if (Object.keys(answers).length > 0) {
+      console.log(
+        chalk.hex(COLORS.ui.separator)("─".repeat(process.stdout.columns || 80)),
+      );
+      console.log();
     }
+
+    const stepText = `Step ${stepNumber}/${totalSteps} ${title}`;
+
+    if (isFirstStep) {
+      // Pause before fading in first step for smooth transition
+      // await this.delay(80);
+
+      // Fade in the first step (cursor already hidden from header)
+      await this.fadeInStep(stepText, 160);
+
+      // Brief pause before showing the prompt to make transition smoother
+      await this.delay(100);
+
+      process.stdout.write("\x1B[?25h"); // Show cursor
+
+      this.firstStepShown = true;
+    } else {
+      // Show subsequent steps instantly
+      console.log(
+        chalk.hex(COLORS.text.dim)(`Step ${stepNumber}/${totalSteps}`) +
+          " " +
+          chalk.hex(COLORS.text.primary)(title),
+      );
+    }
+
     console.log();
   }
 
@@ -246,15 +388,33 @@ export class PromptRenderer {
    * Prompts user with a list of choices
    */
   async promptChoice(config) {
-    const { selection } = await inquirer.prompt([
+    const { selection } = await inquirer.prompt(
+      [
+        {
+          type: "list",
+          name: "selection",
+          message: config.message,
+          choices: config.choices,
+          default: config.default,
+          loop: false,
+          pageSize: 10,
+          theme: {
+            helpMode: "never", // Disable help text at prompt level
+          },
+        },
+      ],
       {
-        type: "list",
-        name: "selection",
-        message: config.message,
-        choices: config.choices,
-        default: config.default,
+        theme: {
+          prefix: chalk.hex(COLORS.text.primary)("→"),
+          helpMode: "never",
+          style: {
+            answer: chalk.hex(COLORS.text.secondary),
+            message: chalk.hex(COLORS.text.secondary),
+            highlight: chalk.hex(COLORS.text.secondary),
+          },
+        },
       },
-    ]);
+    );
 
     return selection;
   }
@@ -263,11 +423,19 @@ export class PromptRenderer {
    * Shows final completion message
    */
   showCompletion() {
-    console.log(chalk.green("\n✓ Configuration complete! Here's your full setup:\n"));
+    console.log();
     console.log(
-      chalk.cyan("Note: ") +
-        "The project will automatically start in your default browser after creation.\n",
+      chalk.hex(COLORS.status.success)("✓") +
+        " " +
+        chalk.hex(COLORS.text.primary)("Configuration complete"),
     );
+    console.log();
+    console.log(
+      chalk.hex(COLORS.text.dim)(
+        "The project will automatically start in your default browser after creation.",
+      ),
+    );
+    console.log();
   }
 
   /**
@@ -282,7 +450,7 @@ export class PromptRenderer {
    */
   createBackOption() {
     return {
-      name: chalk.rgb(255, 140, 105)("← Back to previous step"),
+      name: chalk.hex(COLORS.text.dim)("← Back to previous step"),
       value: "BACK_OPTION",
     };
   }

@@ -407,8 +407,8 @@ export function formatPackageManagerChoices(managers) {
   // Add npm choice if available
   if (managers.npm.available) {
     choices.push({
-      name: `${chalk.green("npm")}${
-        managers.npm.recommended ? " " + chalk.gray("(recommended)") : ""
+      name: `${chalk.white("npm")}${
+        managers.npm.recommended ? " " + chalk.dim("(recommended)") : ""
       }`,
       value: "npm",
       short: "npm",
@@ -417,7 +417,7 @@ export function formatPackageManagerChoices(managers) {
 
   if (managers.yarn.available) {
     choices.push({
-      name: `${chalk.blue("yarn")}`,
+      name: `${chalk.white("yarn")}`,
       value: "yarn",
       short: "yarn",
     });

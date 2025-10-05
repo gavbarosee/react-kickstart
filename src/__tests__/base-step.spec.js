@@ -53,7 +53,7 @@ class FakeStep extends BaseStep {
 }
 
 describe("BaseStep contract", () => {
-  it("adds back option only when canGoBack is true", async () => {
+  it("does not add back option to choices (uses keyboard navigation instead)", async () => {
     const renderer = createRendererStub();
     const a = new FakeStep(renderer, createNavigatorStub(false));
     renderer.promptChoice.mockResolvedValue("a");
@@ -66,7 +66,8 @@ describe("BaseStep contract", () => {
     renderer2.promptChoice.mockResolvedValue("a");
     await b.execute({});
     const c2 = renderer2.promptChoice.mock.calls[0][0].choices;
-    expect(c2.some((c) => c && c.value === "BACK_OPTION")).toBe(true);
+    // Back navigation is now via keyboard shortcuts, not a choice option
+    expect(c2.some((c) => c && c.value === "BACK_OPTION")).toBe(false);
   });
 
   it("stores answer under overridden key via processSelection", async () => {

@@ -21,35 +21,27 @@ export class TestingStep extends BaseStep {
     if (answers.framework === "vite") {
       choices.push({
         name:
-          chalk.green("Vitest") +
-          " + React Testing Library " +
-          chalk.dim("(Recommended)"),
+          chalk.white("Vitest") + chalk.dim(" + React Testing Library (Recommended)"),
         value: "vitest",
-        description: "Fast, Vite-native testing with zero config",
       });
       choices.push({
-        name: chalk.blue("Jest") + " + React Testing Library",
+        name: chalk.white("Jest") + chalk.dim(" + React Testing Library"),
         value: "jest",
-        description: "Traditional setup with more configuration",
       });
     } else if (answers.framework === "nextjs") {
       choices.push({
-        name:
-          chalk.blue("Jest") + " + React Testing Library " + chalk.dim("(Recommended)"),
+        name: chalk.white("Jest") + chalk.dim(" + React Testing Library (Recommended)"),
         value: "jest",
-        description: "Next.js optimized testing setup",
       });
       choices.push({
-        name: chalk.green("Vitest") + " + React Testing Library",
+        name: chalk.white("Vitest") + chalk.dim(" + React Testing Library"),
         value: "vitest",
-        description: "Modern alternative with faster execution",
       });
     }
 
     choices.push({
-      name: chalk.gray("Skip testing setup"),
+      name: chalk.dim("Skip testing setup"),
       value: "none",
-      description: "Set up testing manually later",
     });
 
     return choices;

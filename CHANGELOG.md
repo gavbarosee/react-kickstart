@@ -7,30 +7,26 @@
 
 # [0.4.0](https://github.com/gavbarosee/react-kickstart/compare/v0.3.0...v0.4.0) (2025-09-10)
 
-
 ### Bug Fixes
 
-* **ci:** update nightly validation permissions ([2bf89eb](https://github.com/gavbarosee/react-kickstart/commit/2bf89ebe85685a47e1bb7dc3f2453866b2c383e1))
-
+- **ci:** update nightly validation permissions ([2bf89eb](https://github.com/gavbarosee/react-kickstart/commit/2bf89ebe85685a47e1bb7dc3f2453866b2c383e1))
 
 ### Features
 
-* add dual publishing to npm and GitHub Packages ([cc48848](https://github.com/gavbarosee/react-kickstart/commit/cc488480f1f01959cf3ce0f537cb74d03eea4ceb))
+- add dual publishing to npm and GitHub Packages ([cc48848](https://github.com/gavbarosee/react-kickstart/commit/cc488480f1f01959cf3ce0f537cb74d03eea4ceb))
 
 # [0.3.0](https://github.com/gavbarosee/react-kickstart/compare/v0.2.1...v0.3.0) (2025-09-10)
 
-
 ### Features
 
-* publish to gh registry ([bebe426](https://github.com/gavbarosee/react-kickstart/commit/bebe426daf011cecd71027b1923d1431625a0174))
+- publish to gh registry ([bebe426](https://github.com/gavbarosee/react-kickstart/commit/bebe426daf011cecd71027b1923d1431625a0174))
 
 ## [0.2.1](https://github.com/gavbarosee/react-kickstart/compare/v0.2.0...v0.2.1) (2025-09-09)
 
-
 ### Bug Fixes
 
-* format CHANGELOG.md with prettier ([14743a1](https://github.com/gavbarosee/react-kickstart/commit/14743a1ae09d6c9a30d67cb7b9dddcbd9b331743))
-* update chalk to 5.6.2 and pin version for security ([892d9c1](https://github.com/gavbarosee/react-kickstart/commit/892d9c1979ccfba82f62162938861431a89851d9))
+- format CHANGELOG.md with prettier ([14743a1](https://github.com/gavbarosee/react-kickstart/commit/14743a1ae09d6c9a30d67cb7b9dddcbd9b331743))
+- update chalk to 5.6.2 and pin version for security ([892d9c1](https://github.com/gavbarosee/react-kickstart/commit/892d9c1979ccfba82f62162938861431a89851d9))
 
 # [0.2.0](https://github.com/gavbarosee/react-kickstart/compare/v0.1.1...v0.2.0) (2025-09-09)
 

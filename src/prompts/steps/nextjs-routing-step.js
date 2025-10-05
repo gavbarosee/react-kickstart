@@ -17,11 +17,12 @@ export class NextjsOptionsStep extends BaseStep {
   getChoices(answers) {
     return [
       {
-        name: chalk.cyan("App Router") + " - Newer, supports Server Components",
+        name:
+          chalk.white("App Router") + chalk.dim(" - Newer, supports Server Components"),
         value: "app",
       },
       {
-        name: chalk.blue("Pages Router") + " - Traditional routing system",
+        name: chalk.white("Pages Router") + chalk.dim(" - Traditional routing system"),
         value: "pages",
       },
     ];

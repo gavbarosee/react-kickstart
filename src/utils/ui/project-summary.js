@@ -1,5 +1,7 @@
 import chalk from "chalk";
 
+import { COLORS } from "./colors.js";
+
 function getReduxInfo() {
   return {
     docs: "https://redux-toolkit.js.org/introduction/getting-started",
@@ -137,60 +139,73 @@ export function generateCompletionSummary(
   if (userChoices.testing && userChoices.testing !== "none")
     techStack.push(userChoices.testing);
 
+  // Helper to format header lines with consistent padding
+  const formatHeaderLine = (label, value) => {
+    const paddedLabel = `   ${label}`.padEnd(15); // 3 spaces + 12 chars = 15
+    return `${chalk.hex(COLORS.text.dim)(paddedLabel)} ${value}`;
+  };
+
   const successHeader = [
     "",
-    chalk.bgGreen(`[✓] Project Successfully Created!`),
-    `   ${chalk.cyan("Name:")} ${chalk.bold(projectName)}`,
-    `   ${chalk.cyan("Location:")} ${projectPath}`,
-    `   ${chalk.cyan("Tech Stack:")} ${techStack.join(", ")}`,
-    `   ${chalk.cyan("Package Manager:")} ${userChoices.packageManager}`,
-    `   ${chalk.cyan("Dev Server:")} ${chalk.underline(`http://localhost:${frameworkInfo.port}`)}`,
+    `${chalk.hex(COLORS.status.success)("✓")} ${chalk.hex(COLORS.text.primary)("Project Created")}`,
+    formatHeaderLine("Name", chalk.hex(COLORS.text.secondary)(projectName)),
+    formatHeaderLine("Location", chalk.hex(COLORS.text.dim)(projectPath)),
+    formatHeaderLine(
+      "Stack",
+      chalk.hex(COLORS.text.secondary)(
+        techStack.map((t) => t.toLowerCase()).join(" • "),
+      ),
+    ),
+    formatHeaderLine(
+      "Dev Server",
+      chalk.hex(COLORS.accent.cyan).underline(`http://localhost:${frameworkInfo.port}`),
+    ),
+    "",
+    chalk.hex(COLORS.ui.separator)("─".repeat(process.stdout.columns || 80)),
   ].join("\n");
 
   // STEP 2: next steps with commands
   const commandLines = [];
 
-  commandLines.push(`   ${chalk.bold("1.")} Navigate to project folder`);
-  commandLines.push(`      ${chalk.cyan(`cd ${projectName}`)}`);
-  commandLines.push("");
-
-  let cmdIndex = 2;
-
+  commandLines.push(`   ${chalk.hex(COLORS.text.tertiary)("1.")} Open in browser`);
   commandLines.push(
-    `   ${chalk.bold(`${cmdIndex}.`)} Development server starting automatically`,
-  );
-  commandLines.push(
-    `      ${chalk.gray(
-      `→ Opening your default browser to http://localhost:${frameworkInfo.port}`,
-    )}`,
+    `      ${chalk.hex(COLORS.accent.cyan).underline(`http://localhost:${frameworkInfo.port}`)} ${chalk.hex(COLORS.text.dim)(" → Server is running")}`,
   );
   commandLines.push("");
-  cmdIndex++;
+
+  commandLines.push(
+    `   ${chalk.hex(COLORS.text.tertiary)("2.")} Navigate to project folder`,
+  );
+  commandLines.push(`      ${chalk.hex(COLORS.text.secondary)(`cd ${projectName}`)}`);
+  commandLines.push("");
+
+  let cmdIndex = 3;
 
   if (commandExamples.dev) {
-    commandLines.push(`   ${chalk.bold(`${cmdIndex}.`)} Manual server control`);
     commandLines.push(
-      `      ${chalk.cyan(`${commandExamples.dev.command}`)} ${chalk.gray(
-        `→ Restart development server if needed`,
-      )}`,
+      `   ${chalk.hex(COLORS.text.tertiary)(`${cmdIndex}.`)} Restart server if needed`,
+    );
+    commandLines.push(
+      `      ${chalk.hex(COLORS.text.secondary)(`${commandExamples.dev.command}`)}`,
     );
     commandLines.push("");
     cmdIndex++;
   }
 
   if (commandExamples.build) {
-    commandLines.push(`   ${chalk.bold(`${cmdIndex}.`)} Build for production`);
     commandLines.push(
-      `      ${chalk.cyan(`${commandExamples.build.command}`)} ${chalk.gray(
-        `→ ${commandExamples.build.description}`,
-      )}`,
+      `   ${chalk.hex(COLORS.text.tertiary)(`${cmdIndex}.`)} Production build`,
+    );
+    commandLines.push(
+      `      ${chalk.hex(COLORS.text.secondary)(`${commandExamples.build.command}`)} ${chalk.hex(COLORS.text.dim)(` → ${commandExamples.build.description}`)}`,
     );
     cmdIndex++;
   }
 
   const nextStepsSection = [
     "",
-    chalk.bgMagenta(`[i] Next Steps:`),
+    chalk.hex(COLORS.text.muted)("Next Steps"),
+    "",
     ...commandLines,
   ].join("\n");
 
@@ -200,26 +215,33 @@ export function generateCompletionSummary(
   // STEP 4: documentation links
   const docsSection = [
     "",
-    chalk.bgBlue(`[i] Documentation:`),
-    `   • ${userChoices.framework}: ${chalk.underline(frameworkInfo.docs)}`,
-    `   • ${userChoices.styling}: ${chalk.underline(stylingInfo.docs)}`,
+    chalk.hex(COLORS.text.muted)("Documentation"),
+    "",
+    `   • ${chalk.hex(COLORS.text.muted)(userChoices.framework.toLowerCase())}: ${chalk.hex(COLORS.accent.cyan).underline(frameworkInfo.docs)}`,
+    `   • ${chalk.hex(COLORS.text.muted)(userChoices.styling)}: ${chalk.hex(COLORS.accent.cyan).underline(stylingInfo.docs)}`,
     ...(userChoices.framework !== "nextjs" &&
     userChoices.routing &&
     userChoices.routing !== "none"
       ? [
-          `   • ${userChoices.routing}: ${chalk.underline(
-            getRoutingInfo(userChoices.routing).docs,
-          )}`,
+          `   • ${chalk.hex(COLORS.text.muted)(userChoices.routing)}: ${chalk
+            .hex(COLORS.accent.cyan)
+            .underline(getRoutingInfo(userChoices.routing).docs)}`,
         ]
       : []),
     ...(userChoices.typescript
-      ? [`   • TypeScript: ${chalk.underline(languageInfo.docs)}`]
+      ? [
+          `   • ${chalk.hex(COLORS.text.muted)("typescript")}: ${chalk.hex(COLORS.accent.cyan).underline(languageInfo.docs)}`,
+        ]
       : []),
     ...(userChoices.stateManagement === "redux"
-      ? [`   • Redux Toolkit: ${chalk.underline(getReduxInfo().docs)}`]
+      ? [
+          `   • ${chalk.hex(COLORS.text.muted)("redux")}: ${chalk.hex(COLORS.accent.cyan).underline(getReduxInfo().docs)}`,
+        ]
       : []),
     ...(userChoices.stateManagement === "zustand"
-      ? [`   • Zustand: ${chalk.underline(getZustandInfo().docs)}`]
+      ? [
+          `   • ${chalk.hex(COLORS.text.muted)("zustand")}: ${chalk.hex(COLORS.accent.cyan).underline(getZustandInfo().docs)}`,
+        ]
       : []),
   ].join("\n");
 

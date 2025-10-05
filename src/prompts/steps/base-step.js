@@ -97,23 +97,25 @@ export class BaseStep {
     const choices = this.getChoices(answers);
     const canGoBack = this.navigator.canGoBack();
 
-    // Show step header with navigation instructions if we can go back
-    this.renderer.showStepHeader(
+    // Show step header (pass answers to determine if separator needed)
+    await this.renderer.showStepHeader(
       this.stepNumber,
       this.totalSteps,
       this.title,
       this.icon,
-      canGoBack,
+      answers,
     );
     const defaultIndex = this.getDefault(answers);
 
-    if (canGoBack) {
-      choices.push(this.renderer.createSeparator());
-      choices.push(this.renderer.createBackOption());
-    }
-
     // Get the message
     let message = this.getMessage();
+
+    // Add navigation hint to message in dim gray
+    if (canGoBack) {
+      message += chalk.dim(" (Use ↑↓ to navigate, ← to go back)");
+    } else {
+      message += chalk.dim(" (Use ↑↓ to navigate)");
+    }
 
     // Prompt user with keyboard navigation support
     const selection = await this.promptWithKeyboardNavigation({
