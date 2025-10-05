@@ -78,7 +78,7 @@ Tools like `create-vite` and `create-next-app` give you a framework with minimal
 - **Deployment** — Vercel or Netlify configurations included
 - **Code quality** — ESLint and Prettier preconfigured
 
-Everything works together out of the box—no configuration required.
+Everything works together out of the box with no configuration required.
 
 ### How It Works
 
