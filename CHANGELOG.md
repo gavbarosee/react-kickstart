@@ -1,3 +1,10 @@
+# [0.6.0](https://github.com/gavbarosee/react-kickstart/compare/v0.5.0...v0.6.0) (2025-10-20)
+
+
+### Features
+
+* **ui:** enhance visual hierarchy ([71c15cc](https://github.com/gavbarosee/react-kickstart/commit/71c15cc886c67ac763f60ccb8dfc32a47700ad0a))
+
 # [0.5.0](https://github.com/gavbarosee/react-kickstart/compare/v0.4.1...v0.5.0) (2025-10-05)
 
 
