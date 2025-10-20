@@ -5,6 +5,7 @@ import ora from "ora";
 import path from "path";
 
 import { createErrorHandler, ERROR_TYPES } from "../../errors/index.js";
+import { COLORS } from "../ui/colors.js";
 import { getFrameworkDocumentation } from "../ui/project-summary.js";
 
 let devProcess = null;
@@ -155,7 +156,7 @@ export async function startProject(projectPath, userChoices) {
       const [cmd, ...args] = devCommand.split(" ");
 
       spinner.succeed(
-        `Development server starting at ${chalk.white.underline(devUrl)}`,
+        `Development server starting at ${chalk.hex(COLORS.accent.cyan).underline(devUrl)}`,
       );
       console.log(
         `\n  ${chalk.white("Running:")} ${chalk.white(`${cmd} ${args.join(" ")}`)}`,

@@ -5,7 +5,7 @@ import { COLORS } from "./colors.js";
 
 export function generateSummary(projectPath, projectName, userChoices) {
   const getStatusSymbol = (value) =>
-    value ? chalk.hex(COLORS.status.success)("[✓]") : chalk.red("[×]");
+    value ? chalk.hex(COLORS.status.success)("✓") : chalk.hex(COLORS.status.error)("×");
 
   // format each item in the summary with proper alignment
   const formatItem = (label, value) => {
@@ -20,51 +20,51 @@ export function generateSummary(projectPath, projectName, userChoices) {
   // create summary content with logical grouping
   const content = [
     formatSectionHeader("Project"),
-    formatItem("Name", chalk.hex(COLORS.text.secondary)(projectName)),
+    formatItem("Name", chalk.hex(COLORS.text.tertiary)(projectName)),
     formatItem("Location", chalk.hex(COLORS.text.dim)(projectPath)),
 
     formatSectionHeader("Build"),
     formatItem(
       "Package Manager",
-      chalk.hex(COLORS.text.secondary)(userChoices.packageManager),
+      chalk.hex(COLORS.text.tertiary)(userChoices.packageManager),
     ),
-    formatItem("Framework", chalk.hex(COLORS.text.secondary)(userChoices.framework)),
+    formatItem("Framework", chalk.hex(COLORS.text.tertiary)(userChoices.framework)),
 
     userChoices.framework !== "nextjs" &&
     userChoices.routing &&
     userChoices.routing !== "none"
-      ? formatItem("Routing", chalk.hex(COLORS.text.secondary)(userChoices.routing))
+      ? formatItem("Routing", chalk.hex(COLORS.text.tertiary)(userChoices.routing))
       : "",
 
     // conditionally show routing for next.js
     userChoices.framework === "nextjs"
       ? formatItem(
           "Router Type",
-          chalk.hex(COLORS.text.secondary)(userChoices.nextRouting),
+          chalk.hex(COLORS.text.tertiary)(userChoices.nextRouting),
         )
       : "",
 
     formatSectionHeader("Developer Experience"),
     formatItem("TypeScript", getStatusSymbol(userChoices.typescript)),
     formatItem("Linting", getStatusSymbol(userChoices.linting)),
-    formatItem("Styling", chalk.hex(COLORS.text.secondary)(userChoices.styling)),
+    formatItem("Styling", chalk.hex(COLORS.text.tertiary)(userChoices.styling)),
 
     // State Management
     userChoices.stateManagement && userChoices.stateManagement !== "none"
       ? formatItem(
           "State Management",
-          chalk.hex(COLORS.text.secondary)(userChoices.stateManagement),
+          chalk.hex(COLORS.text.tertiary)(userChoices.stateManagement),
         )
       : "",
 
     // API Setup
     userChoices.api && userChoices.api !== "none"
-      ? formatItem("API Setup", chalk.hex(COLORS.text.secondary)(userChoices.api))
+      ? formatItem("API Setup", chalk.hex(COLORS.text.tertiary)(userChoices.api))
       : "",
 
     // Testing
     userChoices.testing && userChoices.testing !== "none"
-      ? formatItem("Testing", chalk.hex(COLORS.text.secondary)(userChoices.testing))
+      ? formatItem("Testing", chalk.hex(COLORS.text.tertiary)(userChoices.testing))
       : "",
 
     formatSectionHeader("Tools"),
@@ -72,12 +72,12 @@ export function generateSummary(projectPath, projectName, userChoices) {
     userChoices.deployment && userChoices.deployment !== "none"
       ? formatItem(
           "Deployment",
-          chalk.hex(COLORS.text.secondary)(userChoices.deployment),
+          chalk.hex(COLORS.text.tertiary)(userChoices.deployment),
         )
       : "",
     formatItem("Git Repository", getStatusSymbol(userChoices.initGit)),
     userChoices.openEditor
-      ? formatItem("Editor", chalk.hex(COLORS.text.secondary)(userChoices.editor))
+      ? formatItem("Editor", chalk.hex(COLORS.text.tertiary)(userChoices.editor))
       : formatItem("Open in Editor", getStatusSymbol(userChoices.openEditor)),
   ]
     .filter(Boolean)
@@ -98,18 +98,34 @@ export async function showSummaryPrompt(projectPath, projectName, userChoices) {
         name: "confirmed",
         message: "Continue?",
         default: true,
+        transformer: (answer) => {
+          return answer
+            ? chalk.hex(COLORS.status.success)("Yes")
+            : chalk.hex(COLORS.status.error)("No");
+        },
       },
     ],
     {
       theme: {
         prefix: chalk.hex(COLORS.text.primary)("→"),
         style: {
-          answer: chalk.hex(COLORS.text.secondary),
           message: chalk.hex(COLORS.text.secondary),
           highlight: chalk.hex(COLORS.text.secondary),
         },
       },
     },
+  );
+
+  // Clear the line and reprint with correct icon
+  process.stdout.write("\x1B[1A\x1B[2K"); // Move up one line and clear it
+  const icon = confirmed
+    ? chalk.hex(COLORS.status.success)("✓")
+    : chalk.hex(COLORS.status.error)("×");
+  const answer = confirmed
+    ? chalk.hex(COLORS.status.success)("Yes")
+    : chalk.hex(COLORS.status.error)("No");
+  console.log(
+    `${icon} ${chalk.hex(COLORS.text.secondary)("Continue?")} ${answer}`,
   );
 
   console.log();

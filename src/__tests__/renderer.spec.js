@@ -43,12 +43,12 @@ describe("PromptRenderer", () => {
     expect(cleanOutput).toMatch(/Package Manager\s+npm/);
     expect(cleanOutput).toMatch(/Framework\s+nextjs/);
     expect(cleanOutput).toMatch(/Routing\s+app/);
-    expect(cleanOutput).toMatch(/TypeScript\s+Yes/);
-    expect(cleanOutput).toMatch(/Linting\s+No/);
+    expect(cleanOutput).toMatch(/TypeScript\s+✓/);
+    expect(cleanOutput).toMatch(/Linting\s+×/);
     expect(cleanOutput).toMatch(/Styling\s+tailwind/);
     expect(cleanOutput).toMatch(/Routing\s+react-router/);
     expect(cleanOutput).toMatch(/State\s+redux/);
-    expect(cleanOutput).toMatch(/Git\s+Yes/);
+    expect(cleanOutput).toMatch(/Git\s+✓/);
     expect(cleanOutput).toMatch(/Editor\s+code/);
   });
 });
