@@ -148,11 +148,11 @@ export function generateCompletionSummary(
   const successHeader = [
     "",
     `${chalk.hex(COLORS.status.success)("✓")} ${chalk.hex(COLORS.text.primary)("Project Created")}`,
-    formatHeaderLine("Name", chalk.hex(COLORS.text.secondary)(projectName)),
+    formatHeaderLine("Name", chalk.hex(COLORS.text.tertiary)(projectName)),
     formatHeaderLine("Location", chalk.hex(COLORS.text.dim)(projectPath)),
     formatHeaderLine(
       "Stack",
-      chalk.hex(COLORS.text.secondary)(
+      chalk.hex(COLORS.text.tertiary)(
         techStack.map((t) => t.toLowerCase()).join(" • "),
       ),
     ),
@@ -176,7 +176,7 @@ export function generateCompletionSummary(
   commandLines.push(
     `   ${chalk.hex(COLORS.text.tertiary)("2.")} Navigate to project folder`,
   );
-  commandLines.push(`      ${chalk.hex(COLORS.text.secondary)(`cd ${projectName}`)}`);
+  commandLines.push(`      ${chalk.hex(COLORS.text.tertiary)(`cd ${projectName}`)}`);
   commandLines.push("");
 
   let cmdIndex = 3;
@@ -186,7 +186,7 @@ export function generateCompletionSummary(
       `   ${chalk.hex(COLORS.text.tertiary)(`${cmdIndex}.`)} Restart server if needed`,
     );
     commandLines.push(
-      `      ${chalk.hex(COLORS.text.secondary)(`${commandExamples.dev.command}`)}`,
+      `      ${chalk.hex(COLORS.text.tertiary)(`${commandExamples.dev.command}`)}`,
     );
     commandLines.push("");
     cmdIndex++;
@@ -197,7 +197,7 @@ export function generateCompletionSummary(
       `   ${chalk.hex(COLORS.text.tertiary)(`${cmdIndex}.`)} Production build`,
     );
     commandLines.push(
-      `      ${chalk.hex(COLORS.text.secondary)(`${commandExamples.build.command}`)} ${chalk.hex(COLORS.text.dim)(` → ${commandExamples.build.description}`)}`,
+      `      ${chalk.hex(COLORS.text.tertiary)(`${commandExamples.build.command}`)} ${chalk.hex(COLORS.text.dim)(` → ${commandExamples.build.description}`)}`,
     );
     cmdIndex++;
   }
@@ -217,30 +217,29 @@ export function generateCompletionSummary(
     "",
     chalk.hex(COLORS.text.muted)("Documentation"),
     "",
-    `   • ${chalk.hex(COLORS.text.muted)(userChoices.framework.toLowerCase())}: ${chalk.hex(COLORS.accent.cyan).underline(frameworkInfo.docs)}`,
-    `   • ${chalk.hex(COLORS.text.muted)(userChoices.styling)}: ${chalk.hex(COLORS.accent.cyan).underline(stylingInfo.docs)}`,
+    `   • ${chalk.hex(COLORS.text.muted)(userChoices.framework.toLowerCase())}: ${chalk.hex(COLORS.text.dim)(frameworkInfo.docs)}`,
+    `   • ${chalk.hex(COLORS.text.muted)(userChoices.styling)}: ${chalk.hex(COLORS.text.dim)(stylingInfo.docs)}`,
     ...(userChoices.framework !== "nextjs" &&
     userChoices.routing &&
     userChoices.routing !== "none"
       ? [
           `   • ${chalk.hex(COLORS.text.muted)(userChoices.routing)}: ${chalk
-            .hex(COLORS.accent.cyan)
-            .underline(getRoutingInfo(userChoices.routing).docs)}`,
+            .hex(COLORS.text.dim)(getRoutingInfo(userChoices.routing).docs)}`,
         ]
       : []),
     ...(userChoices.typescript
       ? [
-          `   • ${chalk.hex(COLORS.text.muted)("typescript")}: ${chalk.hex(COLORS.accent.cyan).underline(languageInfo.docs)}`,
+          `   • ${chalk.hex(COLORS.text.muted)("typescript")}: ${chalk.hex(COLORS.text.dim)(languageInfo.docs)}`,
         ]
       : []),
     ...(userChoices.stateManagement === "redux"
       ? [
-          `   • ${chalk.hex(COLORS.text.muted)("redux")}: ${chalk.hex(COLORS.accent.cyan).underline(getReduxInfo().docs)}`,
+          `   • ${chalk.hex(COLORS.text.muted)("redux")}: ${chalk.hex(COLORS.text.dim)(getReduxInfo().docs)}`,
         ]
       : []),
     ...(userChoices.stateManagement === "zustand"
       ? [
-          `   • ${chalk.hex(COLORS.text.muted)("zustand")}: ${chalk.hex(COLORS.accent.cyan).underline(getZustandInfo().docs)}`,
+          `   • ${chalk.hex(COLORS.text.muted)("zustand")}: ${chalk.hex(COLORS.text.dim)(getZustandInfo().docs)}`,
         ]
       : []),
   ].join("\n");

@@ -19,8 +19,8 @@ export const COLORS = {
 
   // Status Colors
   status: {
-    success: "#34d399", // Success states, checkmarks, "Yes"
-    error: "red", // Errors (using chalk's built-in red)
+    success: "#00ff00", // Success states, checkmarks, "Yes" (chalk.green equivalent)
+    error: "#ff0000", // Errors, red crosses
     warning: "#fb923c", // Warnings, caution states
   },
 
@@ -28,6 +28,7 @@ export const COLORS = {
   accent: {
     cyan: "#22d3ee", // Links, suggestions, info, highlights
     cyanDark: "#06b6d4", // Brand accent, section headers
+    reactCyan: "#61DAFB", // Official React brand color
   },
 };
 

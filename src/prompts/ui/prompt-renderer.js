@@ -22,7 +22,7 @@ export class PromptRenderer {
 
     if (!this.hasAnimated) {
       // Type logo + title
-      await this.typeText(chalk.hex(COLORS.text.primary)("[/]"), 15);
+      await this.typeText(chalk.hex(COLORS.accent.reactCyan)("[ ⚛ ]"), 15);
       process.stdout.write(" ");
       await this.typeText(chalk.hex(COLORS.text.primary).bold("React Kickstart"), 15);
 
@@ -48,7 +48,7 @@ export class PromptRenderer {
       this.hasAnimated = true; // Mark as animated
     } else {
       // Subsequent times: instant display
-      const logo = chalk.hex(COLORS.text.primary)("[/]");
+      const logo = chalk.hex(COLORS.accent.reactCyan)("[ ⚛ ]");
       const title = chalk.hex(COLORS.text.primary).bold("React Kickstart");
       console.log(`${logo} ${title}`);
       console.log();
@@ -239,20 +239,20 @@ export class PromptRenderer {
       console.log(
         formatLine(
           "Package Manager",
-          chalk.hex(COLORS.text.secondary)(answers.packageManager),
+          chalk.hex(COLORS.text.tertiary)(answers.packageManager),
         ),
       );
     }
 
     if (answers.framework) {
       console.log(
-        formatLine("Framework", chalk.hex(COLORS.text.secondary)(answers.framework)),
+        formatLine("Framework", chalk.hex(COLORS.text.tertiary)(answers.framework)),
       );
     }
 
     if (answers.framework === "nextjs" && answers.nextRouting) {
       console.log(
-        formatLine("Routing", chalk.hex(COLORS.text.secondary)(answers.nextRouting)),
+        formatLine("Routing", chalk.hex(COLORS.text.tertiary)(answers.nextRouting)),
       );
     }
 
@@ -261,8 +261,8 @@ export class PromptRenderer {
         formatLine(
           "TypeScript",
           answers.typescript
-            ? chalk.hex(COLORS.status.success)("Yes")
-            : chalk.hex(COLORS.text.dim)("No"),
+            ? chalk.hex(COLORS.status.success)("✓")
+            : chalk.hex(COLORS.status.error)("×"),
         ),
       );
     }
@@ -272,43 +272,70 @@ export class PromptRenderer {
         formatLine(
           "Linting",
           answers.linting
-            ? chalk.hex(COLORS.status.success)("Yes")
-            : chalk.hex(COLORS.text.dim)("No"),
+            ? chalk.hex(COLORS.status.success)("✓")
+            : chalk.hex(COLORS.status.error)("×"),
         ),
       );
     }
 
     if (answers.styling) {
       console.log(
-        formatLine("Styling", chalk.hex(COLORS.text.secondary)(answers.styling)),
+        formatLine("Styling", chalk.hex(COLORS.text.tertiary)(answers.styling)),
       );
     }
 
     if (answers.routing) {
       console.log(
-        formatLine("Routing", chalk.hex(COLORS.text.secondary)(answers.routing)),
+        formatLine(
+          "Routing",
+          answers.routing === "none"
+            ? chalk.hex(COLORS.text.dim)(answers.routing)
+            : chalk.hex(COLORS.text.tertiary)(answers.routing),
+        ),
       );
     }
 
     if (answers.stateManagement) {
       console.log(
-        formatLine("State", chalk.hex(COLORS.text.secondary)(answers.stateManagement)),
+        formatLine(
+          "State",
+          answers.stateManagement === "none"
+            ? chalk.hex(COLORS.text.dim)(answers.stateManagement)
+            : chalk.hex(COLORS.text.tertiary)(answers.stateManagement),
+        ),
       );
     }
 
     if (answers.api) {
-      console.log(formatLine("API", chalk.hex(COLORS.text.secondary)(answers.api)));
+      console.log(
+        formatLine(
+          "API",
+          answers.api === "none"
+            ? chalk.hex(COLORS.text.dim)(answers.api)
+            : chalk.hex(COLORS.text.tertiary)(answers.api),
+        ),
+      );
     }
 
     if (answers.testing) {
       console.log(
-        formatLine("Testing", chalk.hex(COLORS.text.secondary)(answers.testing)),
+        formatLine(
+          "Testing",
+          answers.testing === "none"
+            ? chalk.hex(COLORS.text.dim)(answers.testing)
+            : chalk.hex(COLORS.text.tertiary)(answers.testing),
+        ),
       );
     }
 
     if (answers.deployment) {
       console.log(
-        formatLine("Deployment", chalk.hex(COLORS.text.secondary)(answers.deployment)),
+        formatLine(
+          "Deployment",
+          answers.deployment === "none"
+            ? chalk.hex(COLORS.text.dim)(answers.deployment)
+            : chalk.hex(COLORS.text.tertiary)(answers.deployment),
+        ),
       );
     }
 
@@ -317,8 +344,8 @@ export class PromptRenderer {
         formatLine(
           "Git",
           answers.initGit
-            ? chalk.hex(COLORS.status.success)("Yes")
-            : chalk.hex(COLORS.text.dim)("No"),
+            ? chalk.hex(COLORS.status.success)("✓")
+            : chalk.hex(COLORS.status.error)("×"),
         ),
       );
     }
@@ -327,7 +354,7 @@ export class PromptRenderer {
       console.log(
         formatLine(
           "Editor",
-          chalk.hex(COLORS.text.secondary)(answers.editor || "vscode"),
+          chalk.hex(COLORS.text.tertiary)(answers.editor || "vscode"),
         ),
       );
     }
@@ -410,7 +437,7 @@ export class PromptRenderer {
           style: {
             answer: chalk.hex(COLORS.text.secondary),
             message: chalk.hex(COLORS.text.secondary),
-            highlight: chalk.hex(COLORS.text.secondary),
+            highlight: chalk.hex(COLORS.accent.reactCyan),
           },
         },
       },
