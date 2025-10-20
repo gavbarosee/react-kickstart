@@ -1,3 +1,5 @@
+## [0.6.1](https://github.com/gavbarosee/react-kickstart/compare/v0.6.0...v0.6.1) (2025-10-20)
+
 # [0.6.0](https://github.com/gavbarosee/react-kickstart/compare/v0.5.0...v0.6.0) (2025-10-20)
 
 
