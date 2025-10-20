@@ -1,6 +1,6 @@
 <div align="center">
 
-![React Kickstart Logo](https://res.cloudinary.com/ddy8ydri4/image/upload/v1759661837/rk-banner_jxltjl.jpg)
+<img width="464" height="auto" alt="Screenshot 2025-10-20 at 13 34 30" src="https://github.com/user-attachments/assets/83088f41-87d8-4f7c-baf9-deacb084a3fd" />
 
 Generate pre-configured React apps with your choice of [framework, styling, and tooling](#stack-options)
 
@@ -31,7 +31,7 @@ Generate pre-configured React apps with your choice of [framework, styling, and 
 
 <div align="center">
 
-https://github.com/user-attachments/assets/cd32c723-63f7-4b6f-81b9-abed53477318
+https://github.com/user-attachments/assets/9051b5ce-ca36-4504-816d-7dad901efcea
 
 _Interactive CLI demonstration_
 
@@ -49,7 +49,7 @@ npx @gavbarosee/react-kickstart my-app
 yarn create @gavbarosee/react-kickstart my-app
 ```
 
-You'll be asked a few questions to configure your stack. Typically under a minute.
+You'll be asked a few prompts to configure your stack. Typically under a minute.
 
 **Prefer global installation?** Install once and use the shorter command:
 
@@ -68,7 +68,7 @@ react-kickstart my-app
 
 ## What It Does
 
-Tools like `create-vite` and `create-next-app` give you a framework with minimal setup. React Kickstart scaffolds your entire application stack:
+Tools like `create-vite` and `create-next-app` give you a framework with minimal setup. React Kickstart scaffolds your entire application stack with several tooling options:
 
 - **State management** — Redux or Zustand configured with working examples
 - **Routing** — React Router or Next.js routing set up with example pages
@@ -88,7 +88,7 @@ Everything works together out of the box with no configuration required.
 4. **Configures everything** — ESLint, Prettier, TypeScript, testing—all wired together
 5. **Generates working code** — Example components showing how everything fits together
 6. **Opens your editor** — Detects VS Code or Cursor and launches it
-7. **Starts the dev server** — Opens `localhost:3000` (Vite) or `:3001` (Next.js) in your browser
+7. **Starts the dev server** — Opens `localhost:5173` (Vite) or `:3001` (Next.js) in your browser
 
 ### Stack Options
 
@@ -138,7 +138,7 @@ Everything you need to start building a real application.
 
 ## Installation
 
-Use npx (no installation needed) or install globally if you'll use it often. [See Quick Start above](#quick-start).
+Use npx (no installation needed) or install globally if you'll use it often. ([See the official installation docs for more details](https://react-kickstart.dev/getting-started/installation)).
 
 ---
 
