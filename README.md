@@ -49,26 +49,26 @@ npx @gavbarosee/react-kickstart my-app
 yarn create @gavbarosee/react-kickstart my-app
 ```
 
-You'll be asked a few prompts to configure your stack. Typically under a minute.
+You'll answer a few prompts to configure your stack. Takes less than a minute.
 
 **Prefer global installation?** Install once and use the shorter command:
 
 ```bash
 npm install -g @gavbarosee/react-kickstart
-# or with yarn
+# or
 yarn global add @gavbarosee/react-kickstart
 
-# then run
+# Then run
 react-kickstart my-app
 ```
 
-**Requirements:** Node.js >= 18
+**Requirements:** Node.js 18 or later
 
 ---
 
 ## What It Does
 
-Tools like `create-vite` and `create-next-app` give you a framework with minimal setup. React Kickstart scaffolds your entire application stack with several tooling options:
+Tools like `create-vite` and `create-next-app` give you a framework with minimal setup. React Kickstart scaffolds your entire application stack:
 
 - **State management** — Redux or Zustand configured with working examples
 - **Routing** — React Router or Next.js routing set up with example pages
@@ -78,17 +78,17 @@ Tools like `create-vite` and `create-next-app` give you a framework with minimal
 - **Deployment** — Vercel or Netlify configurations included
 - **Code quality** — ESLint and Prettier preconfigured
 
-Everything works together out of the box with no configuration required.
+Everything works together out of the box. No configuration required.
 
 ### How It Works
 
 1. **Sets up your project** — Creates folders and base files
 2. **Adds your choices** — Framework, styling, state management, and tooling ([see options](#stack-options))
-3. **Installs dependencies** — Runs npm or yarn automatically (auto-detects which you use)
+3. **Installs dependencies** — Runs npm or yarn automatically (auto-detects which you're using)
 4. **Configures everything** — ESLint, Prettier, TypeScript, testing—all wired together
 5. **Generates working code** — Example components showing how everything fits together
-6. **Opens your editor** — Detects VS Code or Cursor and launches it
-7. **Starts the dev server** — Opens `localhost:5173` (Vite) or `:3001` (Next.js) in your browser
+6. **Opens your editor** — Detects VS Code or Cursor and launches it automatically
+7. **Starts the dev server** — Opens `localhost:5173` (Vite) or `:3000` (Next.js) in your browser
 
 ### Stack Options
 
@@ -138,7 +138,7 @@ Everything you need to start building a real application.
 
 ## Installation
 
-Use npx (no installation needed) or install globally if you'll use it often. ([See the official installation docs for more details](https://react-kickstart.dev/getting-started/installation)).
+Use npx (no installation needed) or install globally if you'll use it often. [See the full installation guide](https://react-kickstart.dev/getting-started/installation) for more details.
 
 ---
 
@@ -165,20 +165,20 @@ Use npx (no installation needed) or install globally if you'll use it often. ([S
 
 **Need help?**
 
-- **[GitHub Discussions](https://github.com/gavbarosee/react-kickstart/discussions)** - Ask questions and share ideas
-- **[GitHub Issues](https://github.com/gavbarosee/react-kickstart/issues)** - Report bugs and request features
-- **[Documentation](https://react-kickstart.dev)** - Guides and references
+- **[GitHub Discussions](https://github.com/gavbarosee/react-kickstart/discussions)** — Ask questions and share ideas
+- **[GitHub Issues](https://github.com/gavbarosee/react-kickstart/issues)** — Report bugs and request features
+- **[Documentation](https://react-kickstart.dev)** — Guides and references
 
 **Stay in the loop:**
 
-- **[GitHub Releases](https://github.com/gavbarosee/react-kickstart/releases)** - New versions and updates
-- **[Changelog](CHANGELOG.md)** - What's changed in each version
+- **[GitHub Releases](https://github.com/gavbarosee/react-kickstart/releases)** — New versions and updates
+- **[Changelog](CHANGELOG.md)** — What's changed in each version
 
 ---
 
 ## Contributing
 
-See the [contributor guide](https://react-kickstart.dev/contributing) for detailed setup and workflow.
+See the [contributing guide](https://react-kickstart.dev/contributing) for setup and workflow details.
 
 ### Contributors
 
@@ -188,6 +188,6 @@ See the [contributor guide](https://react-kickstart.dev/contributing) for detail
 
 ## License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+MIT — see the [LICENSE](LICENSE) file for details.
 
-**Copyright (c) 2025 Gav Barosee**
+**Copyright © 2025 Gav Barosee**
