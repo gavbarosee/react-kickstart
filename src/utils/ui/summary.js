@@ -124,9 +124,7 @@ export async function showSummaryPrompt(projectPath, projectName, userChoices) {
   const answer = confirmed
     ? chalk.hex(COLORS.status.success)("Yes")
     : chalk.hex(COLORS.status.error)("No");
-  console.log(
-    `${icon} ${chalk.hex(COLORS.text.secondary)("Continue?")} ${answer}`,
-  );
+  console.log(`${icon} ${chalk.hex(COLORS.text.secondary)("Continue?")} ${answer}`);
 
   console.log();
 

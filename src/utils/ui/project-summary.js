@@ -223,8 +223,9 @@ export function generateCompletionSummary(
     userChoices.routing &&
     userChoices.routing !== "none"
       ? [
-          `   • ${chalk.hex(COLORS.text.muted)(userChoices.routing)}: ${chalk
-            .hex(COLORS.text.dim)(getRoutingInfo(userChoices.routing).docs)}`,
+          `   • ${chalk.hex(COLORS.text.muted)(userChoices.routing)}: ${chalk.hex(
+            COLORS.text.dim,
+          )(getRoutingInfo(userChoices.routing).docs)}`,
         ]
       : []),
     ...(userChoices.typescript

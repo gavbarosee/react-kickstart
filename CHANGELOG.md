@@ -2,33 +2,29 @@
 
 # [0.6.0](https://github.com/gavbarosee/react-kickstart/compare/v0.5.0...v0.6.0) (2025-10-20)
 
-
 ### Features
 
-* **ui:** enhance visual hierarchy ([71c15cc](https://github.com/gavbarosee/react-kickstart/commit/71c15cc886c67ac763f60ccb8dfc32a47700ad0a))
+- **ui:** enhance visual hierarchy ([71c15cc](https://github.com/gavbarosee/react-kickstart/commit/71c15cc886c67ac763f60ccb8dfc32a47700ad0a))
 
 # [0.5.0](https://github.com/gavbarosee/react-kickstart/compare/v0.4.1...v0.5.0) (2025-10-05)
 
-
 ### Bug Fixes
 
-* **ui:** maintain tagline spacing ([e622060](https://github.com/gavbarosee/react-kickstart/commit/e6220606d2642796ee67c4aeae98d0de188a7b7a))
-
+- **ui:** maintain tagline spacing ([e622060](https://github.com/gavbarosee/react-kickstart/commit/e6220606d2642796ee67c4aeae98d0de188a7b7a))
 
 ### Features
 
-* polish cli ([a7c1e64](https://github.com/gavbarosee/react-kickstart/commit/a7c1e645135764f09f4129f66cfa56b994154550))
-* **ui:** enhance color theme ([f3c2298](https://github.com/gavbarosee/react-kickstart/commit/f3c2298059483b4e649ef126a977cff9711f607b))
-* **ui:** update cli styling ([d208b59](https://github.com/gavbarosee/react-kickstart/commit/d208b5967b55623affe373ca689a11cc7e4502a7))
-* **ux:** improve animation ([c0288c3](https://github.com/gavbarosee/react-kickstart/commit/c0288c3cd88ed9256cdf8f266ff09705518b8a25))
-* **ux:** improve ux ([e0f30f1](https://github.com/gavbarosee/react-kickstart/commit/e0f30f17aa7c9cfa6abb6ed06868f6afd3ae6ecf))
+- polish cli ([a7c1e64](https://github.com/gavbarosee/react-kickstart/commit/a7c1e645135764f09f4129f66cfa56b994154550))
+- **ui:** enhance color theme ([f3c2298](https://github.com/gavbarosee/react-kickstart/commit/f3c2298059483b4e649ef126a977cff9711f607b))
+- **ui:** update cli styling ([d208b59](https://github.com/gavbarosee/react-kickstart/commit/d208b5967b55623affe373ca689a11cc7e4502a7))
+- **ux:** improve animation ([c0288c3](https://github.com/gavbarosee/react-kickstart/commit/c0288c3cd88ed9256cdf8f266ff09705518b8a25))
+- **ux:** improve ux ([e0f30f1](https://github.com/gavbarosee/react-kickstart/commit/e0f30f17aa7c9cfa6abb6ed06868f6afd3ae6ecf))
 
 ## [0.4.1](https://github.com/gavbarosee/react-kickstart/compare/v0.4.0...v0.4.1) (2025-09-10)
 
-
 ### Bug Fixes
 
-* **ci:** fix registry issue ([cfa48a1](https://github.com/gavbarosee/react-kickstart/commit/cfa48a11f3311b838a426a4e914423cd1e2ab6cb))
+- **ci:** fix registry issue ([cfa48a1](https://github.com/gavbarosee/react-kickstart/commit/cfa48a11f3311b838a426a4e914423cd1e2ab6cb))
 
 # [0.4.0](https://github.com/gavbarosee/react-kickstart/compare/v0.3.0...v0.4.0) (2025-09-10)
 
